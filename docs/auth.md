@@ -12,7 +12,7 @@
 
 ```typescript
 // src/lib/auth.ts
-import { PrismaAdapter } from '@auth/prisma-adapter';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { prisma } from './prisma';
@@ -26,6 +26,16 @@ export const authConfig: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    signIn: async ({ account, profile }) => {
+      if (
+        profile &&
+        account?.provider === 'google' &&
+        'email_verified' in profile
+      ) {
+        return !!profile.email_verified;
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -37,7 +47,7 @@ export const authConfig: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (session?.user) {
+      if (session?.user && token) {
         session.user.id = token.id as string;
         session.user.name = token.name;
         session.user.email = token.email;
@@ -47,49 +57,50 @@ export const authConfig: NextAuthOptions = {
       return session;
     },
   },
-  session: { strategy: "jwt" },
   pages: {
-    signIn: "/auth/signin",
+    signIn: '/auth/signin',
   },
 };
 ```
-      session.user.role = token.role;
-    }
-    return session;
-  }
-},
-session: { strategy: "jwt" },
-// ...existing code...
-```
+
+### Key Features Implemented:
+
+1. **Email Verification Requirement**: The `signIn` callback ensures that only users with verified Google emails can sign in.
+2. **JWT Strategy**: Uses JWT tokens for session management (implicit default).
+3. **Custom Session Data**: Includes user ID, role, name, email, and image in the session object.
+4. **Prisma Adapter**: Integrates with the database for user and session management.
 
 ## TypeScript Type Augmentation
 
 ```typescript
 // types/next-auth.d.ts
-import NextAuth from "next-auth";
+import { DefaultSession, DefaultUser } from 'next-auth';
+import { DefaultJWT } from 'next-auth/jwt';
 
-declare module "next-auth" {
-  interface Session {
+declare module 'next-auth' {
+  interface Session extends DefaultSession {
     user: {
       id: string;
       name?: string | null;
       email?: string | null;
       image?: string | null;
-      role: "OWNER" | "PARTNER" | "USER";
+      role: 'OWNER' | 'PARTNER' | 'USER';
     };
   }
-  interface User {
+
+  interface User extends DefaultUser {
     id: string;
-    role: "OWNER" | "PARTNER" | "USER";
+    role: 'OWNER' | 'PARTNER' | 'USER';
     name?: string | null;
     email?: string | null;
     image?: string | null;
   }
 }
-declare module "next-auth/jwt" {
-  interface JWT {
+
+declare module 'next-auth/jwt' {
+  interface JWT extends DefaultJWT {
     id: string;
-    role: "OWNER" | "PARTNER" | "USER";
+    role: 'OWNER' | 'PARTNER' | 'USER';
     name?: string | null;
     email?: string | null;
     image?: string | null;
@@ -97,22 +108,39 @@ declare module "next-auth/jwt" {
 }
 ```
 
-## Middleware Example
+## Middleware Protection
+
+The middleware protects all application routes except for authentication, API routes, and static assets:
 
 ```typescript
 // middleware.ts
-import { withAuth } from "next-auth/middleware";
+import { withAuth } from 'next-auth/middleware';
 
 export default withAuth({
   pages: {
-    signIn: "/auth/signin",
+    signIn: '/auth/signin',
   },
 });
 
 export const config = {
-  matcher: ["/dashboard", "/accounts", "/expenses"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+     */
+    '/((?!api|auth|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+  ],
 };
 ```
+
+This configuration ensures that:
+- All pages require authentication by default
+- Authentication routes (`/auth/*`) are accessible to unauthenticated users
+- API routes are handled separately (can implement their own auth checks)
+- Static assets and metadata files are publicly accessible
 
 ## Accessing Session
 
@@ -126,6 +154,24 @@ export const config = {
 - Use TypeScript augmentation for type safety.
 
 See [docs/data-models.md](./data-models.md) for user/role schema.
+
+## Database Schema Notes
+
+In the Prisma schema, the `role` field is implemented as a `String` type with a default value of "USER":
+
+```prisma
+model User {
+  id                String             @id @default(cuid())
+  name              String?
+  email             String             @unique
+  emailVerified     DateTime?
+  image             String?
+  role              String             @default("USER")  // String type, not enum
+  // ... other fields
+}
+```
+
+While TypeScript types enforce the role as `"OWNER" | "PARTNER" | "USER"`, the database stores it as a string. This provides flexibility while maintaining type safety in the application layer.
 
 ## Why TypeScript Module Augmentation is Needed
 
