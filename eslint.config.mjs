@@ -23,10 +23,17 @@ const eslintConfig = [
   eslintCssPlugin.configs['flat/standard'],
   eslintConfigPrettier,
   {
-    ignores: ['node_modules/**/*', '.next/**/*', 'out/**/*'],
     rules: {
       'react/react-in-jsx-scope': 'off',
     },
+  },
+  {
+    ignores: [
+      'node_modules/**/*',
+      '.next/**/*',
+      'out/**/*',
+      'src/generated/**/*',
+    ],
   },
 ];
 

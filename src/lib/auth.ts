@@ -1,4 +1,4 @@
-import { PrismaAdapter } from '@auth/prisma-adapter';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { prisma } from './prisma';
@@ -13,8 +13,12 @@ export const authConfig: NextAuthOptions = {
   ],
   callbacks: {
     signIn: async ({ account, profile }) => {
-      if (profile && account?.provider === 'google') {
-        return profile.email_verified;
+      if (
+        profile &&
+        account?.provider === 'google' &&
+        'email_verified' in profile
+      ) {
+        return !!profile.email_verified;
       }
       return true;
     },
@@ -29,7 +33,7 @@ export const authConfig: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (session?.user) {
+      if (session?.user && token) {
         session.user.id = token.id as string;
         session.user.name = token.name;
         session.user.email = token.email;
