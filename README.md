@@ -1,18 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+## 💡 Project Overview
 
-First, run the development server:
+Money Manager is a modern, mobile-first budgeting app for couples and families. It features collaborative expense tracking, AI-powered receipt scanning, and analytics.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🏗️ Tech Stack
+
+| Layer    | Tech/Tool             |
+| -------- | --------------------- |
+| Frontend | Next.js, Tailwind CSS |
+| Backend  | Next.js API Routes    |
+| Database | PostgreSQL (Supabase) |
+| ORM      | Prisma                |
+| Auth     | NextAuth.js           |
+| OCR      | External API          |
+| Storage  | Supabase Storage      |
+| Deploy   | Vercel                |
+| Typesafe | TypeScript            |
+
+## 📁 Project Structure
+
+See [docs/architecture.md](docs/architecture.md) for details.
+
+## 🚀 Getting Started
+
+1. Clone repo
+2. Copy `.env.example` to `.env` and fill in secrets
+3. `yarn`
+4. `yarn dev`
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
