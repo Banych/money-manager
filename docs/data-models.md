@@ -293,17 +293,20 @@ See [docs/auth.md](./auth.md) for session and role handling.
 ## Model Evolution Plan
 
 ### Phase 2 Additions
+
 - Add `Receipt` and `ExtractedItem` models for OCR processing
 - Extend `Expense` model with `receiptId` and `categoryId` fields
 - Add confidence scoring and OCR metadata
 
 ### Phase 3 Additions
+
 - Add `Household`, `HouseholdMember`, and `HouseholdInvitation` for multi-user
 - Add `Budget`, `Category`, and `RecurringTransaction` for budgeting
 - Extend `Account` to link to households instead of just users
 - Add user activity tracking and permissions
 
 ### Phase 4 Additions
+
 - Add `Goal`, `Notification`, and `AuditLog` for advanced features
 - Add analytics aggregation tables (if needed for performance)
 - Add external integration models (bank connections, etc.)

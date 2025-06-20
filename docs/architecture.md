@@ -185,12 +185,14 @@ See [docs/auth.md](./auth.md) for a full example.
 ### Phase 2: OCR & Smart Features
 
 **New Components:**
+
 - **OCR Service Layer:** Abstraction for multiple OCR providers (Google Vision, Mindee, OpenAI)
 - **File Upload Manager:** Handle receipt images with validation and compression
 - **Background Job Queue:** Process OCR requests asynchronously (using Vercel Edge Functions or external queue)
 - **Confidence Scoring:** UI components to display and handle OCR confidence levels
 
 **Architecture Changes:**
+
 - Add `/lib/ocr/` module for OCR provider abstraction
 - Extend API routes for file upload and processing
 - Add database triggers for automatic product matching
@@ -199,12 +201,14 @@ See [docs/auth.md](./auth.md) for a full example.
 ### Phase 3: Multi-User & Collaboration
 
 **New Components:**
+
 - **Household Management:** User invitation system with email verification
 - **Permission System:** Role-based access control middleware
 - **Real-time Updates:** Optional WebSocket integration for live collaboration
 - **Activity Tracking:** Audit log for user actions
 
 **Architecture Changes:**
+
 - Extend authentication to include household context
 - Add row-level security (RLS) in Supabase for data isolation
 - Implement invitation token system with expiration
@@ -213,12 +217,14 @@ See [docs/auth.md](./auth.md) for a full example.
 ### Phase 4: Advanced Features & Scale
 
 **New Components:**
+
 - **Analytics Engine:** Aggregation services for spending insights
 - **Notification System:** Multi-channel notification delivery (email, push, in-app)
 - **External Integrations:** API clients for banking, calendar, shopping services
 - **AI Insights Service:** Machine learning for spending pattern analysis
 
 **Architecture Changes:**
+
 - Consider microservices for heavy computation (analytics, AI)
 - Add caching layer (Redis) for frequently accessed data
 - Implement data warehousing for historical analytics
@@ -227,18 +233,21 @@ See [docs/auth.md](./auth.md) for a full example.
 ### Scaling Considerations
 
 **Database Optimization:**
+
 - Add database indexes for frequently queried fields
 - Consider read replicas for analytics queries
 - Implement data archiving for old transactions
 - Add database connection pooling
 
 **Performance:**
+
 - Implement CDN for static assets and images
 - Add API response caching
 - Optimize bundle size with code splitting
 - Add service worker for offline capabilities
 
 **Security Enhancements:**
+
 - Add API rate limiting per user/household
 - Implement data encryption for sensitive fields
 - Add security headers and CSRF protection

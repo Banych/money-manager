@@ -9,12 +9,14 @@ Based on the chat discussion, here's the step-by-step development approach:
 ### Step 1: Database & Authentication Setup
 
 1. **Setup Prisma with Supabase**
+
    ```powershell
    npm install prisma @prisma/client
    npx prisma init
    ```
 
 2. **Configure NextAuth.js**
+
    ```powershell
    npm install next-auth @auth/prisma-adapter
    ```
@@ -31,21 +33,25 @@ Based on the chat discussion, here's the step-by-step development approach:
 ### Step 2: Core Features Development Order
 
 1. **Authentication Pages**
+
    - `/auth/signin` - Google OAuth login
    - Dashboard layout with navigation
 
 2. **Account Management**
+
    - Create/edit accounts (wallets, cards, etc.)
    - View account balances
    - Account selection UI
 
 3. **Expense Tracking**
+
    - Add expense form
    - Link to accounts
    - Manual item entry
    - Expense list/history
 
 4. **Basic Analytics**
+
    - Monthly spending summary
    - Spending by category
    - Account balance overview
@@ -81,12 +87,14 @@ Based on the chat discussion, here's the step-by-step development approach:
 ### Phase 2: OCR & Smart Features
 
 **Development Workflow:**
+
 - **Feature Branches:** Use feature branches for OCR implementation
 - **API Testing:** Comprehensive testing for OCR endpoints
 - **Image Handling:** Best practices for file upload and processing
 - **Error Recovery:** Robust error handling for OCR failures
 
 **New Tools & Libraries:**
+
 ```powershell
 # OCR and image processing
 npm install @google-cloud/vision sharp multer
@@ -99,6 +107,7 @@ npm install inngest bullmq
 ```
 
 **Testing Strategy:**
+
 - **OCR Testing:** Mock OCR responses for consistent testing
 - **File Upload Testing:** Test image upload and processing flows
 - **Integration Testing:** End-to-end receipt processing tests
@@ -107,12 +116,14 @@ npm install inngest bullmq
 ### Phase 3: Multi-User & Collaboration
 
 **Development Workflow:**
+
 - **Database Migrations:** Careful planning for household model changes
 - **Permission Testing:** Comprehensive role-based access testing
 - **Email Integration:** Testing invitation and notification emails
 - **Real-time Features:** WebSocket testing and fallback handling
 
 **New Tools & Libraries:**
+
 ```powershell
 # Email and notifications
 npm install @vercel/email nodemailer
@@ -128,6 +139,7 @@ npm install node-cron
 ```
 
 **Testing Strategy:**
+
 - **Multi-user Testing:** Test concurrent user scenarios
 - **Permission Testing:** Verify role-based access controls
 - **Email Testing:** Mock email delivery for invitations
@@ -136,12 +148,14 @@ npm install node-cron
 ### Phase 4: Advanced Features
 
 **Development Workflow:**
+
 - **Performance Monitoring:** Add comprehensive monitoring
 - **Analytics Pipeline:** Set up data aggregation workflows
 - **Mobile Testing:** Test PWA features on actual devices
 - **Security Audits:** Regular security assessments
 
 **New Tools & Libraries:**
+
 ```powershell
 # Analytics and monitoring
 npm install @vercel/analytics sentry posthog
@@ -157,6 +171,7 @@ npm install date-fns dayjs
 ```
 
 **Testing Strategy:**
+
 - **Performance Testing:** Load testing and optimization
 - **Mobile Testing:** Cross-device and cross-browser testing
 - **Analytics Testing:** Verify data collection and aggregation
@@ -165,18 +180,21 @@ npm install date-fns dayjs
 ### Code Quality & Standards
 
 **Code Organization:**
+
 - **Module Boundaries:** Clear separation between features
 - **Shared Utilities:** Common utilities in `/lib` and `/utils`
 - **Component Reusability:** Build reusable components early
 - **Type Safety:** Strict TypeScript configuration
 
 **Documentation Standards:**
+
 - **API Documentation:** Document all API endpoints
 - **Component Documentation:** Storybook for component library
 - **Code Comments:** Inline documentation for complex logic
 - **Architecture Decisions:** Document major architectural choices
 
 **Performance Optimization:**
+
 - **Bundle Analysis:** Regular bundle size monitoring
 - **Image Optimization:** Optimize receipt images and assets
 - **Database Optimization:** Query optimization and indexing
