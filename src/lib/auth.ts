@@ -5,6 +5,9 @@ import { db } from './db';
 
 export const authConfig: NextAuthOptions = {
   adapter: PrismaAdapter(db),
+  session: {
+    strategy: 'jwt',
+  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -22,23 +25,32 @@ export const authConfig: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
-      if (user) {
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
+    async jwt({ token, user, account }) {
+      // On initial sign in, user object is available
+      if (account && user) {
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
         token.image = user.image;
-        token.role = user.role;
+        token.role = user.role || 'USER';
       }
       return token;
     },
     async session({ session, token }) {
-      if (session?.user && token) {
+      if (session?.user && token?.id) {
         session.user.id = token.id as string;
-        session.user.name = token.name;
-        session.user.email = token.email;
-        session.user.image = token.image;
-        session.user.role = token.role;
+        session.user.name = token.name as string;
+        session.user.email = token.email as string;
+        session.user.image = token.image as string;
+        session.user.role =
+          (token.role as 'USER' | 'OWNER' | 'PARTNER') || 'USER';
       }
       return session;
     },

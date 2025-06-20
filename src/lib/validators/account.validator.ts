@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { FinancialAccountType } from '@/generated/prisma';
+import { z } from 'zod';
 
 const zFinancialAccountType = z.nativeEnum(FinancialAccountType);
 
@@ -7,8 +7,8 @@ export const createAccountValidator = z
   .object({
     name: z.string().min(3, 'Name must be at least 3 characters long'),
     balance: z.number(), // Allow negative balances for credit cards, lines of credit, etc.
-    currency: z.string().default('EUR'),
-    type: zFinancialAccountType.default(FinancialAccountType.CASH),
+    currency: z.string().min(1, 'Currency is required'),
+    type: zFinancialAccountType,
   })
   .refine(
     (data) => {

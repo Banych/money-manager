@@ -8,13 +8,9 @@ export default withAuth({
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     */
-    '/((?!api|auth|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+    // Protected routes that require authentication
+    '/accounts/:path*',
+    '/api/accounts/:path*',
+    // Add other protected routes here as needed
   ],
 };
