@@ -22,7 +22,10 @@ export async function GET() {
 
     return NextResponse.json(accounts, { status: 200 });
   } catch (error) {
-    console.error('Error fetching accounts:', error);
+    // Log error for debugging in development/staging
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error fetching accounts:', error);
+    }
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 }
@@ -34,20 +37,19 @@ export async function POST(request: Request) {
   try {
     const session = await getAuthSession();
 
-    // Debug logging
-    console.log('Full session object:', JSON.stringify(session, null, 2));
-
     if (!session?.user) {
-      console.log('No session or user found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     if (!session.user.id) {
-      console.log('Session user:', session.user);
-      console.log(
-        'User ID missing. Available properties:',
-        Object.keys(session.user)
-      );
+      // Log for debugging in development only
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Session user:', session.user);
+        console.log(
+          'User ID missing. Available properties:',
+          Object.keys(session.user)
+        );
+      }
       return NextResponse.json(
         { error: 'User ID not found in session' },
         { status: 401 }
@@ -77,7 +79,10 @@ export async function POST(request: Request) {
       );
     }
 
-    console.error('Error creating account:', error);
+    // Log error for debugging in development/staging
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error creating account:', error);
+    }
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 }

@@ -10,9 +10,9 @@ import {
 import { Shield, Users, Wallet } from 'lucide-react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
-export default function SignInPage() {
+function SignInContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,7 +31,10 @@ export default function SignInPage() {
       await signIn('google', { callbackUrl });
     } catch (error) {
       setIsSigningIn(false);
-      console.error('Sign in error:', error);
+      // Log error for debugging in development/staging
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Sign in error:', error);
+      }
     }
   };
 
@@ -154,5 +157,28 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardContent className="pt-6">
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+          <p className="text-center text-gray-600 mt-4">Loading...</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <SignInContent />
+    </Suspense>
   );
 }
