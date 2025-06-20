@@ -37,6 +37,7 @@
   /utils
   /types
   /apiClients
+
 ```
 
 ## Additional Folders
@@ -59,3 +60,4 @@
 - Use `/lib` for cross-cutting concerns (Prisma, Auth, OCR).
 - Place UI components in `/components` and module-specific UI in `/modules/*/ui`.
 - Use `/validators` for Zod/Yup schemas.
+```

@@ -3,23 +3,27 @@
 ## Current API Endpoints (MVP)
 
 ### Authentication
+
 - `POST /api/auth/signin` - User login
 - `POST /api/auth/signout` - User logout
 - `GET /api/auth/session` - Get current session
 
 ### Accounts
+
 - `GET /api/accounts` - List user accounts
 - `POST /api/accounts` - Create new account
 - `PUT /api/accounts/[id]` - Update account
 - `DELETE /api/accounts/[id]` - Delete account
 
 ### Expenses
+
 - `GET /api/expenses` - List expenses with pagination
 - `POST /api/expenses` - Create new expense
 - `PUT /api/expenses/[id]` - Update expense
 - `DELETE /api/expenses/[id]` - Delete expense
 
 ### Products & Planning
+
 - `GET /api/products` - List products
 - `POST /api/products` - Create product
 - `GET /api/planned-items` - List planned purchases
@@ -30,6 +34,7 @@
 ### Phase 2: OCR & Smart Features
 
 **Receipt Processing:**
+
 ```typescript
 // POST /api/receipts/upload
 interface ReceiptUploadRequest {
@@ -59,6 +64,7 @@ interface ReceiptCorrectionRequest {
 ```
 
 **Enhanced Product Management:**
+
 ```typescript
 // GET /api/products/search?q=milk
 interface ProductSearchResponse {
@@ -82,6 +88,7 @@ interface ProductMatchResponse {
 ### Phase 3: Multi-User & Collaboration
 
 **Household Management:**
+
 ```typescript
 // POST /api/households
 interface CreateHouseholdRequest {
@@ -109,6 +116,7 @@ interface ActivityFeedResponse {
 ```
 
 **Budget Management:**
+
 ```typescript
 // POST /api/budgets
 interface CreateBudgetRequest {
@@ -142,6 +150,7 @@ interface CreateRecurringTransactionRequest {
 ### Phase 4: Advanced Features
 
 **Analytics & Insights:**
+
 ```typescript
 // GET /api/analytics/spending-trends
 interface SpendingTrendsRequest {
@@ -172,6 +181,7 @@ interface CustomReportRequest {
 ```
 
 **Goal Management:**
+
 ```typescript
 // POST /api/goals
 interface CreateGoalRequest {
@@ -197,6 +207,7 @@ interface GoalProjectionsResponse {
 ```
 
 **Notification System:**
+
 ```typescript
 // GET /api/notifications
 interface NotificationsResponse {
@@ -222,12 +233,14 @@ interface MarkNotificationReadRequest {
 ## API Design Principles
 
 ### Authentication & Authorization
+
 - All endpoints require authentication via NextAuth.js session
 - Role-based access control for household-specific endpoints
 - API rate limiting to prevent abuse
 - Request validation using Zod schemas
 
 ### Error Handling
+
 ```typescript
 interface APIError {
   error: string;
@@ -246,6 +259,7 @@ interface APIError {
 ```
 
 ### Response Formats
+
 ```typescript
 interface APIResponse<T> {
   data: T;
@@ -263,6 +277,7 @@ interface PaginationInfo {
 ```
 
 ### Performance Optimization
+
 - Response caching for frequently accessed data
 - Pagination for large datasets
 - GraphQL-style field selection for complex queries
@@ -271,6 +286,7 @@ interface PaginationInfo {
 ## Webhook Support (Phase 4)
 
 **Webhook Events:**
+
 ```typescript
 interface WebhookEvent {
   id: string;
@@ -289,6 +305,7 @@ interface WebhookEvent {
 ```
 
 **Webhook Configuration:**
+
 ```typescript
 // POST /api/webhooks
 interface CreateWebhookRequest {

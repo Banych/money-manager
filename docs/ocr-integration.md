@@ -39,6 +39,7 @@ GOOGLE_APPLICATION_CREDENTIALS=path/to/credentials.json
 ### Phase 2 Enhancements
 
 **Multi-Provider Support:**
+
 ```typescript
 // lib/ocr/providers.ts
 interface OCRProvider {
@@ -62,12 +63,14 @@ class OpenAIVisionProvider implements OCRProvider {
 ```
 
 **Intelligent Provider Selection:**
+
 - **Fallback Chain:** Try multiple providers if one fails
 - **Quality Scoring:** Compare results from multiple providers
 - **Cost Optimization:** Use cheaper providers for simple receipts
 - **Provider Learning:** Track accuracy per provider over time
 
 **Advanced Item Extraction:**
+
 ```typescript
 interface EnhancedOCRResult extends OCRResult {
   categories: CategorySuggestion[];
@@ -86,12 +89,14 @@ interface CategorySuggestion {
 ### Phase 3 Enhancements
 
 **Machine Learning Improvements:**
+
 - **Custom Model Training:** Train on user-specific receipt patterns
 - **Pattern Recognition:** Learn from user corrections
 - **Merchant Database:** Build comprehensive merchant recognition
 - **Product Normalization:** Standardize product names across receipts
 
 **Batch Processing:**
+
 ```typescript
 // lib/ocr/batch-processor.ts
 export class BatchReceiptProcessor {
@@ -107,6 +112,7 @@ export class BatchReceiptProcessor {
 ```
 
 **Quality Assurance:**
+
 - **Confidence Thresholds:** Dynamic thresholds based on receipt type
 - **Human Review Queue:** Flag low-confidence results for review
 - **Feedback Loop:** Learn from user corrections
@@ -115,6 +121,7 @@ export class BatchReceiptProcessor {
 ### Phase 4 Enhancements
 
 **AI-Powered Insights:**
+
 ```typescript
 interface AdvancedReceiptAnalysis {
   spendingPatterns: SpendingPattern[];
@@ -132,12 +139,14 @@ interface SpendingPattern {
 ```
 
 **Real-time Processing:**
+
 - **Live Camera Feed:** Process receipts in real-time from camera
 - **Instant Extraction:** Immediate text extraction as user captures
 - **Edge Processing:** On-device processing for privacy
 - **Offline Capability:** Queue receipts for processing when online
 
 **Integration Features:**
+
 - **Bank Statement Matching:** Match receipts to bank transactions
 - **Tax Category Mapping:** Automatically categorize for tax purposes
 - **Expense Report Generation:** Create formatted expense reports
@@ -146,6 +155,7 @@ interface SpendingPattern {
 ## Error Handling & Recovery
 
 **Robust Error Handling:**
+
 ```typescript
 interface OCRError {
   type: 'network' | 'processing' | 'format' | 'quota';
@@ -155,7 +165,10 @@ interface OCRError {
 }
 
 class OCRErrorHandler {
-  async handleError(error: OCRError, receipt: Receipt): Promise<OCRResult | null> {
+  async handleError(
+    error: OCRError,
+    receipt: Receipt
+  ): Promise<OCRResult | null> {
     switch (error.type) {
       case 'network':
         return this.retryWithBackoff(receipt);
@@ -171,6 +184,7 @@ class OCRErrorHandler {
 ```
 
 **Fallback Strategies:**
+
 - **Provider Switching:** Automatically try different OCR providers
 - **Image Enhancement:** Apply filters and corrections to improve quality
 - **Manual Override:** Always provide manual data entry option

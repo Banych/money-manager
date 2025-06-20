@@ -137,6 +137,7 @@ export const config = {
 ```
 
 This configuration ensures that:
+
 - All pages require authentication by default
 - Authentication routes (`/auth/*`) are accessible to unauthenticated users
 - API routes are handled separately (can implement their own auth checks)
