@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -22,9 +23,17 @@ export default function AddAccountButton() {
       onOpenChange={setOpen}
     >
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Account
+        <Button
+          asChild
+          size={null}
+          variant="ghost"
+        >
+          <Card className="flex min-h-[158px] grow items-end justify-start rounded-xl bg-gray-50 px-6 transition-shadow hover:shadow-md">
+            <CardContent className="flex w-full grow items-center justify-center gap-2 text-gray-500">
+              <Plus className="size-5" />
+              Add Account
+            </CardContent>
+          </Card>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

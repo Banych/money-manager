@@ -17,8 +17,8 @@ export default async function AccountsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-4xl">
-      <div className="flex justify-between items-center mb-6">
+    <div className="container mx-auto max-w-4xl px-4 py-6">
+      <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Financial Accounts
@@ -27,10 +27,9 @@ export default async function AccountsPage() {
             Manage your wallets, bank accounts, and cards
           </p>
         </div>
-        <AddAccountButton />
       </div>
 
-      <AccountsList />
+      <AccountsList AddAccountComponent={<AddAccountButton />} />
     </div>
   );
 }

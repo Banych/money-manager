@@ -48,7 +48,6 @@
     "typescriptreact"
   ],
   // TypeScript settings
-  "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,
   // Emmet settings for React
   "emmet.includeLanguages": {
