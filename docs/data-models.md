@@ -15,6 +15,7 @@ model User {
   accounts      Account[]
   expenses      Expense[]
   plannedItems  PlannedItem[]
+  recipes       Recipe[]
   sessions      Session[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -80,6 +81,7 @@ model Product {
   category   String?
   history    ExpenseItem[]
   planned    PlannedItem[]
+  ingredients RecipeIngredient[]
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
 }
@@ -94,7 +96,52 @@ model PlannedItem {
   user       User     @relation(fields: [userId], references: [id])
   productId  String?
   product    Product? @relation(fields: [productId], references: [id])
+  recipeId   String?  // Optional: linked to a recipe
+  recipe     Recipe?  @relation(fields: [recipeId], references: [id])
   createdAt  DateTime @default(now())
+}
+```
+
+### Recipe & Meal Planning
+
+```prisma
+model Recipe {
+  id          String             @id @default(cuid())
+  name        String
+  description String?
+  servings    Int?               @default(1)
+  prepTime    Int?               // minutes
+  cookTime    Int?               // minutes
+  mediaUrl    String?            // Link to video/article
+  embedUrl    String?            // Future: embedded content
+  userId      String
+  user        User               @relation(fields: [userId], references: [id])
+  ingredients RecipeIngredient[]
+  plannedItems PlannedItem[]     // Items added to shopping list from this recipe
+  tags        RecipeTag[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model RecipeIngredient {
+  id        String   @id @default(cuid())
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  name      String   // Custom ingredient name if not linked to product
+  quantity  Float?
+  unit      String?  // "cups", "grams", "pieces", etc.
+  notes     String?  // "diced", "fresh", etc.
+  order     Int      @default(0) // Display order in recipe
+  createdAt DateTime @default(now())
+}
+
+model RecipeTag {
+  id       String @id @default(cuid())
+  name     String @unique
+  recipes  Recipe[]
+  color    String? @default("#6B7280") // Hex color for UI
 }
 ```
 

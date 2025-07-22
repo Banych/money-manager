@@ -41,6 +41,7 @@ The Money Manager app is a full-stack, mobile-first platform for couples and fam
 - **Identity:** Users, households, roles, authentication
 - **Finance:** Accounts, transactions, balances
 - **Items:** Goods, item history, planned purchases
+- **Recipes:** Meal planning, ingredient management, shopping integration
 - **OCR:** Receipt scanning, AI parsing, item extraction
 - **Analytics:** Trends, budgets, reports
 

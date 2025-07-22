@@ -29,9 +29,13 @@ type FormData = z.infer<typeof createAccountValidator>;
 
 interface AddAccountFormProps {
   onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
-export default function AddAccountForm({ onSuccess }: AddAccountFormProps) {
+export default function AddAccountForm({
+  onSuccess,
+  onCancel,
+}: AddAccountFormProps) {
   const createAccountMutation = useCreateAccount();
 
   const form = useForm<FormData>({
@@ -90,7 +94,10 @@ export default function AddAccountForm({ onSuccess }: AddAccountFormProps) {
                 defaultValue={field.value}
               >
                 <FormControl>
-                  <SelectTrigger disabled={isLoading}>
+                  <SelectTrigger
+                    disabled={isLoading}
+                    className="w-full"
+                  >
                     <SelectValue placeholder="Select account type" />
                   </SelectTrigger>
                 </FormControl>
@@ -110,12 +117,12 @@ export default function AddAccountForm({ onSuccess }: AddAccountFormProps) {
           )}
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex items-center gap-4">
           <FormField
             control={form.control}
             name="balance"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="grow">
                 <FormLabel>Initial Balance</FormLabel>
                 <FormControl>
                   <Input
@@ -170,7 +177,7 @@ export default function AddAccountForm({ onSuccess }: AddAccountFormProps) {
           <Button
             type="button"
             variant="outline"
-            onClick={() => onSuccess?.()}
+            onClick={() => onCancel?.()}
             disabled={isLoading}
           >
             Cancel

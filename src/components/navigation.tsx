@@ -21,7 +21,7 @@ export default function Navigation() {
       <div className="container mx-auto max-w-4xl px-4 py-3">
         <div className="flex items-center justify-between">
           <Link
-            href="/"
+            href={session?.user ? '/dashboard' : '/'}
             className="text-xl font-bold text-gray-900"
           >
             Money Manager
