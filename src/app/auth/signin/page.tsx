@@ -40,13 +40,13 @@ function SignInContent() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="flex justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
             </div>
-            <p className="text-center text-gray-600 mt-4">Loading...</p>
+            <p className="mt-4 text-center text-gray-600">Loading...</p>
           </CardContent>
         </Card>
       </div>
@@ -55,13 +55,13 @@ function SignInContent() {
 
   if (status === 'authenticated') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="flex justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-green-600"></div>
             </div>
-            <p className="text-center text-gray-600 mt-4">Redirecting...</p>
+            <p className="mt-4 text-center text-gray-600">Redirecting...</p>
           </CardContent>
         </Card>
       </div>
@@ -69,14 +69,14 @@ function SignInContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="mx-auto h-12 w-12 bg-blue-600 rounded-full flex items-center justify-center mb-4">
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600">
             <Wallet className="h-6 w-6 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">
             Welcome Back
           </h1>
           <p className="text-gray-600">Sign in to manage your finances</p>
@@ -94,19 +94,19 @@ function SignInContent() {
           <CardContent className="space-y-6">
             <Button
               onClick={handleSignIn}
-              className="w-full h-12 text-base"
+              className="h-12 w-full text-base"
               size="lg"
               disabled={isSigningIn}
             >
               {isSigningIn ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-3"></div>
+                  <div className="mr-3 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                   Signing in...
                 </>
               ) : (
                 <>
                   <svg
-                    className="w-5 h-5 mr-3"
+                    className="mr-3 h-5 w-5"
                     viewBox="0 0 24 24"
                   >
                     <path
@@ -162,13 +162,13 @@ function SignInContent() {
 
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-4">
       <Card className="w-full max-w-md">
         <CardContent className="pt-6">
           <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
           </div>
-          <p className="text-center text-gray-600 mt-4">Loading...</p>
+          <p className="mt-4 text-center text-gray-600">Loading...</p>
         </CardContent>
       </Card>
     </div>
