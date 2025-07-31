@@ -1,26 +1,6 @@
 # Money Manager App – Architecture Overview
 
-#---
-
-## 3. Key Modules---
-
-## 4. Folder Structure
-
-See [docs/folder-structure.md](./folder-structure.md) for a detailed breakdown.
-
----
-
-## 5. Data Modelsdentity:\*\* Users, households, roles, authentication
-
-- **Finance:** Accounts, transactions, balances
-- **Items:** Goods, item history, planned purchases
-- **Recipes:** Meal planning, ingredient management, shopping integration
-- **OCR:** Receipt scanning, AI parsing, item extraction
-- **Analytics:** Trends, budgets, reports
-
----
-
-## 4. Folder Structure& App Description
+## Global Goal & App Description
 
 The Money Manager app is a full-stack, mobile-first platform for couples and families to collaboratively manage finances. Its primary objective is to provide a seamless, modern experience for tracking spending, income, and accounts, with optional AI-powered receipt scanning to simplify data entry.
 

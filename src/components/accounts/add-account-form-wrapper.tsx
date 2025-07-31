@@ -16,6 +16,9 @@ export default function AddAccountFormWrapper({
   const { data: session, status } = useSession();
 
   useEffect(() => {
+    if (status === 'loading') {
+      return; // Do nothing while loading
+    }
     if (status === 'unauthenticated') {
       router.push('/auth/signin');
     }
