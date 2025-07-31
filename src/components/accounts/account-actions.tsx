@@ -20,19 +20,19 @@ export default function AccountActions({
   account: _account,
 }: AccountActionsProps) {
   const handleEditAccount = () => {
-    // TODO: Implement edit account functionality
+    console.log('Edit account functionality triggered.');
   };
 
   const handleAddTransaction = (_type: 'income' | 'expense') => {
-    // TODO: Implement add transaction functionality
+    console.log(`Add transaction functionality triggered for type: ${_type}.`);
   };
 
   const handleAccountSettings = () => {
-    // TODO: Implement account settings functionality
+    console.log('Account settings functionality triggered.');
   };
 
   const handleDeleteAccount = () => {
-    // TODO: Implement delete account functionality
+    console.log('Delete account functionality triggered.');
   };
 
   return (

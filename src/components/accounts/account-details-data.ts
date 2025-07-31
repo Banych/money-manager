@@ -164,7 +164,7 @@ export function formatCurrency(amount: number, currency: string): string {
   const isNegative = amount < 0;
   const absAmount = Math.abs(amount);
 
-  const formatted = new Intl.NumberFormat('en-EU', {
+  const formatted = new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: currency,
     minimumFractionDigits: 2,

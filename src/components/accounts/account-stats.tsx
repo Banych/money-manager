@@ -112,7 +112,7 @@ export default function AccountStats({ account }: AccountStatsProps) {
                 className="flex items-center justify-between border-b py-2 last:border-b-0"
               >
                 <span className="text-muted-foreground text-sm">
-                  {entry.date.toLocaleDateString('en-EU', {
+                  {entry.date.toLocaleDateString('en-GB', {
                     weekday: 'short',
                     month: 'short',
                     day: 'numeric',
