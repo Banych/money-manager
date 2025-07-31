@@ -136,7 +136,10 @@ export default async function ServerAccountsWidget() {
                     <div className="text-gray-600">
                       {getAccountIcon(account.type)}
                     </div>
-                    <span className="max-w-20 truncate font-medium">
+                    <span
+                      className="max-w-20 truncate font-medium"
+                      title={account.name}
+                    >
                       {account.name}
                     </span>
                   </div>

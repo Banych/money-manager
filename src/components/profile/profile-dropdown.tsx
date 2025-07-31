@@ -31,7 +31,7 @@ const ProfileDropdown: FC<Props> = ({ user }) => {
       <DropdownMenuContent className="max-w-52">
         <DropdownMenuItem asChild>
           <Link
-            href={`/profile/${user.name}`}
+            href={`/profile/${user.name ? encodeURIComponent(user.name) : 'unknown'}`}
             className="flex flex-col items-start gap-1"
           >
             {user.name && (
@@ -50,7 +50,11 @@ const ProfileDropdown: FC<Props> = ({ user }) => {
         <DropdownMenuItem
           onSelect={(event) => {
             event.preventDefault();
-            signOut({ callbackUrl: `${window.location.origin}/auth/signin` });
+            const callbackUrl =
+              typeof window !== 'undefined'
+                ? `${window.location.origin}/auth/signin`
+                : '/auth/signin';
+            signOut({ callbackUrl });
           }}
           className="cursor-pointer text-red-700 hover:text-red-700 focus:text-red-700"
         >
