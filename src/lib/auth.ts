@@ -26,11 +26,15 @@ export const authConfig: NextAuthOptions = {
       return true;
     },
     async redirect({ url, baseUrl }) {
+      // If user just signed in, redirect to dashboard
+      if (url.endsWith('/signin')) {
+        return `${baseUrl}/dashboard`;
+      }
       // Allows relative callback URLs
       if (url.startsWith('/')) return `${baseUrl}${url}`;
       // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+      return `${baseUrl}/dashboard`;
     },
     async jwt({ token, user, account }) {
       // On initial sign in, user object is available

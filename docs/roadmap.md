@@ -15,6 +15,7 @@ Based on the chat discussion, this roadmap prioritizes simplicity and core funct
 - ✅ Dashboard with totals per account
 - ✅ Basic goods database (manual entry from spends)
 - ✅ Planned purchases (wishlist with price suggestions from history)
+- ✅ Recipe management with linked grocery items
 - ✅ Basic analytics (monthly spend, per category)
 
 **Tech Stack:**
@@ -155,6 +156,32 @@ Based on the chat discussion, this roadmap prioritizes simplicity and core funct
 - **Calendar Integration:** Link planned purchases to calendar events
 - **Shopping Lists:** Convert planned purchases to shopping apps
 - **Financial Goals:** Long-term savings and spending goals
+
+## Recipe & Meal Planning Feature
+
+**Overview:** Help users plan meals and connect grocery shopping to specific recipes, reducing food waste and improving budget planning.
+
+**Core Features:**
+
+- **Recipe Management:** Create, edit, and organize recipes with name, description, and optional media links
+- **Ingredient Lists:** Add products to recipes with quantities and estimated costs
+- **Shopping Integration:** Add recipe ingredients directly to planned purchases/grocery lists
+- **Recipe Context:** View which recipe a grocery item is for when shopping
+- **Cost Estimation:** Calculate total recipe cost based on ingredient prices
+- **Media Support:** Add links to cooking videos or articles (future: embedded content)
+
+**User Benefits:**
+
+- Never forget why you added an item to your grocery list
+- Better meal planning leads to less food waste
+- Track cooking costs vs. eating out expenses
+- Build a personal recipe database with cost insights
+
+**Implementation Phases:**
+
+1. **Phase 1:** Basic recipe CRUD with ingredient linking to products
+2. **Phase 2:** Shopping list integration and cost calculations
+3. **Phase 3:** Media embedding and advanced meal planning features
 
 ---
 

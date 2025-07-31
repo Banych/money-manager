@@ -63,8 +63,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  newAccountModal,
 }: Readonly<{
   children: React.ReactNode;
+  newAccountModal: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -74,6 +76,7 @@ export default function RootLayout({
         <Providers>
           <Navigation />
           {children}
+          {newAccountModal}
         </Providers>
         <Toaster position="bottom-right" />
       </body>

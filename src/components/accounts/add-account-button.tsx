@@ -1,41 +1,26 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Card, CardContent } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
-import AddAccountForm from './add-account-form';
+import Link from 'next/link';
 
 export default function AddAccountButton() {
-  const [open, setOpen] = useState(false);
-
   return (
-    <Dialog
-      open={open}
-      onOpenChange={setOpen}
+    <Button
+      asChild
+      size={null}
+      variant="ghost"
+      className="h-auto p-0"
     >
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Account
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add Financial Account</DialogTitle>
-          <DialogDescription>
-            Create a new account to track your finances.
-          </DialogDescription>
-        </DialogHeader>
-        <AddAccountForm onSuccess={() => setOpen(false)} />
-      </DialogContent>
-    </Dialog>
+      <Link href="/accounts/new">
+        <Card className="flex min-h-[140px] grow items-end justify-start rounded-xl bg-gray-50 px-4 transition-shadow hover:shadow-md sm:min-h-[158px] sm:px-6">
+          <CardContent className="flex w-full grow items-center justify-center gap-2 p-4 text-gray-500 sm:p-6">
+            <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="text-sm sm:text-base">Add Account</span>
+          </CardContent>
+        </Card>
+      </Link>
+    </Button>
   );
 }
