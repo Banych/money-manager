@@ -16,20 +16,13 @@ export default function AddAccountFormWrapper({
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status === 'loading') {
-      return; // Do nothing while loading
-    }
     if (status === 'unauthenticated') {
       router.push('/auth/signin');
     }
   }, [status, router]);
 
   if (status === 'loading') {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return null;
   }
 
   if (!session?.user) {

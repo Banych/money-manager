@@ -9,7 +9,7 @@ export default function AuthRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'authenticated' && session?.user) {
+    if (status === 'authenticated') {
       router.push('/dashboard');
     }
   }, [session, status, router]);
