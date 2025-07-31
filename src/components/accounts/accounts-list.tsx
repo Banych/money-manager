@@ -4,6 +4,7 @@ import AccountCard from '@/components/accounts/account-card';
 import AccountSkeleton from '@/components/accounts/account-skeleton';
 import { useAccounts } from '@/hooks/useAccounts';
 import { Wallet } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 type Props = {
   AddAccountComponent?: React.ReactNode;
@@ -11,6 +12,7 @@ type Props = {
 
 export default function AccountsList({ AddAccountComponent }: Props) {
   const { data: accounts = [], isLoading, error } = useAccounts();
+  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -57,7 +59,7 @@ export default function AccountsList({ AddAccountComponent }: Props) {
           key={account.id}
           account={account}
           onClick={() => {
-            // TODO: Navigate to account details page when implemented
+            router.push(`/accounts/${account.id}`);
           }}
         />
       ))}

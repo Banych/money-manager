@@ -10,13 +10,17 @@ Based on the chat discussion, this roadmap prioritizes simplicity and core funct
 
 - ✅ User authentication (NextAuth.js with Google OAuth)
 - ✅ Account creation and management (multiple wallets/cards)
-- ✅ Add income/spending, assign to specific account
+- 🚧 Add income/spending, assign to specific account
 - ✅ Manual item addition to spends (what you bought)
 - ✅ Dashboard with totals per account
 - ✅ Basic goods database (manual entry from spends)
 - ✅ Planned purchases (wishlist with price suggestions from history)
 - ✅ Recipe management with linked grocery items
 - ✅ Basic analytics (monthly spend, per category)
+- ✅ Account details page with transaction history (mock data)
+
+**Current Status:** Account details page implemented with rich UI and mock data.
+**Next:** Convert to real database integration - see [account-details-tasks.md](./account-details-tasks.md)
 
 **Tech Stack:**
 
