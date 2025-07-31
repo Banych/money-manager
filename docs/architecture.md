@@ -36,7 +36,21 @@ The Money Manager app is a full-stack, mobile-first platform for couples and fam
 
 ---
 
-## 2. Key Modules
+## 2. Performance & Optimization
+
+### Static Generation Strategy
+
+The app uses Next.js static generation for optimal performance:
+
+- **Static Pages**: Landing, auth, forms, error pages (CDN cached)
+- **Dynamic Pages**: Dashboard, accounts (user-specific data)
+- **Progressive Enhancement**: Client-side auth checks for static pages
+
+See [docs/static-generation.md](./static-generation.md) for the complete strategy.
+
+---
+
+## 3. Key Modules
 
 - **Identity:** Users, households, roles, authentication
 - **Finance:** Accounts, transactions, balances

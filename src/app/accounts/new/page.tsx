@@ -1,24 +1,18 @@
 import AddAccountFormWrapper from '@/components/accounts/add-account-form-wrapper';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getAuthSession } from '@/lib/auth';
 import { ArrowLeft } from 'lucide-react';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Add Account - Money Manager',
   description: 'Add a new financial account',
 };
 
-export default async function NewAccountPage() {
-  const session = await getAuthSession();
+export const dynamic = 'force-static';
 
-  if (!session?.user) {
-    redirect('/auth/signin');
-  }
-
+export default function NewAccountPage() {
   return (
     <div className="mx-auto max-w-sm px-4 py-4 sm:max-w-md sm:py-6 lg:max-w-2xl lg:px-8">
       {/* Header with back button */}

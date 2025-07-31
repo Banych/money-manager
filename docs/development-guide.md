@@ -30,6 +30,39 @@ Based on the chat discussion, here's the step-by-step development approach:
    NEXTAUTH_URL="http://localhost:3000"
    ```
 
+### Step 1a: Static Generation Setup
+
+**Priority: Implement before Phase 2**
+
+Configure static generation for performance optimization:
+
+1. **Auth Pages** (✅ Implemented)
+
+   ```tsx
+   // src/app/auth/signin/page.tsx
+   export const dynamic = 'force-static';
+
+   // src/app/auth/layout.tsx
+   export const dynamic = 'force-static';
+   ```
+
+2. **Landing/Form Pages** (✅ Implemented)
+
+   ```tsx
+   // src/app/page.tsx - Homepage
+   export const dynamic = 'force-static';
+
+   // src/app/accounts/new/page.tsx - Account creation
+   export const dynamic = 'force-static';
+   ```
+
+3. **Future Static Pages** (📋 To Implement)
+   - Error pages (`not-found.tsx`, `error.tsx`)
+   - Marketing pages (`about`, `privacy`, `terms`)
+   - Help documentation
+
+**See**: [`docs/static-generation.md`](./static-generation.md) for complete strategy.
+
 ### Step 2: Core Features Development Order
 
 1. **Authentication Pages**
