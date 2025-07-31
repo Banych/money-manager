@@ -1,6 +1,26 @@
 # Money Manager App – Architecture Overview
 
-## Global Goal & App Description
+#---
+
+## 3. Key Modules---
+
+## 4. Folder Structure
+
+See [docs/folder-structure.md](./folder-structure.md) for a detailed breakdown.
+
+---
+
+## 5. Data Modelsdentity:\*\* Users, households, roles, authentication
+
+- **Finance:** Accounts, transactions, balances
+- **Items:** Goods, item history, planned purchases
+- **Recipes:** Meal planning, ingredient management, shopping integration
+- **OCR:** Receipt scanning, AI parsing, item extraction
+- **Analytics:** Trends, budgets, reports
+
+---
+
+## 4. Folder Structure& App Description
 
 The Money Manager app is a full-stack, mobile-first platform for couples and families to collaboratively manage finances. Its primary objective is to provide a seamless, modern experience for tracking spending, income, and accounts, with optional AI-powered receipt scanning to simplify data entry.
 
@@ -36,7 +56,21 @@ The Money Manager app is a full-stack, mobile-first platform for couples and fam
 
 ---
 
-## 2. Key Modules
+## 2. Performance & Optimization
+
+### Static Generation Strategy
+
+The app uses Next.js static generation for optimal performance:
+
+- **Static Pages**: Landing, auth, forms, error pages (CDN cached)
+- **Dynamic Pages**: Dashboard, accounts (user-specific data)
+- **Progressive Enhancement**: Client-side auth checks for static pages
+
+See [docs/static-generation.md](./static-generation.md) for the complete strategy.
+
+---
+
+## 3. Key Modules
 
 - **Identity:** Users, households, roles, authentication
 - **Finance:** Accounts, transactions, balances

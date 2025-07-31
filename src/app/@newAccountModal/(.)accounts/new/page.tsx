@@ -11,6 +11,8 @@ import {
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+export const dynamic = 'force-static';
+
 export default function InterceptedAddAccountPage() {
   const router = useRouter();
   const [open, setOpen] = useState(false);

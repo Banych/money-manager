@@ -12,6 +12,9 @@ import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 
+// Force static generation for faster CDN delivery
+export const dynamic = 'force-static';
+
 function SignInContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
