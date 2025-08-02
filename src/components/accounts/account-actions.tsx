@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FinancialAccount } from '@/generated/prisma';
+import { FinancialAccount, TransactionType } from '@/generated/prisma';
 import {
   Edit3,
   Plus,
@@ -11,28 +11,23 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-react';
+import Link from 'next/link';
 
 interface AccountActionsProps {
   account: FinancialAccount;
 }
 
-export default function AccountActions({
-  account: _account,
-}: AccountActionsProps) {
+export default function AccountActions({ account }: AccountActionsProps) {
   const handleEditAccount = () => {
-    console.log('Edit account functionality triggered.');
-  };
-
-  const handleAddTransaction = (_type: 'income' | 'expense') => {
-    console.log(`Add transaction functionality triggered for type: ${_type}.`);
+    // TODO: Implement edit account functionality
   };
 
   const handleAccountSettings = () => {
-    console.log('Account settings functionality triggered.');
+    // TODO: Implement account settings functionality
   };
 
   const handleDeleteAccount = () => {
-    console.log('Delete account functionality triggered.');
+    // TODO: Implement delete account functionality
   };
 
   return (
@@ -51,35 +46,43 @@ export default function AccountActions({
           </h3>
           <div className="grid grid-cols-2 gap-2">
             <Button
-              onClick={() => handleAddTransaction('income')}
+              asChild
               className="h-auto justify-start p-3"
               variant="outline"
             >
-              <div className="flex items-center space-x-2">
-                <TrendingUp className="h-4 w-4 text-green-600" />
-                <div className="text-left">
-                  <div className="font-medium">Add Income</div>
-                  <div className="text-muted-foreground text-xs">
-                    Credit transaction
+              <Link
+                href={`/transactions/new?type=${TransactionType.INCOME}&accountId=${account.id}`}
+              >
+                <div className="flex items-center space-x-2">
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                  <div className="text-left">
+                    <div className="font-medium">Add Income</div>
+                    <div className="text-muted-foreground text-xs">
+                      Credit transaction
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             </Button>
 
             <Button
-              onClick={() => handleAddTransaction('expense')}
+              asChild
               className="h-auto justify-start p-3"
               variant="outline"
             >
-              <div className="flex items-center space-x-2">
-                <TrendingDown className="h-4 w-4 text-red-600" />
-                <div className="text-left">
-                  <div className="font-medium">Add Expense</div>
-                  <div className="text-muted-foreground text-xs">
-                    Debit transaction
+              <Link
+                href={`/transactions/new?type=${TransactionType.EXPENSE}&accountId=${account.id}`}
+              >
+                <div className="flex items-center space-x-2">
+                  <TrendingDown className="h-4 w-4 text-red-600" />
+                  <div className="text-left">
+                    <div className="font-medium">Add Expense</div>
+                    <div className="text-muted-foreground text-xs">
+                      Debit transaction
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             </Button>
           </div>
         </div>
@@ -116,12 +119,14 @@ export default function AccountActions({
             Quick Actions
           </h3>
           <Button
-            onClick={() => handleAddTransaction('expense')}
+            asChild
             className="w-full"
             size="lg"
           >
-            <Plus className="mr-2 h-4 w-4" />
-            Add New Transaction
+            <Link href={`/transactions/new?accountId=${account.id}`}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Transaction
+            </Link>
           </Button>
         </div>
 
