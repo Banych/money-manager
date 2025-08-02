@@ -41,21 +41,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!session.user.id) {
-      // Log for debugging in development only
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Session user:', session.user);
-        console.log(
-          'User ID missing. Available properties:',
-          Object.keys(session.user)
-        );
-      }
-      return NextResponse.json(
-        { error: 'User ID not found in session' },
-        { status: 401 }
-      );
-    }
-
     const body = await request.json();
     const validatedData = createAccountValidator.parse({
       currency: 'EUR',
