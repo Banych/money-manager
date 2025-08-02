@@ -12,8 +12,9 @@ import {
 import { TransactionType } from '@/generated/prisma';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function NewTransactionPage() {
+function TransactionPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -74,5 +75,40 @@ export default function NewTransactionPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function TransactionPageLoading() {
+  return (
+    <div className="container mx-auto max-w-2xl px-4 py-8">
+      <div className="mb-6 flex items-center gap-4">
+        <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
+        <div>
+          <div className="mb-2 h-8 w-48 animate-pulse rounded bg-gray-200" />
+          <div className="h-5 w-64 animate-pulse rounded bg-gray-200" />
+        </div>
+      </div>
+      <Card>
+        <CardHeader>
+          <div className="mb-2 h-6 w-32 animate-pulse rounded bg-gray-200" />
+          <div className="h-4 w-48 animate-pulse rounded bg-gray-200" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="h-10 w-full animate-pulse rounded bg-gray-200" />
+            <div className="h-10 w-full animate-pulse rounded bg-gray-200" />
+            <div className="h-10 w-full animate-pulse rounded bg-gray-200" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function NewTransactionPage() {
+  return (
+    <Suspense fallback={<TransactionPageLoading />}>
+      <TransactionPageContent />
+    </Suspense>
   );
 }

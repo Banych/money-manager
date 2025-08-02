@@ -10,9 +10,9 @@ import {
 } from '@/components/ui/dialog';
 import { TransactionType } from '@/generated/prisma';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
-export default function InterceptedNewTransactionPage() {
+function TransactionModalContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
@@ -71,5 +71,13 @@ export default function InterceptedNewTransactionPage() {
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+export default function InterceptedNewTransactionPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TransactionModalContent />
+    </Suspense>
   );
 }
