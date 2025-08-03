@@ -7,9 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import Loader from '@/components/ui/loader';
 import { useRouter } from 'next/navigation';
-import { ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 
 interface InterceptedModalProps {
   title: string | (() => string);
@@ -144,11 +143,9 @@ export default function InterceptedModal({
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-y-auto">
-            <Suspense fallback={<Loader />}>
-              {typeof children === 'function'
-                ? children({ onClose: handleClose })
-                : children}
-            </Suspense>
+            {typeof children === 'function'
+              ? children({ onClose: handleClose })
+              : children}
           </div>
         </DialogContent>
       </Dialog>
