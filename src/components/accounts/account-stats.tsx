@@ -1,5 +1,3 @@
-'use client';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FinancialAccount } from '@/generated/prisma';
 import { cn } from '@/lib/utils';
