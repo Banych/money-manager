@@ -2,28 +2,23 @@
 
 import { TransactionType } from '@/generated/prisma';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import TransactionForm from './transaction-form';
 
 interface TransactionFormWrapperProps {
   onClose?: () => void;
-  defaultType?: TransactionType;
-  defaultAccountId?: string;
 }
 
 export default function TransactionFormWrapper({
   onClose,
-  defaultType,
-  defaultAccountId,
 }: TransactionFormWrapperProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [mounted, setMounted] = useState(false);
+  const params = useSearchParams();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const type = (params.get('type') as TransactionType) ?? undefined;
+  const accountId = (params.get('accountId') as string) ?? undefined;
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -31,7 +26,7 @@ export default function TransactionFormWrapper({
     }
   }, [status, router]);
 
-  if (!mounted || status === 'loading') {
+  if (status === 'loading') {
     return (
       <div className="flex items-center justify-center py-8">
         <div>Loading...</div>
@@ -50,8 +45,8 @@ export default function TransactionFormWrapper({
   return (
     <TransactionForm
       onClose={onClose}
-      defaultType={defaultType}
-      defaultAccountId={defaultAccountId}
+      defaultType={type}
+      defaultAccountId={accountId}
     />
   );
 }
