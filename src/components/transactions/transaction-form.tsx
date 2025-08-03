@@ -258,7 +258,7 @@ const TransactionForm = ({
                     >
                       {category}
                     </SelectItem>
-                  )) || []}
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
