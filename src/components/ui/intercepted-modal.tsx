@@ -91,9 +91,9 @@ export default function InterceptedModal({
 
           // Add a small delay before navigation to ensure state updates
           setTimeout(() => {
-            if (window.history.length > 1) {
+            try {
               router.back();
-            } else {
+            } catch {
               router.push('/');
             }
           }, 100);

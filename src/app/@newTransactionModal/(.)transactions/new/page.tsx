@@ -6,6 +6,8 @@ import InterceptedModal from '@/components/ui/intercepted-modal';
 import Loader from '@/components/ui/loader';
 import { Suspense } from 'react';
 
+export const dynamic = 'force-static';
+
 function TransactionModalContent() {
   const { title, description } = useTransactionModalContent();
 
