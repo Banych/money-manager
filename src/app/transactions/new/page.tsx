@@ -18,9 +18,7 @@ function TransactionPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Extract query parameters
   const type = searchParams.get('type') as TransactionType | null;
-  const accountId = searchParams.get('accountId') || undefined;
 
   const getPageTitle = () => {
     if (type === TransactionType.INCOME) return 'Add Income';
@@ -67,11 +65,7 @@ function TransactionPageContent() {
           <CardDescription>{getPageDescription()}</CardDescription>
         </CardHeader>
         <CardContent>
-          <TransactionFormWrapper
-            onClose={handleClose}
-            defaultType={type || undefined}
-            defaultAccountId={accountId}
-          />
+          <TransactionFormWrapper onClose={handleClose} />
         </CardContent>
       </Card>
     </div>
