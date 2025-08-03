@@ -16,12 +16,14 @@ function TransactionModalContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Extract query parameters
-  const type = searchParams.get('type') as TransactionType | null;
-  const accountId = searchParams.get('accountId') || undefined;
+  // Extract query parameters with safety checks
+  const type = searchParams?.get('type') as TransactionType | null;
+  const accountId = searchParams?.get('accountId') || undefined;
 
   useEffect(() => {
+    setMounted(true);
     setOpen(true);
   }, []);
 
@@ -47,6 +49,11 @@ function TransactionModalContent() {
     }
     return 'Add a new income or expense transaction.';
   };
+
+  // Ensure component is mounted before rendering dialog
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Dialog
@@ -76,7 +83,13 @@ function TransactionModalContent() {
 
 export default function InterceptedNewTransactionPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-[200px] items-center justify-center">
+          <div>Loading transaction form...</div>
+        </div>
+      }
+    >
       <TransactionModalContent />
     </Suspense>
   );

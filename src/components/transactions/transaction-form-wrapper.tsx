@@ -3,7 +3,7 @@
 import { TransactionType } from '@/generated/prisma';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import TransactionForm from './transaction-form';
 
 interface TransactionFormWrapperProps {
@@ -19,6 +19,11 @@ export default function TransactionFormWrapper({
 }: TransactionFormWrapperProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -26,12 +31,20 @@ export default function TransactionFormWrapper({
     }
   }, [status, router]);
 
-  if (status === 'loading') {
-    return null;
+  if (!mounted || status === 'loading') {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   if (!session?.user) {
-    return null;
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div>Please sign in to continue.</div>
+      </div>
+    );
   }
 
   return (
