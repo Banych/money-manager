@@ -7,8 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import Loader from '@/components/ui/loader';
 import { useRouter } from 'next/navigation';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
 
 interface InterceptedModalProps {
   title: string | (() => string);
@@ -76,11 +77,8 @@ export default function InterceptedModal({
 }: InterceptedModalProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    // Small delay to ensure proper mounting
     const timer = setTimeout(() => setOpen(true), 10);
     return () => clearTimeout(timer);
   }, []);
@@ -117,11 +115,6 @@ export default function InterceptedModal({
     handleOpenChange(false);
   }, [handleOpenChange]);
 
-  // Don't render until mounted to prevent hydration issues
-  if (!mounted) {
-    return null;
-  }
-
   const resolvedTitle = typeof title === 'function' ? title() : title;
   const resolvedDescription =
     typeof description === 'function' ? description() : description;
@@ -151,9 +144,11 @@ export default function InterceptedModal({
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-y-auto">
-            {typeof children === 'function'
-              ? children({ onClose: handleClose })
-              : children}
+            <Suspense fallback={<Loader />}>
+              {typeof children === 'function'
+                ? children({ onClose: handleClose })
+                : children}
+            </Suspense>
           </div>
         </DialogContent>
       </Dialog>

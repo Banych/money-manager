@@ -1,10 +1,22 @@
 'use client';
 
-import { DialogClose } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-export default function CloseModal() {
+const CloseModal = () => {
   const { back } = useRouter();
 
-  return <DialogClose onClick={() => back()} />;
-}
+  return (
+    <Button
+      aria-label="Close modal"
+      variant="secondary"
+      className="size-6 rounded-md p-0"
+      onClick={back}
+    >
+      <X className="size-4" />
+    </Button>
+  );
+};
+
+export default CloseModal;
