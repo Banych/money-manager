@@ -26,7 +26,7 @@ import {
 } from '@/lib/validators/transaction.validator';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -45,19 +45,18 @@ const DEFAULT_CATEGORIES = {
 };
 
 interface TransactionFormProps {
-  onClose?: () => void;
-  defaultType?: TransactionType;
-  defaultAccountId?: string;
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
-const TransactionForm = ({
-  onClose,
-  defaultType,
-  defaultAccountId,
-}: TransactionFormProps) => {
+const TransactionForm = ({ onSuccess, onCancel }: TransactionFormProps) => {
   const router = useRouter();
   const { data: accounts, isLoading: accountsLoading } = useAccounts();
   const { mutate: createTransaction, isPending } = useCreateTransaction();
+  const params = useSearchParams();
+
+  const defaultType = (params.get('type') as TransactionType) ?? undefined;
+  const defaultAccountId = (params.get('accountId') as string) ?? undefined;
 
   const form = useForm<CreateTransactionData>({
     resolver: zodResolver(createTransactionValidator),
@@ -94,7 +93,7 @@ const TransactionForm = ({
     createTransaction(cleanedData, {
       onSuccess: () => {
         form.reset();
-        onClose?.();
+        onSuccess?.();
       },
     });
   };
@@ -289,7 +288,7 @@ const TransactionForm = ({
           <Button
             type="button"
             variant="outline"
-            onClick={onClose}
+            onClick={onCancel}
             className="flex-1"
           >
             Cancel
