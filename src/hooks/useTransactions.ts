@@ -4,7 +4,6 @@ import { accountsKeys } from '@/hooks/useAccounts';
 import { accountStatisticsKeys } from '@/hooks/useAccountStatistics';
 import { CreateTransactionData } from '@/lib/validators/transaction.validator';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 export const transactionsKeys = {
@@ -94,7 +93,6 @@ async function createTransaction(
 
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
-  const router = useRouter();
   return useMutation({
     mutationFn: createTransaction,
     onSuccess: (newTransaction, variables) => {
@@ -113,7 +111,6 @@ export function useCreateTransaction() {
       toast.success(
         `${variables.type === 'INCOME' ? 'Income' : 'Expense'} of ${formatCurrency(variables.amount, 'EUR')} added.`
       );
-      router.push(`/transactions/${newTransaction.id}`);
     },
     onError: (error) => {
       toast.error(

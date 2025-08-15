@@ -20,10 +20,10 @@ interface AccountOverviewProps {
 }
 
 export default function AccountOverview({ account }: AccountOverviewProps) {
-  const Icon = accountTypeIcons[account.type];
-  const isNegative = account.balance < 0;
   const { data: accountData } = useAccount(account.id, account);
   const { data: stats } = useAccountStatistics(account.id);
+  const Icon = accountTypeIcons[accountData?.type || account.type];
+  const isNegative = (accountData?.balance || account.balance) < 0;
 
   return (
     <Card className="mb-6">

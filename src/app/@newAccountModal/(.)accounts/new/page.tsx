@@ -1,6 +1,6 @@
 'use client';
 
-import AddAccountFormWrapper from '@/components/accounts/add-account-form-wrapper';
+import AddAccountForm from '@/components/accounts/add-account-form';
 import InterceptedModal from '@/components/ui/intercepted-modal';
 
 export const dynamic = 'force-static';
@@ -12,7 +12,7 @@ export default function InterceptedAddAccountPage() {
       description="Create a new account to track your finances."
       maxWidth="md"
     >
-      {({ onClose }) => <AddAccountFormWrapper onClose={onClose} />}
+      <AddAccountForm />
     </InterceptedModal>
   );
 }

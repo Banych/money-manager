@@ -1,4 +1,4 @@
-import AddAccountFormWrapper from '@/components/accounts/add-account-form-wrapper';
+import AddAccountForm from '@/components/accounts/add-account-form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
@@ -42,7 +42,7 @@ export default function NewAccountPage() {
           </p>
         </CardHeader>
         <CardContent className="p-4 sm:p-6">
-          <AddAccountFormWrapper />
+          <AddAccountForm />
         </CardContent>
       </Card>
     </div>

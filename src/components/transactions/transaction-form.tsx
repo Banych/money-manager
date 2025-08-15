@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useInterceptedModal } from '@/components/ui/intercepted-modal';
 import {
   Select,
   SelectContent,
@@ -57,6 +58,7 @@ const TransactionForm = ({
 }: TransactionFormProps) => {
   const { data: accounts, isLoading: accountsLoading } = useAccounts();
   const { mutate: createTransaction, isPending } = useCreateTransaction();
+  const modal = useInterceptedModal();
 
   const isAccountsEmpty =
     (!accounts || accounts.length === 0) && !accountsLoading;
@@ -96,6 +98,7 @@ const TransactionForm = ({
     createTransaction(cleanedData, {
       onSuccess: () => {
         form.reset();
+        modal?.onClose();
       },
     });
   };
