@@ -15,7 +15,7 @@ export interface AccountStatisticsResponse {
   activityStatus: 'active' | 'low' | 'inactive';
 }
 
-const accountStatisticsKeys = {
+export const accountStatisticsKeys = {
   all: ['account-statistics'] as const,
   detail: (accountId: string) => ['account-statistics', accountId] as const,
 };
@@ -37,6 +37,6 @@ export function useAccountStatistics(accountId?: string, enabled = true) {
       : accountStatisticsKeys.all,
     queryFn: () => fetchAccountStatistics(accountId as string),
     enabled: !!accountId && enabled,
-    staleTime: 60_000,
+    staleTime: 5 * 60 * 1000,
   });
 }

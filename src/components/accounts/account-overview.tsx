@@ -8,6 +8,7 @@ import {
   formatBalance,
 } from '@/constants/accounts';
 import { FinancialAccount } from '@/generated/prisma';
+import { useAccount } from '@/hooks/useAccounts';
 import { useAccountStatistics } from '@/hooks/useAccountStatistics';
 import { formatISO } from '@/lib/date';
 import { cn } from '@/lib/utils';
@@ -21,6 +22,7 @@ interface AccountOverviewProps {
 export default function AccountOverview({ account }: AccountOverviewProps) {
   const Icon = accountTypeIcons[account.type];
   const isNegative = account.balance < 0;
+  const { data: accountData } = useAccount(account.id, account);
   const { data: stats } = useAccountStatistics(account.id);
 
   return (
@@ -32,15 +34,17 @@ export default function AccountOverview({ account }: AccountOverviewProps) {
               <Icon className="text-primary h-6 w-6" />
             </div>
             <div>
-              <CardTitle className="text-xl">{account.name}</CardTitle>
+              <CardTitle className="text-xl">
+                {accountData?.name || account.name}
+              </CardTitle>
               <div className="mt-1 flex items-center space-x-2">
                 <Badge
                   variant="outline"
                   className="text-xs"
                 >
-                  {accountTypeLabels[account.type]}
+                  {accountTypeLabels[accountData?.type || account.type]}
                 </Badge>
-                {account.lastActivity && (
+                {accountData?.lastActivity && (
                   <Badge
                     variant="outline"
                     className="text-xs"
@@ -54,7 +58,7 @@ export default function AccountOverview({ account }: AccountOverviewProps) {
           <div className="flex items-center justify-end space-x-2">
             <Calendar className="text-muted-foreground h-4 w-4" />
             <span className="text-muted-foreground text-sm">
-              Created {formatISO(account.createdAt)}
+              Created {formatISO(accountData?.createdAt || account.createdAt)}
             </span>
           </div>
         </div>
@@ -69,7 +73,9 @@ export default function AccountOverview({ account }: AccountOverviewProps) {
               isNegative ? 'text-red-600' : 'text-green-600'
             )}
           >
-            {formatBalance(account.balance, account.currency)}
+            {accountData
+              ? formatBalance(accountData.balance, accountData.currency)
+              : formatBalance(account.balance, account.currency)}
           </div>
           <div className="flex items-center justify-center space-x-2">
             {stats &&
@@ -81,16 +87,23 @@ export default function AccountOverview({ account }: AccountOverviewProps) {
                 >
                   <TrendingUp className="h-4 w-4" />
                   <span className="font-medium">
-                    +{formatBalance(stats.netChange, account.currency)} this
-                    month
+                    +
+                    {formatBalance(
+                      stats.netChange,
+                      accountData?.currency || account.currency
+                    )}{' '}
+                    this month
                   </span>
                 </div>
               ) : (
                 <div className={cn('flex items-center space-x-1 text-red-600')}>
                   <TrendingDown className="h-4 w-4" />
                   <span className="font-medium">
-                    {formatBalance(stats.netChange, account.currency)} this
-                    month
+                    {formatBalance(
+                      stats.netChange,
+                      accountData?.currency || account.currency
+                    )}{' '}
+                    this month
                   </span>
                 </div>
               ))}
@@ -115,7 +128,10 @@ export default function AccountOverview({ account }: AccountOverviewProps) {
           <div className="bg-muted/50 rounded-lg p-3 text-center">
             <div className="text-primary text-2xl font-bold">
               {stats
-                ? formatBalance(stats.averageTransaction, account.currency)
+                ? formatBalance(
+                    stats.averageTransaction,
+                    accountData?.currency || account.currency
+                  )
                 : '—'}
             </div>
             <div className="text-muted-foreground text-sm">
@@ -126,9 +142,11 @@ export default function AccountOverview({ account }: AccountOverviewProps) {
 
         {/* Last Activity */}
         <div className="text-muted-foreground text-center text-sm">
-          {account.lastActivity
-            ? formatLastActivity(new Date(account.lastActivity))
-            : 'No activity yet'}
+          {accountData?.lastActivity
+            ? formatLastActivity(new Date(accountData.lastActivity))
+            : account.lastActivity
+              ? formatLastActivity(new Date(account.lastActivity))
+              : 'No activity yet'}
         </div>
       </CardContent>
     </Card>

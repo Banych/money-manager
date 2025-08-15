@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { TransactionType } from '@/generated/prisma';
 import { useAccounts } from '@/hooks/useAccounts';
-import { useCreateTransaction } from '@/hooks/useCreateTransaction';
+import { useCreateTransaction } from '@/hooks/useTransactions';
 import { formatISO } from '@/lib/date';
 import {
   CreateTransactionData,

@@ -1,5 +1,11 @@
+import { formatCurrency } from '@/components/accounts/account-details-data';
 import { Transaction, TransactionType } from '@/generated/prisma';
-import { useQuery } from '@tanstack/react-query';
+import { accountsKeys } from '@/hooks/useAccounts';
+import { accountStatisticsKeys } from '@/hooks/useAccountStatistics';
+import { CreateTransactionData } from '@/lib/validators/transaction.validator';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export const transactionsKeys = {
   all: ['transactions'] as const,
@@ -68,4 +74,68 @@ export function useTransactions(
     enabled: !!accountId && (options.enabled ?? true),
     staleTime: 60_000,
   });
+}
+
+// Create transaction request
+async function createTransaction(
+  data: CreateTransactionData
+): Promise<Transaction> {
+  const response = await fetch('/api/transactions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to create transaction');
+  }
+  return response.json();
+}
+
+export function useCreateTransaction() {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  return useMutation({
+    mutationFn: createTransaction,
+    onSuccess: (newTransaction, variables) => {
+      // Invalidate account list (balance, lastActivity, etc.)
+      queryClient.invalidateQueries({ queryKey: accountsKeys.lists() });
+      // Invalidate transactions lists (all variations)
+      queryClient.invalidateQueries({ queryKey: transactionsKeys.lists() });
+      queryClient.invalidateQueries({
+        queryKey: accountsKeys.detail(newTransaction.accountId),
+      });
+      // Invalidate statistics for that account
+      queryClient.invalidateQueries({
+        queryKey: accountStatisticsKeys.detail(variables.accountId),
+      });
+
+      toast.success(
+        `${variables.type === 'INCOME' ? 'Income' : 'Expense'} of ${formatCurrency(variables.amount, 'EUR')} added.`
+      );
+      router.push(`/transactions/${newTransaction.id}`);
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to create transaction'
+      );
+    },
+  });
+}
+
+// Refresh helper
+export function useRefreshTransactions() {
+  const queryClient = useQueryClient();
+  return (accountId?: string) => {
+    queryClient.invalidateQueries({ queryKey: transactionsKeys.lists() });
+    if (accountId) {
+      queryClient.invalidateQueries({
+        queryKey: transactionsKeys.account(accountId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: accountStatisticsKeys.detail(accountId),
+      });
+    }
+    queryClient.invalidateQueries({ queryKey: accountsKeys.lists() });
+  };
 }
