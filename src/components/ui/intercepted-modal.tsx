@@ -1,5 +1,6 @@
 'use client';
 
+import BackButton from '@/components/back-button';
 import {
   Dialog,
   DialogContent,
@@ -48,15 +49,7 @@ function ModalErrorBoundary({ children, fallback }: ModalErrorBoundaryProps) {
             <p className="mb-2 text-red-600">
               Something went wrong with the modal.
             </p>
-            <button
-              onClick={() => {
-                setHasError(false);
-                window.history.back();
-              }}
-              className="text-blue-600 underline"
-            >
-              Go back
-            </button>
+            <BackButton label="Go Back" />
           </div>
         </div>
       )
@@ -76,6 +69,11 @@ export default function InterceptedModal({
 }: InterceptedModalProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setOpen(true), 10);
@@ -124,6 +122,8 @@ export default function InterceptedModal({
     lg: 'sm:max-w-lg',
     xl: 'sm:max-w-xl',
   };
+
+  if (!isMounted) return null;
 
   return (
     <ModalErrorBoundary>
