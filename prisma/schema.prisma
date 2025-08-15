@@ -64,16 +64,18 @@ model Account {
 }
 
 model FinancialAccount {
-  id          String               @id @default(cuid())
-  userId      String
-  user        User                 @relation(fields: [userId], references: [id])
-  name        String
-  balance     Float                @default(0)
-  currency    String               @default("EUR")
-  type        FinancialAccountType @default(CASH)
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  Transaction Transaction[]
+  id           String               @id @default(cuid())
+  userId       String
+  user         User                 @relation(fields: [userId], references: [id])
+  name         String
+  balance      Float                @default(0)
+  currency     String               @default("EUR")
+  type         FinancialAccountType @default(CASH)
+  // lastActivity defaults to creation timestamp (now) so new accounts show immediate activity
+  lastActivity DateTime?            @default(now())
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  Transaction  Transaction[]
 }
 
 model Session {
@@ -103,4 +105,7 @@ model Transaction {
   receiptUrl  String?          @db.Text
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+
+  @@index([accountId, date])
+  @@index([userId, date])
 }

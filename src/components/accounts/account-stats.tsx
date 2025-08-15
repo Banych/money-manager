@@ -1,20 +1,50 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { FinancialAccount } from '@/generated/prisma';
+import { useAccountStatistics } from '@/hooks/useAccountStatistics';
+import { dayjs } from '@/lib/date';
 import { cn } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, TrendingUp } from 'lucide-react';
-import {
-  formatCurrency,
-  generateAccountStatistics,
-  generateMockTransactions,
-} from './account-details-data';
+import { formatCurrency } from './account-details-data';
 
 interface AccountStatsProps {
   account: FinancialAccount;
 }
 
 export default function AccountStats({ account }: AccountStatsProps) {
-  const transactions = generateMockTransactions(account.id, 30);
-  const stats = generateAccountStatistics(account, transactions);
+  const { data: stats, isLoading, isError } = useAccountStatistics(account.id);
+
+  if (isLoading) {
+    return (
+      <div className="mb-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="rounded-lg border p-4"
+          >
+            <Skeleton className="mb-4 h-4 w-24" />
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="mt-2 h-3 w-40" />
+          </div>
+        ))}
+        <div className="rounded-lg border p-6 md:col-span-2 lg:col-span-3">
+          <Skeleton className="mb-4 h-4 w-48" />
+          <div className="space-y-2">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <Skeleton
+                key={i}
+                className="h-6 w-full"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !stats) return null;
 
   return (
     <div className="mb-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -28,17 +58,7 @@ export default function AccountStats({ account }: AccountStatsProps) {
           <div className="text-2xl font-bold text-green-600">
             {formatCurrency(stats.monthlyIncome, account.currency)}
           </div>
-          <p className="text-muted-foreground text-xs">
-            From{' '}
-            {
-              transactions.filter(
-                (tx) =>
-                  tx.type === 'income' &&
-                  new Date(tx.date).getMonth() === new Date().getMonth()
-              ).length
-            }{' '}
-            transactions
-          </p>
+          <p className="text-muted-foreground text-xs">From - transactions</p>
         </CardContent>
       </Card>
 
@@ -54,17 +74,7 @@ export default function AccountStats({ account }: AccountStatsProps) {
           <div className="text-2xl font-bold text-red-600">
             {formatCurrency(stats.monthlyExpenses, account.currency)}
           </div>
-          <p className="text-muted-foreground text-xs">
-            From{' '}
-            {
-              transactions.filter(
-                (tx) =>
-                  tx.type === 'expense' &&
-                  new Date(tx.date).getMonth() === new Date().getMonth()
-              ).length
-            }{' '}
-            transactions
-          </p>
+          <p className="text-muted-foreground text-xs">From - transactions</p>
         </CardContent>
       </Card>
 
@@ -110,11 +120,7 @@ export default function AccountStats({ account }: AccountStatsProps) {
                 className="flex items-center justify-between border-b py-2 last:border-b-0"
               >
                 <span className="text-muted-foreground text-sm">
-                  {entry.date.toLocaleDateString('en-GB', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
+                  {dayjs(entry.date).format('ddd, DD MMM')}
                 </span>
                 <span
                   className={cn(

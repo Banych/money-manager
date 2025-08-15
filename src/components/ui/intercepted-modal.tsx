@@ -63,9 +63,7 @@ export default function InterceptedModal({
   title,
   description,
   children,
-  className,
   onClose,
-  maxWidth = 'sm',
 }: InterceptedModalProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -116,13 +114,6 @@ export default function InterceptedModal({
   const resolvedDescription =
     typeof description === 'function' ? description() : description;
 
-  const maxWidthClasses = {
-    sm: 'sm:max-w-sm',
-    md: 'sm:max-w-md',
-    lg: 'sm:max-w-lg',
-    xl: 'sm:max-w-xl',
-  };
-
   if (!isMounted) return null;
 
   return (
@@ -131,9 +122,7 @@ export default function InterceptedModal({
         open={open}
         onOpenChange={handleOpenChange}
       >
-        <DialogContent
-          className={`mx-4 max-h-full max-w-sm overflow-y-auto ${maxWidthClasses[maxWidth]} md:max-h-[90vh] ${className || ''}`}
-        >
+        <DialogContent>
           <DialogHeader className="pb-4 text-left">
             <DialogTitle className="text-lg sm:text-xl">
               {resolvedTitle}

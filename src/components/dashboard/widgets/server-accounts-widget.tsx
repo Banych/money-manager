@@ -37,7 +37,7 @@ export default async function ServerAccountsWidget() {
         userId: session.user.id,
       },
       orderBy: {
-        balance: 'desc',
+        lastActivity: 'asc',
       },
       take: 3, // Show top 3 accounts
     }),

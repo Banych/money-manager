@@ -1,20 +1,18 @@
+'use client';
+
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import {
   accountTypeIcons,
   accountTypeLabels,
   formatBalance,
 } from '@/constants/accounts';
 import { FinancialAccount } from '@/generated/prisma';
+import { useAccountStatistics } from '@/hooks/useAccountStatistics';
+import { formatISO } from '@/lib/date';
 import { cn } from '@/lib/utils';
 import { Calendar, TrendingDown, TrendingUp } from 'lucide-react';
-import {
-  formatLastActivity,
-  generateAccountInsights,
-  getActivityStatusDisplay,
-  getTrendDisplay,
-} from './account-insights';
+import { formatLastActivity } from './account-insights';
 
 interface AccountOverviewProps {
   account: FinancialAccount;
@@ -23,14 +21,12 @@ interface AccountOverviewProps {
 export default function AccountOverview({ account }: AccountOverviewProps) {
   const Icon = accountTypeIcons[account.type];
   const isNegative = account.balance < 0;
-  const insights = generateAccountInsights(account.id, account.type);
-  const activityStatus = getActivityStatusDisplay(insights.activityStatus);
-  const trendDisplay = getTrendDisplay(insights.trend);
+  const { data: stats } = useAccountStatistics(account.id);
 
   return (
     <Card className="mb-6">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-row flex-wrap items-center justify-between gap-3">
           <div className="flex items-center space-x-3">
             <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
               <Icon className="text-primary h-6 w-6" />
@@ -44,22 +40,22 @@ export default function AccountOverview({ account }: AccountOverviewProps) {
                 >
                   {accountTypeLabels[account.type]}
                 </Badge>
-                <Badge
-                  variant={activityStatus.variant}
-                  className={cn('text-xs', activityStatus.className)}
-                >
-                  {activityStatus.label}
-                </Badge>
+                {account.lastActivity && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs"
+                  >
+                    Active
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
-          <div className="text-right">
-            <div className="flex items-center space-x-2">
-              <Calendar className="text-muted-foreground h-4 w-4" />
-              <span className="text-muted-foreground text-sm">
-                Created {account.createdAt.toLocaleDateString()}
-              </span>
-            </div>
+          <div className="flex items-center justify-end space-x-2">
+            <Calendar className="text-muted-foreground h-4 w-4" />
+            <span className="text-muted-foreground text-sm">
+              Created {formatISO(account.createdAt)}
+            </span>
           </div>
         </div>
       </CardHeader>
@@ -76,70 +72,51 @@ export default function AccountOverview({ account }: AccountOverviewProps) {
             {formatBalance(account.balance, account.currency)}
           </div>
           <div className="flex items-center justify-center space-x-2">
-            <div
-              className={cn('flex items-center space-x-1', trendDisplay.color)}
-            >
-              {insights.trend === 'up' && <TrendingUp className="h-4 w-4" />}
-              {insights.trend === 'down' && (
-                <TrendingDown className="h-4 w-4" />
-              )}
-              {insights.trend === 'stable' && (
-                <span className="text-lg">→</span>
-              )}
-              <span className="font-medium">
-                {insights.trendPercentage.toFixed(1)}% this month
-              </span>
-            </div>
+            {stats &&
+              // need to change it to percentage of net change to previous month
+              // to show how nuch is current cash related to previous end of month
+              (stats.netChange >= 0 ? (
+                <div
+                  className={cn('flex items-center space-x-1 text-green-600')}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="font-medium">
+                    +{formatBalance(stats.netChange, account.currency)} this
+                    month
+                  </span>
+                </div>
+              ) : (
+                <div className={cn('flex items-center space-x-1 text-red-600')}>
+                  <TrendingDown className="h-4 w-4" />
+                  <span className="font-medium">
+                    {formatBalance(stats.netChange, account.currency)} this
+                    month
+                  </span>
+                </div>
+              ))}
           </div>
         </div>
 
         {/* Credit Card Utilization */}
-        {insights.utilization && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium">Credit Utilization</h3>
-              <span className="text-muted-foreground text-sm">
-                {(
-                  (insights.utilization.used / insights.utilization.limit) *
-                  100
-                ).toFixed(1)}
-                %
-              </span>
-            </div>
-            <div className="space-y-2">
-              <Progress
-                value={
-                  (insights.utilization.used / insights.utilization.limit) * 100
-                }
-                className="h-3"
-              />
-              <div className="text-muted-foreground flex justify-between text-sm">
-                <span>
-                  Used:{' '}
-                  {formatBalance(insights.utilization.used, account.currency)}
-                </span>
-                <span>
-                  Limit:{' '}
-                  {formatBalance(insights.utilization.limit, account.currency)}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Credit utilization widget will render here once real data is available */}
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-4">
+          {stats && (
+            <div className="bg-muted/50 rounded-lg p-3 text-center">
+              <div className="text-primary text-2xl font-bold">
+                {stats.transactionsCount}
+              </div>
+              <div className="text-muted-foreground text-sm">
+                Transactions this month
+              </div>
+            </div>
+          )}
           <div className="bg-muted/50 rounded-lg p-3 text-center">
             <div className="text-primary text-2xl font-bold">
-              {insights.monthlyTransactions}
-            </div>
-            <div className="text-muted-foreground text-sm">
-              Transactions this month
-            </div>
-          </div>
-          <div className="bg-muted/50 rounded-lg p-3 text-center">
-            <div className="text-primary text-2xl font-bold">
-              {formatBalance(insights.averageTransaction, account.currency)}
+              {stats
+                ? formatBalance(stats.averageTransaction, account.currency)
+                : '—'}
             </div>
             <div className="text-muted-foreground text-sm">
               Average transaction
@@ -149,7 +126,9 @@ export default function AccountOverview({ account }: AccountOverviewProps) {
 
         {/* Last Activity */}
         <div className="text-muted-foreground text-center text-sm">
-          {formatLastActivity(insights.lastActivity)}
+          {account.lastActivity
+            ? formatLastActivity(new Date(account.lastActivity))
+            : 'No activity yet'}
         </div>
       </CardContent>
     </Card>

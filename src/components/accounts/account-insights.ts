@@ -71,11 +71,12 @@ export function generateAccountInsights(
 /**
  * Format last activity for display
  */
+import { dayjs } from '@/lib/date';
 export function formatLastActivity(date: Date): string {
-  const now = new Date();
-  const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
+  const d = dayjs(date);
+  if (!d.isValid()) return 'No recent activity';
+  const diffDays = dayjs().diff(d, 'day');
+  if (diffDays === 0) return 'Used today';
   if (diffDays === 1) return 'Used yesterday';
   if (diffDays < 7) return `Used ${diffDays} days ago`;
   if (diffDays < 30) return `Used ${Math.ceil(diffDays / 7)} weeks ago`;

@@ -21,6 +21,7 @@ import {
 import { TransactionType } from '@/generated/prisma';
 import { useAccounts } from '@/hooks/useAccounts';
 import { useCreateTransaction } from '@/hooks/useCreateTransaction';
+import { formatISO } from '@/lib/date';
 import {
   CreateTransactionData,
   createTransactionValidator,
@@ -67,7 +68,7 @@ const TransactionForm = ({
       description: '',
       type: defaultType || TransactionType.EXPENSE,
       category: '',
-      date: new Date().toISOString().split('T')[0],
+      date: formatISO(new Date()),
       accountId: defaultAccountId || '',
     },
   });

@@ -14,13 +14,17 @@
 - `POST /api/accounts` - Create new account
 - `PUT /api/accounts/[id]` - Update account
 - `DELETE /api/accounts/[id]` - Delete account
+- `GET /api/accounts/[id]/transactions` - Paginated & filterable transactions (query: page, limit, type, category, from, to)
+- `GET /api/accounts/[id]/statistics` - Unified monthly & recent metrics (income, expenses, netChange, trend, trendPercentage, transactionsCount, averageTransaction, 7-day balanceHistory, lastActivity, activityStatus)
 
-### Expenses
+### Transactions
 
-- `GET /api/expenses` - List expenses with pagination
-- `POST /api/expenses` - Create new expense
-- `PUT /api/expenses/[id]` - Update expense
-- `DELETE /api/expenses/[id]` - Delete expense
+- `POST /api/transactions` - Create transaction (recomputes account balance & lastActivity)
+- `GET /api/transactions/[id]` - Get single transaction
+- `PUT /api/transactions/[id]` - Update transaction (balance recomputed)
+- `DELETE /api/transactions/[id]` - Delete transaction (balance recomputed)
+
+`/api/expenses` deprecated / superseded by unified transactions model.
 
 ### Products & Planning
 

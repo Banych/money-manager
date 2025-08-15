@@ -1,3 +1,4 @@
+import { formatCurrency } from '@/components/accounts/account-details-data';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,6 +12,7 @@ import { Plus, Receipt } from 'lucide-react';
 
 export default function ExpensesIncomeWidget() {
   // Mock data - replace with real data when transactions are implemented
+  const currency = 'EUR';
   const monthlyIncome = 3500;
   const monthlyExpenses = 2800;
   const netIncome = monthlyIncome - monthlyExpenses;
@@ -41,13 +43,13 @@ export default function ExpensesIncomeWidget() {
           <div>
             <p className="text-sm text-gray-500">Income</p>
             <p className="text-lg font-semibold text-green-600">
-              +€{monthlyIncome.toLocaleString()}
+              +{formatCurrency(monthlyIncome, currency)}
             </p>
           </div>
           <div>
             <p className="text-sm text-gray-500">Expenses</p>
             <p className="text-lg font-semibold text-red-600">
-              -€{monthlyExpenses.toLocaleString()}
+              -{formatCurrency(monthlyExpenses, currency)}
             </p>
           </div>
           <div>
@@ -55,7 +57,8 @@ export default function ExpensesIncomeWidget() {
             <p
               className={`text-lg font-semibold ${netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}
             >
-              {netIncome >= 0 ? '+' : ''}€{netIncome.toLocaleString()}
+              {netIncome >= 0 ? '+' : ''}
+              {formatCurrency(Math.abs(netIncome), currency)}
             </p>
           </div>
         </div>

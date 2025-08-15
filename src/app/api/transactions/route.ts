@@ -1,19 +1,9 @@
-import { TransactionType } from '@/generated/prisma';
 import { getAuthSession } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { recomputeAccountBalance } from '@/lib/transactions/balance';
 import { createTransactionValidator } from '@/lib/validators/transaction.validator';
 import { NextRequest, NextResponse } from 'next/server';
 import { ZodError } from 'zod';
-
-function calculateNewBalance(
-  currentBalance: number,
-  amount: number,
-  type: TransactionType
-): number {
-  return type === TransactionType.INCOME
-    ? currentBalance + amount
-    : currentBalance - amount;
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,38 +24,24 @@ export async function POST(req: NextRequest) {
       userId: session.user.id,
     };
 
-    // Use a database transaction to ensure atomicity
-    const result = await db.$transaction(async (prisma) => {
-      const account = await prisma.financialAccount.findUnique({
-        where: {
-          id: validatedTransaction.accountId,
-          userId: session.user.id,
-        },
+    const transaction = await db.$transaction(async (prisma) => {
+      const account = await prisma.financialAccount.findFirst({
+        where: { id: validatedTransaction.accountId, userId: session.user.id },
       });
+      if (!account) throw new Error('Account not found');
 
-      if (!account) {
-        throw new Error('Account not found');
-      }
-
-      const transaction = await prisma.transaction.create({
+      const created = await prisma.transaction.create({
         data: transactionData,
       });
-
-      const updatedAccount = await prisma.financialAccount.update({
-        where: { id: account.id },
-        data: {
-          balance: calculateNewBalance(
-            account.balance,
-            validatedTransaction.amount,
-            validatedTransaction.type
-          ),
-        },
-      });
-
-      return { transaction, updatedAccount };
+      await recomputeAccountBalance(
+        prisma,
+        transactionData.accountId,
+        session.user.id
+      );
+      return created;
     });
 
-    return NextResponse.json(result.transaction, { status: 201 });
+    return NextResponse.json(transaction, { status: 201 });
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(

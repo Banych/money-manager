@@ -1,3 +1,4 @@
+import { formatCurrency } from '@/components/accounts/account-details-data';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,6 +12,7 @@ import { PieChart, Plus, Target } from 'lucide-react';
 
 export default function PlannedPurchasesWidget() {
   // Mock data - replace with real planned purchases when implemented
+  const currency = 'EUR';
   const totalPlanned = 2500;
   const totalSaved = 1200;
   const plannedItems = [
@@ -49,7 +51,8 @@ export default function PlannedPurchasesWidget() {
             {progressPercentage}%
           </p>
           <p className="text-xs text-gray-500">
-            €{totalSaved.toLocaleString()} of €{totalPlanned.toLocaleString()}
+            {formatCurrency(totalSaved, currency)} of{' '}
+            {formatCurrency(totalPlanned, currency)}
           </p>
         </div>
 
@@ -90,8 +93,8 @@ export default function PlannedPurchasesWidget() {
                     ></div>
                   </div>
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>€{item.saved}</span>
-                    <span>€{item.target}</span>
+                    <span>{formatCurrency(item.saved, currency)}</span>
+                    <span>{formatCurrency(item.target, currency)}</span>
                   </div>
                 </div>
               );
