@@ -1,15 +1,25 @@
-'use client';
-
-import TransactionFormWrapper from '@/components/transactions/transaction-form-wrapper';
-import { useTransactionModalContent } from '@/components/transactions/transaction-modal-content';
+import TransactionForm from '@/components/transactions/transaction-form';
 import InterceptedModal from '@/components/ui/intercepted-modal';
-import Loader from '@/components/ui/loader';
-import { Suspense } from 'react';
+import { TransactionType } from '@/generated/prisma';
+import {
+  getTransactionPageDescription,
+  getTransactionPageTitle,
+} from '@/lib/utils';
 
-export const dynamic = 'force-static';
+type NewTransactionPageProps = {
+  searchParams?: Promise<{
+    type?: TransactionType;
+    accountId?: string;
+  }>;
+};
 
-function TransactionModalContent() {
-  const { title, description } = useTransactionModalContent();
+export default async function InterceptedNewTransactionPage({
+  searchParams,
+}: NewTransactionPageProps) {
+  const { type, accountId } = (await searchParams) || {};
+
+  const title = getTransactionPageTitle(type);
+  const description = getTransactionPageDescription(type);
 
   return (
     <InterceptedModal
@@ -17,15 +27,10 @@ function TransactionModalContent() {
       description={description}
       maxWidth="md"
     >
-      {({ onClose }) => <TransactionFormWrapper onClose={onClose} />}
+      <TransactionForm
+        defaultAccountId={accountId}
+        defaultType={type}
+      />
     </InterceptedModal>
-  );
-}
-
-export default function InterceptedNewTransactionPage() {
-  return (
-    <Suspense fallback={<Loader />}>
-      <TransactionModalContent />
-    </Suspense>
   );
 }

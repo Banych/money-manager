@@ -1,5 +1,6 @@
 'use client';
 
+import BackButton from '@/components/back-button';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -26,7 +27,7 @@ import {
 } from '@/lib/validators/transaction.validator';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -44,19 +45,20 @@ const DEFAULT_CATEGORIES = {
   ],
 };
 
-interface TransactionFormProps {
-  onSuccess?: () => void;
-  onCancel?: () => void;
-}
+type TransactionFormProps = {
+  defaultType?: TransactionType;
+  defaultAccountId?: string;
+};
 
-const TransactionForm = ({ onSuccess, onCancel }: TransactionFormProps) => {
-  const router = useRouter();
+const TransactionForm = ({
+  defaultType,
+  defaultAccountId,
+}: TransactionFormProps) => {
   const { data: accounts, isLoading: accountsLoading } = useAccounts();
   const { mutate: createTransaction, isPending } = useCreateTransaction();
-  const params = useSearchParams();
 
-  const defaultType = (params.get('type') as TransactionType) ?? undefined;
-  const defaultAccountId = (params.get('accountId') as string) ?? undefined;
+  const isAccountsEmpty =
+    (!accounts || accounts.length === 0) && !accountsLoading;
 
   const form = useForm<CreateTransactionData>({
     resolver: zodResolver(createTransactionValidator),
@@ -93,35 +95,9 @@ const TransactionForm = ({ onSuccess, onCancel }: TransactionFormProps) => {
     createTransaction(cleanedData, {
       onSuccess: () => {
         form.reset();
-        onSuccess?.();
       },
     });
   };
-
-  if (accountsLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-6 w-6 animate-spin" />
-        <span className="ml-2">Loading accounts...</span>
-      </div>
-    );
-  }
-
-  if (!accounts?.length) {
-    return (
-      <div className="py-8 text-center">
-        <p className="text-muted-foreground">
-          You need to create an account first before adding transactions.
-        </p>
-        <Button
-          onClick={() => router.push('/accounts/new')}
-          className="mt-4"
-        >
-          Create Account
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <Form {...form}>
@@ -183,37 +159,55 @@ const TransactionForm = ({ onSuccess, onCancel }: TransactionFormProps) => {
         />
 
         {/* Account Selection */}
-        <FormField
-          control={form.control}
-          name="accountId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Account</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select an account" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {accounts.map((account) => (
-                    <SelectItem
-                      key={account.id}
-                      value={account.id}
-                    >
-                      {account.name} ({account.currency}{' '}
-                      {account.balance.toFixed(2)})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {accountsLoading ? (
+          <div className="py-4 text-center">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+        ) : isAccountsEmpty ? (
+          <div className="py-8 text-center">
+            <p className="text-muted-foreground">
+              You need to create an account first before adding transactions.
+            </p>
+            <Button
+              asChild
+              className="mt-4"
+            >
+              <Link href="/accounts/new">Create Account</Link>
+            </Button>
+          </div>
+        ) : (
+          <FormField
+            control={form.control}
+            name="accountId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Account</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select an account" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {accounts?.map((account) => (
+                      <SelectItem
+                        key={account.id}
+                        value={account.id}
+                      >
+                        {account.name} ({account.currency}{' '}
+                        {account.balance.toFixed(2)})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         {/* Description */}
         <FormField
@@ -285,14 +279,10 @@ const TransactionForm = ({ onSuccess, onCancel }: TransactionFormProps) => {
 
         {/* Form Actions */}
         <div className="flex gap-3 pt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
+          <BackButton
+            label="Cancel"
             className="flex-1"
-          >
-            Cancel
-          </Button>
+          />
           <Button
             type="submit"
             disabled={isPending}

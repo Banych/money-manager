@@ -2,6 +2,7 @@ import { formatCurrency } from '@/components/accounts/account-details-data';
 import { Transaction } from '@/generated/prisma';
 import { CreateTransactionData } from '@/lib/validators/transaction.validator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 // Query keys for consistent cache management
@@ -45,6 +46,7 @@ async function createTransaction(
 // Hook for creating transactions
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: createTransaction,
@@ -65,6 +67,8 @@ export function useCreateTransaction() {
       toast.success(
         `${variables.type === 'INCOME' ? 'Income' : 'Expense'} of ${formatCurrency(variables.amount, 'EUR')} added successfully!`
       );
+
+      router.push(`/transactions/${newTransaction.id}`);
     },
     onError: (error) => {
       toast.error(
