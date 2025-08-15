@@ -3,15 +3,9 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FinancialAccount, TransactionType } from '@/generated/prisma';
-import {
-  Edit3,
-  Plus,
-  Settings,
-  Trash2,
-  TrendingDown,
-  TrendingUp,
-} from 'lucide-react';
+import { Edit3, Plus, Settings, TrendingDown, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import DeleteAccountButton from './delete-account-button';
 
 interface AccountActionsProps {
   account: FinancialAccount;
@@ -26,9 +20,7 @@ export default function AccountActions({ account }: AccountActionsProps) {
     // TODO: Implement account settings functionality
   };
 
-  const handleDeleteAccount = () => {
-    // TODO: Implement delete account functionality
-  };
+  // Delete handled by DeleteAccountButton component
 
   return (
     <Card>
@@ -135,17 +127,15 @@ export default function AccountActions({ account }: AccountActionsProps) {
           <h3 className="text-sm font-medium tracking-wide text-red-600 uppercase">
             Danger Zone
           </h3>
-          <Button
-            onClick={handleDeleteAccount}
-            className="w-full justify-start"
-            variant="destructive"
-            size="sm"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete Account
-          </Button>
+          <DeleteAccountButton
+            accountId={account.id}
+            accountName={account.name}
+            variant="button"
+            className="w-full"
+          />
           <p className="text-muted-foreground text-xs">
-            This action cannot be undone. All transaction history will be lost.
+            This action cannot be undone. All transactions for this account will
+            be permanently removed.
           </p>
         </div>
       </CardContent>
