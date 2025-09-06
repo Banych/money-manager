@@ -2,6 +2,7 @@
 
 import BackButton from '@/components/back-button';
 import { Button } from '@/components/ui/button';
+import { DateTimePicker } from '@/components/ui/date-time-picker';
 import {
   Form,
   FormControl,
@@ -11,6 +12,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useInterceptedModal } from '@/components/ui/intercepted-modal';
 import {
   Select,
   SelectContent,
@@ -20,7 +22,8 @@ import {
 } from '@/components/ui/select';
 import { TransactionType } from '@/generated/prisma';
 import { useAccounts } from '@/hooks/useAccounts';
-import { useCreateTransaction } from '@/hooks/useCreateTransaction';
+import { useCreateTransaction } from '@/hooks/useTransactions';
+import { formatDateTime } from '@/lib/date';
 import {
   CreateTransactionData,
   createTransactionValidator,
@@ -56,6 +59,7 @@ const TransactionForm = ({
 }: TransactionFormProps) => {
   const { data: accounts, isLoading: accountsLoading } = useAccounts();
   const { mutate: createTransaction, isPending } = useCreateTransaction();
+  const modal = useInterceptedModal();
 
   const isAccountsEmpty =
     (!accounts || accounts.length === 0) && !accountsLoading;
@@ -67,9 +71,10 @@ const TransactionForm = ({
       description: '',
       type: defaultType || TransactionType.EXPENSE,
       category: '',
-      date: new Date().toISOString().split('T')[0],
+      date: formatDateTime(new Date()),
       accountId: defaultAccountId || '',
     },
+    mode: 'onTouched',
   });
 
   const selectedType = form.watch('type');
@@ -95,6 +100,7 @@ const TransactionForm = ({
     createTransaction(cleanedData, {
       onSuccess: () => {
         form.reset();
+        modal?.onClose();
       },
     });
   };
@@ -267,9 +273,12 @@ const TransactionForm = ({
             <FormItem>
               <FormLabel>Date</FormLabel>
               <FormControl>
-                <Input
-                  type="date"
+                <DateTimePicker
                   {...field}
+                  onChange={(date) => {
+                    field.onChange(date ? formatDateTime(date) : '');
+                  }}
+                  value={field.value ? new Date(field.value) : new Date()}
                 />
               </FormControl>
               <FormMessage />

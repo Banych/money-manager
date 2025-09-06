@@ -1,18 +1,82 @@
-import { TransactionType } from '@/generated/prisma';
+import { Prisma } from '@/generated/prisma';
 import { getAuthSession } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { recomputeAccountBalance } from '@/lib/transactions/balance';
+import { transactionQuerySchema } from '@/lib/validators/transaction.query.validator';
 import { createTransactionValidator } from '@/lib/validators/transaction.validator';
 import { NextRequest, NextResponse } from 'next/server';
 import { ZodError } from 'zod';
 
-function calculateNewBalance(
-  currentBalance: number,
-  amount: number,
-  type: TransactionType
-): number {
-  return type === TransactionType.INCOME
-    ? currentBalance + amount
-    : currentBalance - amount;
+export async function GET(req: NextRequest) {
+  try {
+    const session = await getAuthSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const url = new URL(req.url);
+    const parsed = transactionQuerySchema.safeParse(
+      Object.fromEntries(url.searchParams.entries())
+    );
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Invalid query params', details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const { page, limit, type, category, from, to } = parsed.data;
+    const currentPage = page && page > 0 ? page : 1;
+    const currentLimit = limit && limit > 0 ? Math.min(limit, 100) : 20;
+    const skip = (currentPage - 1) * currentLimit;
+
+    const where: Prisma.TransactionWhereInput = {
+      userId: session.user.id,
+      ...(type ? { type } : {}),
+      ...(category ? { category } : {}),
+      ...(from || to
+        ? {
+            date: {
+              ...(from ? { gte: from } : {}),
+              ...(to ? { lte: to } : {}),
+            },
+          }
+        : {}),
+    };
+
+    const [data, total] = await Promise.all([
+      db.transaction.findMany({
+        where,
+        include: {
+          account: {
+            select: {
+              id: true,
+              name: true,
+              currency: true,
+              type: true,
+            },
+          },
+        },
+        orderBy: { date: 'desc' },
+        skip,
+        take: currentLimit,
+      }),
+      db.transaction.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      data,
+      total,
+      page: currentPage,
+      limit: currentLimit,
+      pages: Math.ceil(total / currentLimit) || 1,
+    });
+  } catch {
+    return NextResponse.json(
+      { error: 'Failed to fetch transactions' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -34,38 +98,24 @@ export async function POST(req: NextRequest) {
       userId: session.user.id,
     };
 
-    // Use a database transaction to ensure atomicity
-    const result = await db.$transaction(async (prisma) => {
-      const account = await prisma.financialAccount.findUnique({
-        where: {
-          id: validatedTransaction.accountId,
-          userId: session.user.id,
-        },
+    const transaction = await db.$transaction(async (prisma) => {
+      const account = await prisma.financialAccount.findFirst({
+        where: { id: validatedTransaction.accountId, userId: session.user.id },
       });
+      if (!account) throw new Error('Account not found');
 
-      if (!account) {
-        throw new Error('Account not found');
-      }
-
-      const transaction = await prisma.transaction.create({
+      const created = await prisma.transaction.create({
         data: transactionData,
       });
-
-      const updatedAccount = await prisma.financialAccount.update({
-        where: { id: account.id },
-        data: {
-          balance: calculateNewBalance(
-            account.balance,
-            validatedTransaction.amount,
-            validatedTransaction.type
-          ),
-        },
-      });
-
-      return { transaction, updatedAccount };
+      await recomputeAccountBalance(
+        prisma,
+        transactionData.accountId,
+        session.user.id
+      );
+      return created;
     });
 
-    return NextResponse.json(result.transaction, { status: 201 });
+    return NextResponse.json(transaction, { status: 201 });
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(

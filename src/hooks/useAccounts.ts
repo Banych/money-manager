@@ -90,3 +90,65 @@ export function useRefreshAccounts() {
     queryClient.invalidateQueries({ queryKey: accountsKeys.lists() });
   };
 }
+
+// Delete account
+async function deleteAccountRequest(id: string): Promise<void> {
+  const res = await fetch(`/api/accounts/${id}`, { method: 'DELETE' });
+  if (!res.ok && res.status !== 204) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Failed to delete account');
+  }
+}
+
+export function useDeleteAccount() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteAccountRequest,
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: accountsKeys.lists() });
+      const previous = queryClient.getQueryData<FinancialAccount[]>(
+        accountsKeys.lists()
+      );
+      queryClient.setQueryData<FinancialAccount[]>(
+        accountsKeys.lists(),
+        (old) => (old ? old.filter((a) => a.id !== id) : old)
+      );
+      return { previous };
+    },
+    onError: (error, _id, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(accountsKeys.lists(), context.previous);
+      }
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to delete account'
+      );
+    },
+    onSuccess: (_data, id) => {
+      // Invalidate related detail/statistics queries
+      queryClient.invalidateQueries({ queryKey: accountsKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: accountsKeys.detail(id) });
+      toast.success('Account deleted');
+    },
+  });
+}
+
+async function fetchSingleAccount(id: string): Promise<FinancialAccount> {
+  const response = await fetch(`/api/accounts/${id}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch account');
+  }
+  return response.json();
+}
+
+export function useAccount(
+  id: string,
+  initialData: FinancialAccount | null = null
+) {
+  return useQuery({
+    queryKey: accountsKeys.detail(id),
+    queryFn: () => fetchSingleAccount(id),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    initialData,
+  });
+}

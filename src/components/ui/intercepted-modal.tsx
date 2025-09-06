@@ -9,12 +9,19 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 interface InterceptedModalProps {
   title: string | (() => string);
   description: string | (() => string);
-  children: ReactNode | ((props: { onClose: () => void }) => ReactNode);
+  children: ReactNode; // Previously used a render prop (function as children), but due to RSC limitations (functions can't cross the server/client boundary), a context-based pattern is now used.
   className?: string;
   onClose?: () => void;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl';
@@ -59,17 +66,23 @@ function ModalErrorBoundary({ children, fallback }: ModalErrorBoundaryProps) {
   return <>{children}</>;
 }
 
+const InterceptedModalContext = createContext<{ onClose: () => void } | null>(
+  null
+);
+
+export function useInterceptedModal() {
+  return useContext(InterceptedModalContext);
+}
+
 export default function InterceptedModal({
   title,
   description,
   children,
-  className,
   onClose,
-  maxWidth = 'sm',
 }: InterceptedModalProps) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [open, setOpen] = useState(true);
 
   useEffect(() => {
     setIsMounted(true);
@@ -83,26 +96,9 @@ export default function InterceptedModal({
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
       if (!isOpen) {
-        try {
-          setOpen(false);
-          onClose?.();
-
-          // Add a small delay before navigation to ensure state updates
-          setTimeout(() => {
-            try {
-              router.back();
-            } catch {
-              router.push('/');
-            }
-          }, 100);
-        } catch (error) {
-          // Log error for debugging
-          if (typeof window !== 'undefined' && window.console) {
-            window.console.error('Error closing modal:', error);
-          }
-          // Fallback navigation
-          window.location.href = '/';
-        }
+        setOpen(false);
+        onClose?.();
+        router.back();
       }
     },
     [router, onClose]
@@ -116,13 +112,6 @@ export default function InterceptedModal({
   const resolvedDescription =
     typeof description === 'function' ? description() : description;
 
-  const maxWidthClasses = {
-    sm: 'sm:max-w-sm',
-    md: 'sm:max-w-md',
-    lg: 'sm:max-w-lg',
-    xl: 'sm:max-w-xl',
-  };
-
   if (!isMounted) return null;
 
   return (
@@ -131,9 +120,7 @@ export default function InterceptedModal({
         open={open}
         onOpenChange={handleOpenChange}
       >
-        <DialogContent
-          className={`mx-4 max-h-full max-w-sm overflow-y-auto ${maxWidthClasses[maxWidth]} md:max-h-[90vh] ${className || ''}`}
-        >
+        <DialogContent>
           <DialogHeader className="pb-4 text-left">
             <DialogTitle className="text-lg sm:text-xl">
               {resolvedTitle}
@@ -142,11 +129,9 @@ export default function InterceptedModal({
               {resolvedDescription}
             </DialogDescription>
           </DialogHeader>
-          <div className="overflow-y-auto">
-            {typeof children === 'function'
-              ? children({ onClose: handleClose })
-              : children}
-          </div>
+          <InterceptedModalContext.Provider value={{ onClose: handleClose }}>
+            <div className="overflow-y-auto">{children}</div>
+          </InterceptedModalContext.Provider>
         </DialogContent>
       </Dialog>
     </ModalErrorBoundary>

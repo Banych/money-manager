@@ -18,15 +18,13 @@ export default async function AccountsPage() {
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Financial Accounts
-          </h1>
-          <p className="text-muted-foreground">
-            Manage your wallets, bank accounts, and cards
-          </p>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">
+          Financial Accounts
+        </h1>
+        <p className="text-muted-foreground">
+          Manage your wallets, bank accounts, and cards
+        </p>
       </div>
 
       <AccountsList AddAccountComponent={<AddAccountButton />} />

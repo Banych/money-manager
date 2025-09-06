@@ -2,15 +2,12 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FinancialAccount } from '@/generated/prisma';
+import { Skeleton } from '@/components/ui/skeleton';
+import { FinancialAccount, TransactionType } from '@/generated/prisma';
+import { useAccountTransactions } from '@/hooks/useTransactions';
 import { cn } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, ShoppingBag } from 'lucide-react';
-import {
-  formatCurrency,
-  formatTransactionDate,
-  generateMockTransactions,
-  MockTransaction,
-} from './account-details-data';
+import { formatCurrency, formatTransactionDate } from './account-details-data';
 
 interface RecentTransactionsProps {
   account: FinancialAccount;
@@ -21,15 +18,17 @@ export default function RecentTransactions({
   account,
   limit = 10,
 }: RecentTransactionsProps) {
-  const transactions = generateMockTransactions(account.id, 30).slice(0, limit);
+  const { data, isLoading, isError } = useAccountTransactions(account.id, {
+    limit,
+  });
+  const transactions = data?.data ?? [];
 
-  const getTransactionIcon = (transaction: MockTransaction) => {
-    return transaction.type === 'income' ? (
+  const getTransactionIcon = (type: 'INCOME' | 'EXPENSE') =>
+    type === 'INCOME' ? (
       <ArrowUpIcon className="h-4 w-4 text-green-600" />
     ) : (
       <ArrowDownIcon className="h-4 w-4 text-red-600" />
     );
-  };
 
   const getCategoryColor = (category?: string) => {
     if (!category) return 'bg-gray-100 text-gray-800';
@@ -49,6 +48,54 @@ export default function RecentTransactions({
 
     return colorMap[category] || 'bg-gray-100 text-gray-800';
   };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <ShoppingBag className="h-5 w-5" />
+            <span>Recent Transactions</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between rounded-lg border p-3"
+              >
+                <div className="flex items-center space-x-3">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                </div>
+                <Skeleton className="h-4 w-16" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <ShoppingBag className="h-5 w-5" />
+            <span>Recent Transactions</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-red-600">Failed to load transactions.</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (transactions.length === 0) {
     return (
@@ -99,11 +146,11 @@ export default function RecentTransactions({
             >
               <div className="flex items-center space-x-3">
                 <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                  {getTransactionIcon(transaction)}
+                  {getTransactionIcon(transaction.type)}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">
-                    {transaction.description}
+                    {transaction.description || '—'}
                   </p>
                   <div className="mt-1 flex items-center space-x-2">
                     <p className="text-muted-foreground text-sm">
@@ -127,7 +174,7 @@ export default function RecentTransactions({
                 <p
                   className={cn(
                     'font-bold',
-                    transaction.type === 'income'
+                    transaction.type === TransactionType.INCOME
                       ? 'text-green-600'
                       : 'text-red-600'
                   )}
@@ -135,7 +182,9 @@ export default function RecentTransactions({
                   {formatCurrency(transaction.amount, account.currency)}
                 </p>
                 <p className="text-muted-foreground text-xs">
-                  {transaction.type === 'income' ? 'Credit' : 'Debit'}
+                  {transaction.type === TransactionType.INCOME
+                    ? 'Credit'
+                    : 'Debit'}
                 </p>
               </div>
             </div>

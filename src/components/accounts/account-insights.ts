@@ -71,11 +71,12 @@ export function generateAccountInsights(
 /**
  * Format last activity for display
  */
+import { dayjs } from '@/lib/date';
 export function formatLastActivity(date: Date): string {
-  const now = new Date();
-  const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
+  const d = dayjs(date);
+  if (!d.isValid()) return 'No recent activity';
+  const diffDays = dayjs().diff(d, 'day');
+  if (diffDays === 0) return 'Used today';
   if (diffDays === 1) return 'Used yesterday';
   if (diffDays < 7) return `Used ${diffDays} days ago`;
   if (diffDays < 30) return `Used ${Math.ceil(diffDays / 7)} weeks ago`;
@@ -85,13 +86,14 @@ export function formatLastActivity(date: Date): string {
 /**
  * Get trend icon and color
  */
-export function getTrendDisplay(trend: BalanceTrend) {
+export function getTrendDisplay(trend?: BalanceTrend) {
   switch (trend) {
     case 'up':
       return { icon: '↗️', color: 'text-green-600', bgColor: 'bg-green-50' };
     case 'down':
       return { icon: '↘️', color: 'text-red-600', bgColor: 'bg-red-50' };
     case 'stable':
+    default:
       return { icon: '➡️', color: 'text-gray-600', bgColor: 'bg-gray-50' };
   }
 }
@@ -100,7 +102,7 @@ export function getTrendDisplay(trend: BalanceTrend) {
  * Get activity status display
  * TODO: refactor it later (we might have separate component for it)
  */
-export function getActivityStatusDisplay(status: ActivityStatus) {
+export function getActivityStatusDisplay(status?: ActivityStatus) {
   switch (status) {
     case 'active':
       return {
@@ -115,6 +117,7 @@ export function getActivityStatusDisplay(status: ActivityStatus) {
         className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100',
       };
     case 'inactive':
+    default:
       return {
         label: 'Inactive',
         variant: 'outline' as const,

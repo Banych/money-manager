@@ -33,7 +33,7 @@ export default async function NewTransactionPage({
   return (
     <div className="container mx-auto max-w-2xl px-4 py-8">
       {/* Header */}
-      <div className="mb-6 flex items-center gap-4">
+      <div className="mb-4 flex items-center gap-4">
         <BackButton />
         <div>
           <h1 className="text-2xl font-bold">{getPageTitle()}</h1>

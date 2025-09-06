@@ -1,5 +1,6 @@
 'use client';
 
+import BackButton from '@/components/back-button';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -27,15 +28,7 @@ import { z } from 'zod';
 
 type FormData = z.infer<typeof createAccountValidator>;
 
-interface AddAccountFormProps {
-  onSuccess?: () => void;
-  onCancel?: () => void;
-}
-
-export default function AddAccountForm({
-  onSuccess,
-  onCancel,
-}: AddAccountFormProps) {
+export default function AddAccountForm() {
   const createAccountMutation = useCreateAccount();
 
   const form = useForm<FormData>({
@@ -52,7 +45,6 @@ export default function AddAccountForm({
     createAccountMutation.mutate(data, {
       onSuccess: () => {
         form.reset();
-        onSuccess?.();
       },
     });
   };
@@ -174,14 +166,11 @@ export default function AddAccountForm({
         </div>
 
         <div className="flex justify-end space-x-2 pt-4">
-          <Button
-            type="button"
+          <BackButton
+            label="Cancel"
             variant="outline"
-            onClick={() => onCancel?.()}
             disabled={isLoading}
-          >
-            Cancel
-          </Button>
+          />
           <Button
             type="submit"
             disabled={isLoading}
