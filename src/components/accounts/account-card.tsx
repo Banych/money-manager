@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   accountTypeIcons,
   accountTypeLabels,
@@ -25,10 +26,8 @@ export default function AccountCard({ account, onClick }: AccountCardProps) {
   const Icon = accountTypeIcons[account.type];
   const isNegative = account.balance < 0;
   const { data: stats, isLoading } = useAccountStatistics(account.id);
-  const activityStatus = stats
-    ? getActivityStatusDisplay(stats.activityStatus)
-    : null;
-  const trendDisplay = stats ? getTrendDisplay(stats.trend) : null;
+  const activityStatus = getActivityStatusDisplay(stats?.activityStatus);
+  const trendDisplay = getTrendDisplay(stats?.trend);
 
   return (
     <Card
@@ -43,7 +42,9 @@ export default function AccountCard({ account, onClick }: AccountCardProps) {
           <CardTitle className="truncate text-sm font-medium">
             {account.name}
           </CardTitle>
-          {activityStatus && (
+          {isLoading ? (
+            <Skeleton className="h-5.5 w-18" />
+          ) : (
             <Badge
               variant={activityStatus.variant}
               className={cn('text-xs', activityStatus.className)}
@@ -58,7 +59,7 @@ export default function AccountCard({ account, onClick }: AccountCardProps) {
       <CardContent className="space-y-4">
         {/* Main Balance */}
         <div className="flex items-center justify-between">
-          <div className="flex-1">
+          <div className="flex flex-1 flex-col">
             <div
               className={cn(
                 'text-2xl font-bold',
@@ -67,23 +68,27 @@ export default function AccountCard({ account, onClick }: AccountCardProps) {
             >
               {formatBalance(account.balance, account.currency)}
             </div>
-            <div className="mt-1 flex items-center space-x-2">
+            <div className="flex items-center space-x-2">
               <Badge
                 variant="secondary"
                 className="text-xs"
               >
                 {accountTypeLabels[account.type]}
               </Badge>
-              {trendDisplay && stats && (
-                <div
-                  className={cn(
-                    'flex items-center space-x-1 text-xs',
-                    trendDisplay.color
-                  )}
-                >
-                  <span>{trendDisplay.icon}</span>
-                  <span>{stats.trendPercentage.toFixed(1)}%</span>
-                </div>
+              {isLoading ? (
+                <Skeleton className="h-4 w-10" />
+              ) : (
+                stats && (
+                  <div
+                    className={cn(
+                      'flex items-center space-x-1 text-xs',
+                      trendDisplay.color
+                    )}
+                  >
+                    <span>{trendDisplay.icon}</span>
+                    <span>{stats.trendPercentage.toFixed(1)}%</span>
+                  </div>
+                )
               )}
             </div>
           </div>
@@ -94,24 +99,34 @@ export default function AccountCard({ account, onClick }: AccountCardProps) {
         {/* Activity Info */}
         <div className="space-y-1">
           <div className="text-muted-foreground text-xs">
-            {stats?.lastActivity
-              ? formatLastActivity(new Date(stats.lastActivity))
-              : 'No recent activity'}
+            {isLoading ? (
+              <Skeleton className="h-3 w-20" />
+            ) : stats?.lastActivity ? (
+              formatLastActivity(new Date(stats.lastActivity))
+            ) : (
+              'No recent activity'
+            )}
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">
-              {isLoading
-                ? '…'
-                : `${stats?.transactionsCount ?? 0} transactions this month`}
+              {isLoading ? (
+                <Skeleton className="h-3 w-24" />
+              ) : (
+                `${stats?.transactionsCount ?? 0} transactions this month`
+              )}
             </span>
             <span className="text-muted-foreground">
-              Avg:{' '}
-              {isLoading
-                ? '…'
-                : formatBalance(
+              {isLoading ? (
+                <Skeleton className="h-3 w-16" />
+              ) : (
+                <>
+                  {'Avg: '}
+                  {formatBalance(
                     stats?.averageTransaction || 0,
                     account.currency
                   )}
+                </>
+              )}
             </span>
           </div>
         </div>

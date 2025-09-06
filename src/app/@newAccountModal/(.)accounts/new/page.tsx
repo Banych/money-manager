@@ -10,7 +10,6 @@ export default function InterceptedAddAccountPage() {
     <InterceptedModal
       title="Add Financial Account"
       description="Create a new account to track your finances."
-      maxWidth="md"
     >
       <AddAccountForm />
     </InterceptedModal>

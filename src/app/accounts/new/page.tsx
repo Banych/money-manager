@@ -16,20 +16,18 @@ export default function NewAccountPage() {
   return (
     <div className="mx-auto max-w-sm px-4 py-4 sm:max-w-md sm:py-6 lg:max-w-2xl lg:px-8">
       {/* Header with back button */}
-      <div className="mb-6 flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 text-xs sm:h-9 sm:text-sm"
-          asChild
-        >
-          <Link href="/accounts">
-            <ArrowLeft className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Back to Accounts</span>
-            <span className="sm:hidden">Back</span>
-          </Link>
-        </Button>
-      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 text-xs sm:h-9 sm:text-sm"
+        asChild
+      >
+        <Link href="/accounts">
+          <ArrowLeft className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Back to Accounts</span>
+          <span className="sm:hidden">Back</span>
+        </Link>
+      </Button>
 
       {/* Main content */}
       <Card className="shadow-lg">

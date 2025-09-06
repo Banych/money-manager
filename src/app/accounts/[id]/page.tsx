@@ -1,6 +1,5 @@
 import AccountActions from '@/components/accounts/account-actions';
 import AccountOverview from '@/components/accounts/account-overview';
-import AccountStats from '@/components/accounts/account-stats';
 import RecentTransactions from '@/components/accounts/recent-transactions';
 import { Button } from '@/components/ui/button';
 import { getAuthSession } from '@/lib/auth';
@@ -68,23 +67,18 @@ const AccountPage = async ({ params }: AccountPageProps) => {
   return (
     <div className="container mx-auto max-w-6xl px-4 py-6">
       {/* Header with Back Button */}
-      <div className="mb-6">
-        <Link href="/accounts">
-          <Button
-            variant="ghost"
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Accounts
-          </Button>
-        </Link>
-      </div>
+      <Link href="/accounts">
+        <Button
+          variant="ghost"
+          className="mb-4"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Accounts
+        </Button>
+      </Link>
 
       {/* Account Overview */}
       <AccountOverview account={account} />
-
-      {/* Statistics */}
-      <AccountStats account={account} />
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
