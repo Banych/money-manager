@@ -17,6 +17,10 @@ export function formatDateTime(date: Date | string | number): string {
   return dayjs(date).format('YYYY-MM-DD HH:mm');
 }
 
+export function formatDateTimeISO(date: Date | string | number): string {
+  return dayjs(date).toISOString();
+}
+
 export function formatRelative(date: Date | string | number): string {
   return dayjs(date).fromNow();
 }

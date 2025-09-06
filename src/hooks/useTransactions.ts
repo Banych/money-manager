@@ -6,7 +6,12 @@ import {
   CreateTransactionData,
   UpdateTransactionData,
 } from '@/lib/validators/transaction.validator';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  QueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 export const transactionsKeys = {
@@ -29,11 +34,12 @@ export interface UseTransactionsOptions {
   from?: Date;
   to?: Date;
   enabled?: boolean;
+  userId?: string;
 }
 
 export interface TransactionsListResponse {
   data: (Transaction & {
-    account?: {
+    account: {
       id: string;
       name: string;
       currency: string;
@@ -105,7 +111,10 @@ export function useAccountTransactions(
   });
 }
 
-export function useAllTransactions(options: UseTransactionsOptions = {}) {
+export function useAllTransactions(
+  options: UseTransactionsOptions = {},
+  queryInitialOptions: QueryOptions<TransactionsListResponse, Error> = {}
+) {
   return useQuery({
     queryKey: transactionsKeys.globalList({
       page: options.page,
@@ -114,10 +123,12 @@ export function useAllTransactions(options: UseTransactionsOptions = {}) {
       category: options.category,
       from: options.from?.toISOString(),
       to: options.to?.toISOString(),
+      userId: options.userId,
     } as Record<string, unknown>),
     queryFn: () => fetchAllTransactions(options),
     enabled: options.enabled ?? true,
     staleTime: 60_000,
+    ...queryInitialOptions,
   });
 }
 

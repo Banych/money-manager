@@ -46,12 +46,16 @@ export const supportedCurrencies = [
 /**
  * Format balance with currency symbol
  */
-export const formatBalance = (balance: number, currency: string): string => {
+export const formatBalance = (
+  balance: number,
+  currency: string,
+  hasFraction: boolean = true
+): string => {
   const symbol =
     currencySymbols[currency as keyof typeof currencySymbols] || currency;
   const formatted = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: hasFraction ? 2 : 0,
+    maximumFractionDigits: hasFraction ? 2 : 0,
   }).format(Math.abs(balance));
 
   return balance < 0 ? `-${symbol}${formatted}` : `${symbol}${formatted}`;

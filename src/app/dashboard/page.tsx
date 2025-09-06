@@ -1,8 +1,8 @@
 import AnalyticsWidget from '@/components/dashboard/widgets/analytics-widget';
-import ExpensesIncomeWidget from '@/components/dashboard/widgets/expenses-income-widget';
 import GroceryWidget from '@/components/dashboard/widgets/grocery-widget';
 import PlannedPurchasesWidget from '@/components/dashboard/widgets/planned-purchases-widget';
 import ServerAccountsWidget from '@/components/dashboard/widgets/server-accounts-widget';
+import ServerExpensesIncomeWidget from '@/components/dashboard/widgets/server-expenses-income-widget';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -43,7 +43,7 @@ export default async function Dashboard() {
 
         <div className="mb-8 grid gap-6 md:grid-cols-2">
           <ServerAccountsWidget />
-          <ExpensesIncomeWidget />
+          <ServerExpensesIncomeWidget />
           <GroceryWidget />
           <AnalyticsWidget />
           <PlannedPurchasesWidget />
@@ -66,10 +66,10 @@ export default async function Dashboard() {
                 <Link href="/accounts/new">Add Account</Link>
               </Button>
               <Button
-                disabled
+                asChild
                 variant="outline"
               >
-                Add Transaction
+                <Link href="/transactions/new">Add Transaction</Link>
               </Button>
               <Button
                 disabled

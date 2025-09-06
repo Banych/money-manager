@@ -2,6 +2,7 @@
 
 import BackButton from '@/components/back-button';
 import { Button } from '@/components/ui/button';
+import { DateTimePicker } from '@/components/ui/date-time-picker';
 import {
   Form,
   FormControl,
@@ -22,7 +23,7 @@ import {
 import { TransactionType } from '@/generated/prisma';
 import { useAccounts } from '@/hooks/useAccounts';
 import { useCreateTransaction } from '@/hooks/useTransactions';
-import { formatISO } from '@/lib/date';
+import { formatDateTime } from '@/lib/date';
 import {
   CreateTransactionData,
   createTransactionValidator,
@@ -70,9 +71,10 @@ const TransactionForm = ({
       description: '',
       type: defaultType || TransactionType.EXPENSE,
       category: '',
-      date: formatISO(new Date()),
+      date: formatDateTime(new Date()),
       accountId: defaultAccountId || '',
     },
+    mode: 'onTouched',
   });
 
   const selectedType = form.watch('type');
@@ -271,9 +273,12 @@ const TransactionForm = ({
             <FormItem>
               <FormLabel>Date</FormLabel>
               <FormControl>
-                <Input
-                  type="date"
+                <DateTimePicker
                   {...field}
+                  onChange={(date) => {
+                    field.onChange(date ? formatDateTime(date) : '');
+                  }}
+                  value={field.value ? new Date(field.value) : new Date()}
                 />
               </FormControl>
               <FormMessage />

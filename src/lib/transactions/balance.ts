@@ -1,4 +1,9 @@
-import { Prisma, PrismaClient, TransactionType } from '@/generated/prisma';
+import {
+  Prisma,
+  PrismaClient,
+  Transaction,
+  TransactionType,
+} from '@/generated/prisma';
 
 /**
  * Recompute an account's balance and lastActivity from all its transactions.
@@ -66,3 +71,37 @@ export async function validateTransactionAccess(
 
   return transaction;
 }
+
+export type SimpleMonthlyBudget = {
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  primaryCurrency: string;
+};
+
+export const calculateSimpleMonthlyBudget = (
+  transactions: (Transaction & { account: { currency: string } })[]
+): SimpleMonthlyBudget => {
+  let monthlyIncome = 0;
+  let monthlyExpenses = 0;
+  const currencyUsage: Record<string, number> = {};
+
+  transactions.forEach((transaction) => {
+    // Track currency usage
+    const currency = transaction.account.currency;
+    currencyUsage[currency] = (currencyUsage[currency] || 0) + 1;
+
+    if (transaction.type === TransactionType.INCOME) {
+      monthlyIncome += transaction.amount;
+    } else if (transaction.type === TransactionType.EXPENSE) {
+      monthlyExpenses += transaction.amount;
+    }
+  });
+
+  // Determine the most frequently used currency
+  const primaryCurrency = Object.entries(currencyUsage).reduce(
+    (a, b) => (b[1] > a[1] ? b : a),
+    ['', 0]
+  )[0];
+
+  return { monthlyIncome, monthlyExpenses, primaryCurrency };
+};
