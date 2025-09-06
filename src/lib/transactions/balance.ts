@@ -9,6 +9,16 @@ export async function recomputeAccountBalance(
   accountId: string,
   userId: string
 ) {
+  // First verify the account exists and belongs to the user
+  const account = await prisma.financialAccount.findUnique({
+    where: { id: accountId, userId },
+    select: { id: true },
+  });
+
+  if (!account) {
+    throw new Error('Account not found or access denied');
+  }
+
   const aggregates = await prisma.transaction.groupBy({
     by: ['type'],
     where: { accountId, userId },
@@ -35,4 +45,24 @@ export async function recomputeAccountBalance(
     data: { balance, lastActivity: latestTx?.date ?? null },
     select: { id: true, balance: true, lastActivity: true },
   });
+}
+
+/**
+ * Validate transaction ownership and account access
+ */
+export async function validateTransactionAccess(
+  prisma: PrismaClient | Prisma.TransactionClient,
+  transactionId: string,
+  userId: string
+) {
+  const transaction = await prisma.transaction.findFirst({
+    where: { id: transactionId, userId },
+    select: { id: true, accountId: true, amount: true, type: true },
+  });
+
+  if (!transaction) {
+    throw new Error('Transaction not found or access denied');
+  }
+
+  return transaction;
 }

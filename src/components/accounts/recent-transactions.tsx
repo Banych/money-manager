@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FinancialAccount, TransactionType } from '@/generated/prisma';
-import { useTransactions } from '@/hooks/useTransactions';
+import { useAccountTransactions } from '@/hooks/useTransactions';
 import { cn } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, ShoppingBag } from 'lucide-react';
 import { formatCurrency, formatTransactionDate } from './account-details-data';
@@ -18,7 +18,9 @@ export default function RecentTransactions({
   account,
   limit = 10,
 }: RecentTransactionsProps) {
-  const { data, isLoading, isError } = useTransactions(account.id, { limit });
+  const { data, isLoading, isError } = useAccountTransactions(account.id, {
+    limit,
+  });
   const transactions = data?.data ?? [];
 
   const getTransactionIcon = (type: 'INCOME' | 'EXPENSE') =>

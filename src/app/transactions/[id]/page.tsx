@@ -1,6 +1,8 @@
+import { getAuthSession } from '@/lib/auth';
 import { formatDateTime } from '@/lib/date';
 import { db } from '@/lib/db';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -9,8 +11,24 @@ interface Props {
 export default async function TransactionPage({ params }: Props) {
   const { id } = await params;
 
+  const session = await getAuthSession();
+  if (!session?.user) {
+    redirect('/auth/signin');
+  }
+
   const transaction = await db.transaction.findUnique({
-    where: { id },
+    where: {
+      id,
+      userId: session.user.id, // Add user ownership check
+    },
+    include: {
+      account: {
+        select: {
+          name: true,
+          currency: true,
+        },
+      },
+    },
   });
 
   if (!transaction) {
@@ -48,7 +66,8 @@ export default async function TransactionPage({ params }: Props) {
                 : 'font-semibold text-red-600'
             }
           >
-            {transaction.amount.toFixed(2)}
+            {transaction.type === 'INCOME' ? '+' : '-'}
+            {transaction.amount.toFixed(2)} {transaction.account.currency}
           </div>
         </div>
         <div className="rounded-lg border p-4">

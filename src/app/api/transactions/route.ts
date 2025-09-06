@@ -1,9 +1,83 @@
+import { Prisma } from '@/generated/prisma';
 import { getAuthSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { recomputeAccountBalance } from '@/lib/transactions/balance';
+import { transactionQuerySchema } from '@/lib/validators/transaction.query.validator';
 import { createTransactionValidator } from '@/lib/validators/transaction.validator';
 import { NextRequest, NextResponse } from 'next/server';
 import { ZodError } from 'zod';
+
+export async function GET(req: NextRequest) {
+  try {
+    const session = await getAuthSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const url = new URL(req.url);
+    const parsed = transactionQuerySchema.safeParse(
+      Object.fromEntries(url.searchParams.entries())
+    );
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Invalid query params', details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const { page, limit, type, category, from, to } = parsed.data;
+    const currentPage = page && page > 0 ? page : 1;
+    const currentLimit = limit && limit > 0 ? Math.min(limit, 100) : 20;
+    const skip = (currentPage - 1) * currentLimit;
+
+    const where: Prisma.TransactionWhereInput = {
+      userId: session.user.id,
+      ...(type ? { type } : {}),
+      ...(category ? { category } : {}),
+      ...(from || to
+        ? {
+            date: {
+              ...(from ? { gte: from } : {}),
+              ...(to ? { lte: to } : {}),
+            },
+          }
+        : {}),
+    };
+
+    const [data, total] = await Promise.all([
+      db.transaction.findMany({
+        where,
+        include: {
+          account: {
+            select: {
+              id: true,
+              name: true,
+              currency: true,
+              type: true,
+            },
+          },
+        },
+        orderBy: { date: 'desc' },
+        skip,
+        take: currentLimit,
+      }),
+      db.transaction.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      data,
+      total,
+      page: currentPage,
+      limit: currentLimit,
+      pages: Math.ceil(total / currentLimit) || 1,
+    });
+  } catch {
+    return NextResponse.json(
+      { error: 'Failed to fetch transactions' },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
