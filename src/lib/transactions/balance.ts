@@ -98,10 +98,16 @@ export const calculateSimpleMonthlyBudget = (
   });
 
   // Determine the most frequently used currency
-  const primaryCurrency = Object.entries(currencyUsage).reduce(
-    (a, b) => (b[1] > a[1] ? b : a),
-    ['', 0]
-  )[0];
+  let primaryCurrency: string;
+  const currencyEntries = Object.entries(currencyUsage);
+  if (currencyEntries.length === 0) {
+    primaryCurrency = 'EUR'; // or any default currency you prefer
+  } else {
+    primaryCurrency = currencyEntries.reduce(
+      (a, b) => (b[1] > a[1] ? b : a),
+      ['', 0]
+    )[0];
+  }
 
   return { monthlyIncome, monthlyExpenses, primaryCurrency };
 };

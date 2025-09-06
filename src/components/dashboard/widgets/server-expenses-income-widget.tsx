@@ -108,10 +108,12 @@ export default async function ServerExpensesIncomeWidget() {
   });
 
   // Determine primary currency (most used)
-  const primaryCurrency = Object.keys(currencyUsage).reduce(
-    (a, b) => (currencyUsage[a] > currencyUsage[b] ? a : b),
-    'EUR'
-  );
+  const primaryCurrency =
+    Object.keys(currencyUsage).length > 0
+      ? Object.keys(currencyUsage).reduce((a, b) =>
+          currencyUsage[a] > currencyUsage[b] ? a : b
+        )
+      : 'EUR';
 
   const hasTransactions = monthlyTransactions.length > 0;
 

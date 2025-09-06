@@ -245,7 +245,7 @@ export function DateTimePicker({
                 ref={hourScrollRef}
                 className="flex p-2 sm:flex-col"
               >
-                {hours.reverse().map((hour) => (
+                {[...hours].reverse().map((hour) => (
                   <Button
                     key={hour}
                     size="icon"

@@ -93,7 +93,7 @@ export function useRefreshAccounts() {
 
 // Delete account
 async function deleteAccountRequest(id: string): Promise<void> {
-  const res = await fetch(`/api/accounts/${id} `, { method: 'DELETE' });
+  const res = await fetch(`/api/accounts/${id}`, { method: 'DELETE' });
   if (!res.ok && res.status !== 204) {
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || 'Failed to delete account');

@@ -21,7 +21,7 @@ import {
 interface InterceptedModalProps {
   title: string | (() => string);
   description: string | (() => string);
-  children: ReactNode; // Functions can't cross the RSC boundary; use context hook instead
+  children: ReactNode; // Previously used a render prop (function as children), but due to RSC limitations (functions can't cross the server/client boundary), a context-based pattern is now used.
   className?: string;
   onClose?: () => void;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl';

@@ -30,7 +30,7 @@ export const createTransactionValidator = z.object({
     })
     .refine(
       (date) => {
-        return isBefore(new Date(date), new Date());
+        return isBefore(date, new Date());
       },
       { message: 'Date cannot be in the future' }
     ),
