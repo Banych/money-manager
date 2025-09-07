@@ -7,6 +7,7 @@ import { FinancialAccount, TransactionType } from '@/generated/prisma';
 import { useAccountTransactions } from '@/hooks/useTransactions';
 import { cn } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, ShoppingBag } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { formatCurrency, formatTransactionDate } from './account-details-data';
 
 interface RecentTransactionsProps {
@@ -21,6 +22,8 @@ export default function RecentTransactions({
   const { data, isLoading, isError } = useAccountTransactions(account.id, {
     limit,
   });
+  const { push } = useRouter();
+
   const transactions = data?.data ?? [];
 
   const getTransactionIcon = (type: 'INCOME' | 'EXPENSE') =>
@@ -142,7 +145,8 @@ export default function RecentTransactions({
           {transactions.map((transaction) => (
             <div
               key={transaction.id}
-              className="hover:bg-muted/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
+              className="hover:bg-muted/50 flex cursor-pointer items-center justify-between rounded-lg border p-3 transition-colors"
+              onClick={() => push(`/transactions/${transaction.id}`)}
             >
               <div className="flex items-center space-x-3">
                 <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">

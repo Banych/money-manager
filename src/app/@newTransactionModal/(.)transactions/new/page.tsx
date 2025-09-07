@@ -1,4 +1,4 @@
-import TransactionForm from '@/components/transactions/transaction-form';
+import TransactionForm from '@/components/transactions/create-transaction-form';
 import InterceptedModal from '@/components/ui/intercepted-modal';
 import { TransactionType } from '@/generated/prisma';
 import {

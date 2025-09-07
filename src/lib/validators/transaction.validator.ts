@@ -39,7 +39,7 @@ export const createTransactionValidator = z.object({
 
 export type CreateTransactionData = z.infer<typeof createTransactionValidator>;
 
-export const updateTransactionValidator = z.object({
+export const editTransactionValidator = z.object({
   id: z.string().cuid('Invalid transaction ID format'),
   amount: z
     .number({ invalid_type_error: 'Amount must be a number' })
@@ -63,4 +63,4 @@ export const updateTransactionValidator = z.object({
     .optional(),
 });
 
-export type UpdateTransactionData = z.infer<typeof updateTransactionValidator>;
+export type EditTransactionData = z.infer<typeof editTransactionValidator>;

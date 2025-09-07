@@ -103,6 +103,12 @@ export default async function TransactionPage({ params }: Props) {
       >
         View account
       </Link>
+      <Link
+        href={`/transactions/${transaction.id}/edit`}
+        className="text-primary text-sm underline"
+      >
+        Edit transaction
+      </Link>
     </div>
   );
 }

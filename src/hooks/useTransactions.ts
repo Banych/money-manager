@@ -4,7 +4,7 @@ import { accountsKeys } from '@/hooks/useAccounts';
 import { accountStatisticsKeys } from '@/hooks/useAccountStatistics';
 import {
   CreateTransactionData,
-  UpdateTransactionData,
+  EditTransactionData,
 } from '@/lib/validators/transaction.validator';
 import {
   QueryOptions,
@@ -214,7 +214,7 @@ export function useTransaction(id: string, enabled = true) {
 
 // Update transaction request
 async function updateTransaction(
-  data: UpdateTransactionData
+  data: EditTransactionData
 ): Promise<Transaction> {
   const { id, ...updateData } = data;
   const response = await fetch(`/api/transactions/${id}`, {

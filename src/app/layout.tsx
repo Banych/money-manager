@@ -65,10 +65,12 @@ export default function RootLayout({
   children,
   newAccountModal,
   newTransactionModal,
+  editTransactionModal,
 }: Readonly<{
   children: React.ReactNode;
   newAccountModal: React.ReactNode;
   newTransactionModal: React.ReactNode;
+  editTransactionModal: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -80,6 +82,7 @@ export default function RootLayout({
           {children}
           {newAccountModal}
           {newTransactionModal}
+          {editTransactionModal}
         </Providers>
         <Toaster position="bottom-right" />
       </body>
