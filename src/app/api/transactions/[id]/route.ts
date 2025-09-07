@@ -61,6 +61,9 @@ export async function PUT(
           category: parsed.category ?? existing.category,
           date: parsed.date ? new Date(parsed.date) : existing.date,
         },
+        include: {
+          account: { select: { id: true, name: true, currency: true } },
+        },
       });
 
       await recomputeAccountBalance(

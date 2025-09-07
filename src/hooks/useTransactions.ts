@@ -2,6 +2,7 @@ import { formatCurrency } from '@/components/accounts/account-details-data';
 import { Transaction, TransactionType } from '@/generated/prisma';
 import { accountsKeys } from '@/hooks/useAccounts';
 import { accountStatisticsKeys } from '@/hooks/useAccountStatistics';
+import { TransactionWithAccount } from '@/lib/db';
 import {
   CreateTransactionData,
   EditTransactionData,
@@ -195,7 +196,7 @@ export function useRefreshTransactions() {
 }
 
 // Get single transaction
-async function fetchTransaction(id: string): Promise<Transaction> {
+async function fetchTransaction(id: string): Promise<TransactionWithAccount> {
   const response = await fetch(`/api/transactions/${id}`);
   if (!response.ok) {
     throw new Error('Failed to fetch transaction');
@@ -203,12 +204,17 @@ async function fetchTransaction(id: string): Promise<Transaction> {
   return response.json();
 }
 
-export function useTransaction(id: string, enabled = true) {
+export function useTransaction(
+  id: string,
+  enabled = true,
+  queryInitialOptions: QueryOptions<TransactionWithAccount, Error> = {}
+) {
   return useQuery({
     queryKey: transactionsKeys.detail(id),
     queryFn: () => fetchTransaction(id),
     enabled: !!id && enabled,
     staleTime: 60_000,
+    ...queryInitialOptions,
   });
 }
 
