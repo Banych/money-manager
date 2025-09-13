@@ -25,6 +25,7 @@ const BackButton = ({
       variant={variant || 'ghost'}
       className={cn(
         'flex size-8 items-center justify-center gap-2 rounded-md p-0',
+        label && 'w-auto',
         className
       )}
       onClick={back}
