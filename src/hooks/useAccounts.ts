@@ -1,6 +1,9 @@
 import { FinancialAccount } from '@/generated/prisma';
+import { UpdateAccountData } from '@/lib/validators/account.validator';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { accountStatisticsKeys } from './useAccountStatistics';
+import { transactionsKeys } from './useTransactions';
 
 // Query keys for consistent cache management
 export const accountsKeys = {
@@ -150,5 +153,146 @@ export function useAccount(
     queryFn: () => fetchSingleAccount(id),
     staleTime: 5 * 60 * 1000, // 5 minutes
     initialData,
+  });
+}
+
+// Update account
+async function updateAccount(
+  data: UpdateAccountData
+): Promise<FinancialAccount> {
+  const { id, ...updateData } = data;
+  const response = await fetch(`/api/accounts/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updateData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to update account');
+  }
+
+  return response.json();
+}
+
+// Hook for updating accounts
+export function useUpdateAccount() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateAccount,
+    onMutate: async (data: UpdateAccountData) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({
+        queryKey: accountsKeys.detail(data.id!),
+      });
+      await queryClient.cancelQueries({ queryKey: accountsKeys.lists() });
+
+      // Snapshot the previous values
+      const previousAccount = queryClient.getQueryData<FinancialAccount>(
+        accountsKeys.detail(data.id!)
+      );
+      const previousAccounts = queryClient.getQueryData<FinancialAccount[]>(
+        accountsKeys.lists()
+      );
+
+      // Optimistically update the account detail
+      if (previousAccount) {
+        const updatedAccount = { ...previousAccount, ...data };
+        queryClient.setQueryData(accountsKeys.detail(data.id!), updatedAccount);
+      }
+
+      // Optimistically update the accounts list
+      if (previousAccounts) {
+        const updatedAccounts = previousAccounts.map((account) =>
+          account.id === data.id ? { ...account, ...data } : account
+        );
+        queryClient.setQueryData(accountsKeys.lists(), updatedAccounts);
+      }
+
+      return { previousAccount, previousAccounts };
+    },
+    onError: (error, data, context) => {
+      // Rollback on error
+      if (context?.previousAccount) {
+        queryClient.setQueryData(
+          accountsKeys.detail(data.id!),
+          context.previousAccount
+        );
+      }
+      if (context?.previousAccounts) {
+        queryClient.setQueryData(
+          accountsKeys.lists(),
+          context.previousAccounts
+        );
+      }
+
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to update account'
+      );
+    },
+    onSuccess: (updatedAccount, data) => {
+      // Update the cache with the server response
+      queryClient.setQueryData(accountsKeys.detail(data.id!), updatedAccount);
+
+      // Update the accounts list
+      queryClient.setQueryData<FinancialAccount[]>(
+        accountsKeys.lists(),
+        (oldData) => {
+          if (!oldData) return [updatedAccount];
+          return oldData.map((account) =>
+            account.id === updatedAccount.id ? updatedAccount : account
+          );
+        }
+      );
+
+      // Invalidate ALL dependent queries that rely on account data
+      const accountId = data.id!;
+
+      // 1. Invalidate account-specific queries
+      queryClient.invalidateQueries({
+        queryKey: accountsKeys.detail(accountId),
+      });
+      queryClient.invalidateQueries({ queryKey: accountsKeys.lists() });
+
+      // 2. Invalidate account statistics (balance changes affect calculations)
+      queryClient.invalidateQueries({
+        queryKey: accountStatisticsKeys.detail(accountId),
+      });
+      queryClient.invalidateQueries({ queryKey: accountStatisticsKeys.all });
+
+      // 3. Invalidate transaction queries for this account (balance may affect display)
+      queryClient.invalidateQueries({
+        queryKey: transactionsKeys.account(accountId),
+      });
+
+      // 4. Invalidate global/dashboard queries that aggregate account data
+      // These queries don't have specific keys but are often server-side rendered
+      // We invalidate based on common patterns used in dashboard components
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const key = query.queryKey;
+          return (
+            // Dashboard-related queries
+            key.includes('dashboard') ||
+            key.includes('total-balance') ||
+            key.includes('accounts-summary') ||
+            // Any query that might aggregate account data
+            (Array.isArray(key) &&
+              key.some(
+                (k) =>
+                  typeof k === 'string' &&
+                  (k.includes('account') ||
+                    k.includes('balance') ||
+                    k.includes('statistics'))
+              ))
+          );
+        },
+      });
+
+      toast.success(`Account "${updatedAccount.name}" updated successfully!`);
+    },
   });
 }

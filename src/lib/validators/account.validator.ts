@@ -29,13 +29,14 @@ export const createAccountValidator = z
 
 export const updateAccountValidator = z
   .object({
+    id: z.string().cuid('Invalid account ID format'),
     name: z
       .string()
       .min(3, 'Name must be at least 3 characters long')
       .optional(),
     balance: z.number().optional(),
     currency: z.string().optional(),
-    type: zFinancialAccountType.optional().default(FinancialAccountType.CASH),
+    type: zFinancialAccountType.optional(),
   })
   .refine(
     (data) => {
