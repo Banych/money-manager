@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const { page, limit, type, category, from, to } = parsed.data;
+    const { page, limit, type, category, search, from, to } = parsed.data;
     const currentPage = page && page > 0 ? page : 1;
     const currentLimit = limit && limit > 0 ? Math.min(limit, 100) : 20;
     const skip = (currentPage - 1) * currentLimit;
@@ -34,6 +34,14 @@ export async function GET(req: NextRequest) {
       userId: session.user.id,
       ...(type ? { type } : {}),
       ...(category ? { category } : {}),
+      ...(search
+        ? {
+            description: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          }
+        : {}),
       ...(from || to
         ? {
             date: {

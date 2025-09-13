@@ -1,0 +1,1 @@
+export const INFINITE_TRANSACTIONS_LIMIT = 10;

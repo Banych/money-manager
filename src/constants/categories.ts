@@ -1,4 +1,6 @@
-export const DEFAULT_CATEGORIES = {
+import { TransactionType } from '@/generated/prisma';
+
+export const DEFAULT_CATEGORIES: Record<TransactionType, string[]> = {
   INCOME: ['Salary', 'Freelance', 'Investment', 'Gift', 'Other'],
   EXPENSE: [
     'Food & Groceries',

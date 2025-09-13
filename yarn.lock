@@ -337,6 +337,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@mantine/hooks@^8.3.1":
+  version "8.3.1"
+  resolved "https://registry.yarnpkg.com/@mantine/hooks/-/hooks-8.3.1.tgz#d2b1f5900c9107d7cd77ef2f0a4a27f97ff64725"
+  integrity sha512-lQutBS+Q0iz/cNFvdrsYassPWo3RtWcmDGJeOtKfHigLzFOhxUuLOkQgepDbMf3WcVMB/tist6Px1PQOv57JTw==
+
 "@napi-rs/wasm-runtime@^0.2.10", "@napi-rs/wasm-runtime@^0.2.11":
   version "0.2.11"
   resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-0.2.11.tgz#192c1610e1625048089ab4e35bc0649ce478500e"
