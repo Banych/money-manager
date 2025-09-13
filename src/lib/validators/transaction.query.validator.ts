@@ -17,6 +17,7 @@ export const transactionQuerySchema = z.object({
     ),
   type: z.nativeEnum(TransactionType).optional(),
   category: z.string().min(1).optional(),
+  search: z.string().min(1).optional(),
   from: z
     .string()
     .optional()

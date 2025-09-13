@@ -1,5 +1,6 @@
 'use client';
 
+import TransactionActionMenu from '@/components/transactions/transaction-action-menu';
 import Loader from '@/components/ui/loader';
 import { formatBalance } from '@/constants/accounts';
 import { Transaction, TransactionType } from '@/generated/prisma';
@@ -74,23 +75,26 @@ const RecentTransactionsWidgetBlock: FC<RecentTransactionsWidgetBlockProps> = ({
                     {transaction.account.name}
                   </p>
                 </div>
-                <div className="ml-2 text-right">
-                  <p
-                    className={`font-semibold ${
-                      transaction.type === TransactionType.INCOME
-                        ? 'text-green-600'
-                        : 'text-red-600'
-                    }`}
-                  >
-                    {transaction.type === TransactionType.INCOME ? '+' : '-'}
-                    {formatBalance(
-                      transaction.amount,
-                      transaction.account.currency
-                    )}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {formatDateTime(transaction.date)}
-                  </p>
+                <div className="ml-2 flex items-center space-x-2">
+                  <div className="text-right">
+                    <p
+                      className={`font-semibold ${
+                        transaction.type === TransactionType.INCOME
+                          ? 'text-green-600'
+                          : 'text-red-600'
+                      }`}
+                    >
+                      {transaction.type === TransactionType.INCOME ? '+' : '-'}
+                      {formatBalance(
+                        transaction.amount,
+                        transaction.account.currency
+                      )}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {formatDateTime(transaction.date)}
+                    </p>
+                  </div>
+                  <TransactionActionMenu transaction={transaction} />
                 </div>
               </div>
             ))

@@ -25,7 +25,7 @@ export async function GET(
       );
     }
 
-    const { page, limit, type, category, from, to } = parsed.data;
+    const { page, limit, type, category, search, from, to } = parsed.data;
     const result = await getAccountTransactions({
       accountId: id,
       userId: session.user.id,
@@ -33,6 +33,7 @@ export async function GET(
       limit,
       type,
       category,
+      search,
       from,
       to,
     });

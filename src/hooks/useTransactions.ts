@@ -2,12 +2,15 @@ import { formatCurrency } from '@/components/accounts/account-details-data';
 import { Transaction, TransactionType } from '@/generated/prisma';
 import { accountsKeys } from '@/hooks/useAccounts';
 import { accountStatisticsKeys } from '@/hooks/useAccountStatistics';
+import { TransactionWithAccount } from '@/lib/db';
 import {
   CreateTransactionData,
-  UpdateTransactionData,
+  EditTransactionData,
 } from '@/lib/validators/transaction.validator';
 import {
+  DefinedInitialDataInfiniteOptions,
   QueryOptions,
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -27,12 +30,13 @@ export const transactionsKeys = {
 };
 
 export interface UseTransactionsOptions {
-  page?: number;
+  page?: number | string;
   limit?: number;
   type?: TransactionType;
   category?: string;
   from?: Date;
   to?: Date;
+  search?: string;
   enabled?: boolean;
   userId?: string;
 }
@@ -61,6 +65,7 @@ async function fetchAccountTransactions(
   if (params.limit) search.set('limit', String(params.limit));
   if (params.type) search.set('type', params.type);
   if (params.category) search.set('category', params.category);
+  if (params.search) search.set('search', params.search);
   if (params.from) search.set('from', params.from.toISOString());
   if (params.to) search.set('to', params.to.toISOString());
 
@@ -81,6 +86,7 @@ async function fetchAllTransactions(
   if (params.limit) search.set('limit', String(params.limit));
   if (params.type) search.set('type', params.type);
   if (params.category) search.set('category', params.category);
+  if (params.search) search.set('search', params.search);
   if (params.from) search.set('from', params.from.toISOString());
   if (params.to) search.set('to', params.to.toISOString());
 
@@ -107,7 +113,7 @@ export function useAccountTransactions(
     } as Record<string, unknown>),
     queryFn: () => fetchAccountTransactions(accountId, options),
     enabled: !!accountId && (options.enabled ?? true),
-    staleTime: 60_000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 
@@ -127,7 +133,31 @@ export function useAllTransactions(
     } as Record<string, unknown>),
     queryFn: () => fetchAllTransactions(options),
     enabled: options.enabled ?? true,
-    staleTime: 60_000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    ...queryInitialOptions,
+  });
+}
+
+export function useInfiniteAllTransactions(
+  options: UseTransactionsOptions = {},
+  queryInitialOptions: Omit<
+    DefinedInitialDataInfiniteOptions<TransactionsListResponse, Error>,
+    'queryKey'
+  >
+) {
+  return useInfiniteQuery({
+    queryKey: transactionsKeys.globalList({
+      limit: options.limit,
+      type: options.type,
+      category: options.category,
+      from: options.from?.toISOString(),
+      to: options.to?.toISOString(),
+      userId: options.userId,
+    } as Record<string, unknown>),
+    queryFn: ({ pageParam = 1 }) =>
+      fetchAllTransactions({ ...options, page: String(pageParam) }),
+    enabled: options.enabled ?? true,
+    staleTime: 5 * 60 * 1000, // 5 minutes
     ...queryInitialOptions,
   });
 }
@@ -195,7 +225,7 @@ export function useRefreshTransactions() {
 }
 
 // Get single transaction
-async function fetchTransaction(id: string): Promise<Transaction> {
+async function fetchTransaction(id: string): Promise<TransactionWithAccount> {
   const response = await fetch(`/api/transactions/${id}`);
   if (!response.ok) {
     throw new Error('Failed to fetch transaction');
@@ -203,18 +233,23 @@ async function fetchTransaction(id: string): Promise<Transaction> {
   return response.json();
 }
 
-export function useTransaction(id: string, enabled = true) {
+export function useTransaction(
+  id: string,
+  enabled = true,
+  queryInitialOptions: QueryOptions<TransactionWithAccount, Error> = {}
+) {
   return useQuery({
     queryKey: transactionsKeys.detail(id),
     queryFn: () => fetchTransaction(id),
     enabled: !!id && enabled,
-    staleTime: 60_000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    ...queryInitialOptions,
   });
 }
 
 // Update transaction request
 async function updateTransaction(
-  data: UpdateTransactionData
+  data: EditTransactionData
 ): Promise<Transaction> {
   const { id, ...updateData } = data;
   const response = await fetch(`/api/transactions/${id}`, {

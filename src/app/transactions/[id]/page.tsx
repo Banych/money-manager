@@ -1,6 +1,11 @@
+import BackButton from '@/components/back-button';
+import DeleteTransactionButton from '@/components/transactions/delete-transaction-button';
+import TransactionDetails from '@/components/transactions/transaction-details';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAuthSession } from '@/lib/auth';
-import { formatDateTime } from '@/lib/date';
 import { db } from '@/lib/db';
+import { Edit2, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
@@ -24,6 +29,7 @@ export default async function TransactionPage({ params }: Props) {
     include: {
       account: {
         select: {
+          id: true,
           name: true,
           currency: true,
         },
@@ -33,76 +39,70 @@ export default async function TransactionPage({ params }: Props) {
 
   if (!transaction) {
     return (
-      <div className="space-y-4 p-6">
-        <h1 className="text-2xl font-semibold">Transaction</h1>
-        <p className="text-muted-foreground text-sm">Transaction not found.</p>
-        <Link
-          href="/accounts"
-          className="text-primary text-sm underline"
-        >
-          Back to accounts
-        </Link>
+      <div className="container mx-auto max-w-4xl p-6">
+        <BackButton />
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Transaction Not Found</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              The transaction you&apos;re looking for doesn&apos;t exist or you
+              don&apos;t have permission to view it.
+            </p>
+            <Button asChild>
+              <Link href="/accounts">
+                <Wallet className="mr-2 h-4 w-4" />
+                Back to Accounts
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="mb-1 text-2xl font-semibold">Transaction Detail</h1>
-        <p className="text-muted-foreground text-sm">
-          Created {formatDateTime(transaction.createdAt)}
-        </p>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-lg border p-4">
-          <div className="text-muted-foreground mb-1 text-xs uppercase">
-            Amount
+    <div className="container mx-auto max-w-4xl space-y-6 p-6">
+      <BackButton label="Return back" />
+
+      <TransactionDetails initialTransaction={transaction} />
+
+      {/* Actions Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+            {/* Primary Actions */}
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+              >
+                <Link href={`/accounts/${transaction.accountId}`}>
+                  <Wallet className="mr-2 h-4 w-4" />
+                  View Account
+                </Link>
+              </Button>
+
+              <Button
+                asChild
+                size="sm"
+              >
+                <Link href={`/transactions/${transaction.id}/edit`}>
+                  <Edit2 className="mr-2 h-4 w-4" />
+                  Edit Transaction
+                </Link>
+              </Button>
+
+              <DeleteTransactionButton transactionId={transaction.id} />
+            </div>
           </div>
-          <div
-            className={
-              transaction.type === 'INCOME'
-                ? 'font-semibold text-green-600'
-                : 'font-semibold text-red-600'
-            }
-          >
-            {transaction.type === 'INCOME' ? '+' : '-'}
-            {transaction.amount.toFixed(2)} {transaction.account.currency}
-          </div>
-        </div>
-        <div className="rounded-lg border p-4">
-          <div className="text-muted-foreground mb-1 text-xs uppercase">
-            Type
-          </div>
-          <div className="font-semibold">{transaction.type}</div>
-        </div>
-        <div className="rounded-lg border p-4">
-          <div className="text-muted-foreground mb-1 text-xs uppercase">
-            Category
-          </div>
-          <div className="font-semibold">{transaction.category || '—'}</div>
-        </div>
-        <div className="rounded-lg border p-4">
-          <div className="text-muted-foreground mb-1 text-xs uppercase">
-            Date
-          </div>
-          <div className="font-semibold">
-            {formatDateTime(transaction.date)}
-          </div>
-        </div>
-        <div className="rounded-lg border p-4 md:col-span-2 lg:col-span-3">
-          <div className="text-muted-foreground mb-1 text-xs uppercase">
-            Description
-          </div>
-          <div className="font-semibold">{transaction.description || '—'}</div>
-        </div>
-      </div>
-      <Link
-        href={`/accounts/${transaction.accountId}`}
-        className="text-primary text-sm underline"
-      >
-        View account
-      </Link>
+        </CardContent>
+      </Card>
     </div>
   );
 }

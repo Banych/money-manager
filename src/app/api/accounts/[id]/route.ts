@@ -31,6 +31,7 @@ export async function GET(
   } catch (error) {
     // Log error for debugging in development/staging
     if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
       console.error('Error fetching account:', error);
     }
     return NextResponse.json(
@@ -64,38 +65,79 @@ export async function PUT(
       return NextResponse.json({ error: 'Account not found' }, { status: 404 });
     }
 
-    const body = await request.json();
-    const { balance, currency, name, type } =
-      updateAccountValidator.parse(body);
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid JSON in request body' },
+        { status: 400 }
+      );
+    }
+
+    // Validate request body with proper error handling
+    let validatedData;
+    try {
+      // Add the ID from URL params to the body for validation
+      const bodyWithId = { ...body, id };
+      validatedData = updateAccountValidator.parse(bodyWithId);
+    } catch (validationError) {
+      return NextResponse.json(
+        {
+          error: 'Invalid data provided',
+          details:
+            validationError instanceof Error
+              ? validationError.message
+              : 'Validation failed',
+        },
+        { status: 400 }
+      );
+    }
+
+    const { balance, currency, name, type } = validatedData;
+
+    // Build update data object with only provided fields
+    const updateData: Record<string, unknown> = {};
+    if (name !== undefined) updateData.name = name;
+    if (balance !== undefined) updateData.balance = balance;
+    if (currency !== undefined) updateData.currency = currency;
+    if (type !== undefined) updateData.type = type;
 
     const account = await db.financialAccount.update({
       where: {
         id,
         userId: session.user.id,
       },
-      data: {
-        name,
-        balance,
-        currency,
-        type,
-      },
+      data: updateData,
     });
-
-    if (!account) {
-      return NextResponse.json(
-        { error: 'Failed to update account' },
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(account, { status: 200 });
   } catch (error) {
     // Log error for debugging in development/staging
     if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
       console.error('Error updating account:', error);
     }
+
+    // Handle specific database errors
+    if (error instanceof Error) {
+      if (error.message.includes('Unique constraint')) {
+        return NextResponse.json(
+          { error: 'Account name already exists' },
+          { status: 409 }
+        );
+      }
+
+      if (error.message.includes('Foreign key constraint')) {
+        return NextResponse.json(
+          { error: 'Invalid data references' },
+          { status: 400 }
+        );
+      }
+    }
+
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Failed to update account' },
       { status: 500 }
     );
   }

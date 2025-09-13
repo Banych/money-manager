@@ -1,7 +1,7 @@
 import { getAuthSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { recomputeAccountBalance } from '@/lib/transactions/balance';
-import { updateTransactionValidator } from '@/lib/validators/transaction.validator';
+import { editTransactionValidator } from '@/lib/validators/transaction.validator';
 import { NextRequest, NextResponse } from 'next/server';
 import { ZodError } from 'zod';
 
@@ -42,7 +42,7 @@ export async function PUT(
     }
 
     const body = await req.json();
-    const parsed = updateTransactionValidator.parse({ id, ...body });
+    const parsed = editTransactionValidator.parse({ id, ...body });
 
     const result = await db.$transaction(async (prisma) => {
       const existing = await prisma.transaction.findFirst({
@@ -60,6 +60,9 @@ export async function PUT(
           type: parsed.type ?? existing.type,
           category: parsed.category ?? existing.category,
           date: parsed.date ? new Date(parsed.date) : existing.date,
+        },
+        include: {
+          account: { select: { id: true, name: true, currency: true } },
         },
       });
 

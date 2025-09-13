@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { DEFAULT_CATEGORIES } from '@/constants/categories';
 import { TransactionType } from '@/generated/prisma';
 import { useAccounts } from '@/hooks/useAccounts';
 import { useCreateTransaction } from '@/hooks/useTransactions';
@@ -33,20 +34,6 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-
-const DEFAULT_CATEGORIES = {
-  INCOME: ['Salary', 'Freelance', 'Investment', 'Gift', 'Other'],
-  EXPENSE: [
-    'Food & Groceries',
-    'Transportation',
-    'Entertainment',
-    'Bills & Utilities',
-    'Shopping',
-    'Healthcare',
-    'Education',
-    'Other',
-  ],
-};
 
 type TransactionFormProps = {
   defaultType?: TransactionType;

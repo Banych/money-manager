@@ -12,10 +12,6 @@ interface AccountActionsProps {
 }
 
 export default function AccountActions({ account }: AccountActionsProps) {
-  const handleEditAccount = () => {
-    // TODO: Implement edit account functionality
-  };
-
   const handleAccountSettings = () => {
     // TODO: Implement account settings functionality
   };
@@ -86,12 +82,14 @@ export default function AccountActions({ account }: AccountActionsProps) {
           </h3>
           <div className="space-y-2">
             <Button
-              onClick={handleEditAccount}
+              asChild
               className="w-full justify-start"
               variant="outline"
             >
-              <Edit3 className="mr-2 h-4 w-4" />
-              Edit Account Details
+              <Link href={`/accounts/${account.id}/edit`}>
+                <Edit3 className="mr-2 h-4 w-4" />
+                Edit Account Details
+              </Link>
             </Button>
 
             <Button

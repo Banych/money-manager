@@ -1,13 +1,15 @@
 'use client';
 
+import TransactionListItem from '@/components/transactions/transaction-list-item';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import EmptyState from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FinancialAccount, TransactionType } from '@/generated/prisma';
+import { FinancialAccount } from '@/generated/prisma';
 import { useAccountTransactions } from '@/hooks/useTransactions';
-import { cn } from '@/lib/utils';
-import { ArrowDownIcon, ArrowUpIcon, ShoppingBag } from 'lucide-react';
-import { formatCurrency, formatTransactionDate } from './account-details-data';
+import { ShoppingBag } from 'lucide-react';
+import Link from 'next/link';
 
 interface RecentTransactionsProps {
   account: FinancialAccount;
@@ -21,33 +23,8 @@ export default function RecentTransactions({
   const { data, isLoading, isError } = useAccountTransactions(account.id, {
     limit,
   });
+
   const transactions = data?.data ?? [];
-
-  const getTransactionIcon = (type: 'INCOME' | 'EXPENSE') =>
-    type === 'INCOME' ? (
-      <ArrowUpIcon className="h-4 w-4 text-green-600" />
-    ) : (
-      <ArrowDownIcon className="h-4 w-4 text-red-600" />
-    );
-
-  const getCategoryColor = (category?: string) => {
-    if (!category) return 'bg-gray-100 text-gray-800';
-
-    const colorMap: Record<string, string> = {
-      'Food & Dining': 'bg-orange-100 text-orange-800',
-      Transportation: 'bg-blue-100 text-blue-800',
-      Shopping: 'bg-purple-100 text-purple-800',
-      Entertainment: 'bg-pink-100 text-pink-800',
-      'Bills & Utilities': 'bg-yellow-100 text-yellow-800',
-      Income: 'bg-green-100 text-green-800',
-      Healthcare: 'bg-red-100 text-red-800',
-      Travel: 'bg-indigo-100 text-indigo-800',
-      Education: 'bg-cyan-100 text-cyan-800',
-      'Personal Care': 'bg-emerald-100 text-emerald-800',
-    };
-
-    return colorMap[category] || 'bg-gray-100 text-gray-800';
-  };
 
   if (isLoading) {
     return (
@@ -107,15 +84,11 @@ export default function RecentTransactions({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="py-8 text-center">
-            <ShoppingBag className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-            <h3 className="mb-2 text-lg font-medium text-gray-900">
-              No transactions yet
-            </h3>
-            <p className="text-gray-500">
-              Transactions will appear here once you start using this account.
-            </p>
-          </div>
+          <EmptyState
+            icon={<ShoppingBag className="h-12 w-12" />}
+            title="No transactions yet"
+            description="Transactions will appear here once you start using this account."
+          />
         </CardContent>
       </Card>
     );
@@ -138,64 +111,28 @@ export default function RecentTransactions({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
+        <ul className="list-none space-y-3">
           {transactions.map((transaction) => (
-            <div
+            <TransactionListItem
               key={transaction.id}
-              className="hover:bg-muted/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                  {getTransactionIcon(transaction.type)}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">
-                    {transaction.description || '—'}
-                  </p>
-                  <div className="mt-1 flex items-center space-x-2">
-                    <p className="text-muted-foreground text-sm">
-                      {formatTransactionDate(transaction.date)}
-                    </p>
-                    {transaction.category && (
-                      <Badge
-                        variant="secondary"
-                        className={cn(
-                          'text-xs',
-                          getCategoryColor(transaction.category)
-                        )}
-                      >
-                        {transaction.category}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="text-right">
-                <p
-                  className={cn(
-                    'font-bold',
-                    transaction.type === TransactionType.INCOME
-                      ? 'text-green-600'
-                      : 'text-red-600'
-                  )}
-                >
-                  {formatCurrency(transaction.amount, account.currency)}
-                </p>
-                <p className="text-muted-foreground text-xs">
-                  {transaction.type === TransactionType.INCOME
-                    ? 'Credit'
-                    : 'Debit'}
-                </p>
-              </div>
-            </div>
+              transaction={transaction}
+              showAccount={false}
+              account={{
+                name: account.name,
+                currency: account.currency,
+              }}
+            />
           ))}
-        </div>
+        </ul>
 
         {transactions.length >= limit && (
           <div className="mt-4 text-center">
-            <button className="text-primary text-sm hover:underline">
-              View all transactions
-            </button>
+            <Button
+              asChild
+              variant="link"
+            >
+              <Link href="/transactions">View all transactions</Link>
+            </Button>
           </div>
         )}
       </CardContent>
