@@ -88,7 +88,7 @@ export default function TransactionFilters({
         {/* Categories in types filter */}
         <div>
           <label className="mb-2 block text-sm font-medium">
-            Types&Categories
+            Types & Categories
           </label>
           <Select
             value={category ? category : type ? `all-${type}` : 'all'}

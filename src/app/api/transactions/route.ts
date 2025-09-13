@@ -79,7 +79,9 @@ export async function GET(req: NextRequest) {
       limit: currentLimit,
       pages: Math.ceil(total / currentLimit) || 1,
     });
-  } catch {
+  } catch (error) {
+    // Log the error for debugging purposes
+    console.error('Error fetching transactions:', error);
     return NextResponse.json(
       { error: 'Failed to fetch transactions' },
       { status: 500 }

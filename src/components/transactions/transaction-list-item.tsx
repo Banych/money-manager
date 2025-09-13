@@ -71,7 +71,24 @@ const TransactionListItem = forwardRef<HTMLLIElement, TransactionListItemProps>(
     };
 
     if (!displayAccount) {
-      return null;
+      // Render a placeholder skeleton or empty list item for consistent layout
+      return (
+        <li
+          ref={ref}
+          className={cn(
+            'hover:bg-muted/50 rounded-lg border p-3 transition-colors sm:p-4',
+            className
+          )}
+        >
+          <div className="flex animate-pulse items-center space-x-4">
+            <div className="bg-muted h-10 w-10 rounded-full sm:h-12 sm:w-12" />
+            <div className="flex-1 space-y-2 py-1">
+              <div className="bg-muted h-4 w-3/4 rounded" />
+              <div className="bg-muted h-3 w-1/2 rounded" />
+            </div>
+          </div>
+        </li>
+      );
     }
 
     return (

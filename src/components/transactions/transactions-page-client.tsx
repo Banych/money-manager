@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import EmptyState from '@/components/ui/empty-state';
-import { INFINITE_TRANSACTIONS_LIMIT } from '@/constants/transactions';
 import { TransactionType } from '@/generated/prisma';
 import { useInfiniteAllTransactions } from '@/hooks/useTransactions';
 import { TransactionListResult } from '@/lib/queries/transactions';
@@ -67,7 +66,8 @@ const TransactionsPageClient = ({
           pageParams: [1],
         },
         getNextPageParam: (lastPage, pages, lastPageParam) => {
-          if (lastPage.page < INFINITE_TRANSACTIONS_LIMIT) {
+          // If the number of items returned is less than the limit, there are no more pages
+          if (lastPage.data.length < limit) {
             return undefined;
           }
           return Number(lastPageParam) + 1;

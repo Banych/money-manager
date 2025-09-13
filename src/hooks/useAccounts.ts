@@ -186,7 +186,7 @@ export function useUpdateAccount() {
     onMutate: async (data: UpdateAccountData) => {
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({
-        queryKey: accountsKeys.detail(data.id!),
+        queryKey: accountsKeys.detail(data.id),
       });
       await queryClient.cancelQueries({ queryKey: accountsKeys.lists() });
 
