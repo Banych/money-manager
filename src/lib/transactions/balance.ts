@@ -3,7 +3,7 @@ import {
   PrismaClient,
   Transaction,
   TransactionType,
-} from '@/generated/prisma';
+} from '@/generated/prisma/client';
 
 /**
  * Recompute an account's balance and lastActivity from all its transactions.

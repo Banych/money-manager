@@ -1,0 +1,2 @@
+-- This migration was intentionally left empty.
+-- Transaction indexes were added in 20250815152640_add_transaction_composite_indexes.
