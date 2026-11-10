@@ -68,11 +68,14 @@ RSC request and stayed on `/auth/signin`. Server log showed no errors.
 - **Pre-existing, Critical (branch security review):** the sign-in page
   pushes its `callbackUrl` query parameter into the router unchecked when the
   visitor is already signed in (`src/app/auth/signin/page.tsx:22,27`). A
-  link with `callbackUrl=https://evil.example` redirects off-site, and
-  `callbackUrl=javascript:…` probably runs script in the app's origin.
-  Verified offline against Next's router logic, not run in a browser. Details:
+  link with `callbackUrl=https://evil.example` redirects off-site (verified
+  offline against Next's router logic, not run in a browser), and
+  `callbackUrl=javascript:…` probably runs script in the app's origin
+  (suspected, not run). Details:
   `.superpowers/sdd/2026-11-10-auth-guards/final-security-review.md`.
-- **Pre-existing, Minor:** guards check `session.user`, not
-  `session.user.id`; a session without `id` would make Prisma's
-  `userId: undefined` filter match every user's rows. Not reachable with
-  tokens the app issues today.
+- **Pre-existing, high impact if reached:** guards check `session.user`,
+  not `session.user.id`; a session without `id` would make Prisma's
+  `userId: undefined` filter match every user's rows. No path to a token
+  without `id` is known (the `jwt` callback always sets it and the token is
+  encrypted); the security review rated it Minor, the silent-failure hunt
+  High with reachability uncertain.

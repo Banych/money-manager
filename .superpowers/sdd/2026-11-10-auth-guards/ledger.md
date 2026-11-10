@@ -117,3 +117,30 @@ new; HEAD `0487258` unchanged; `ledger.md` untouched.
 | Production catch blocks don't log (hunt P2), sign-in errors swallowed (P4), bare `catch {}` in metadata (P5), modal error boundary (P6), 404-for-any-error (P7), no `error.tsx` (P8), bare "Unauthorized" toast on `/new` forms (P3) | Pre-existing, out of scope; left in `final-silent-failure-hunt.md`                                                                                                                                                                              | Silent 500s in production stay invisible                               |
 | CLAUDE.md re-adding-middleware lines duplicate `docs/auth.md` (simplification)                                                                                                                                                       | Not applied: the line is the code map's warning that a root `middleware.ts` is never compiled                                                                                                                                                   | None                                                                   |
 | Shared `requireSession()` helper (simplification, out of scope)                                                                                                                                                                      | Not applied: touches pages outside the range; revisit with the `userId` hardening                                                                                                                                                               | None                                                                   |
+
+### Fix-wave re-review (`0487258..b9a0768`)
+
+`task-reviewer-capable`: APPROVED, 6 Minor; tamper check clean (status
+empty, HEAD `b9a0768` before and after). All six fixed in the same round:
+
+- Missing-`id` check: the progress log now gives both ratings (security
+  Minor, hunt High with reachability uncertain) instead of "not reachable".
+  The Rulings row stands; its "unreachable today" means no known path.
+- API handler count corrected to 12 in `final-whole-branch-review.md`
+  (the agent's handback said 11; the original handbacks were not saved).
+- `final-simplification.md` "six `.tsx` edits" corrected to five.
+- Clarification of the Reports paragraph: the tamper check ran before the
+  whole-branch report was saved, so three files were new then (the two
+  plugin-written reports and the main session's security-report save);
+  the fourth, `final-whole-branch-review.md`, was saved afterwards.
+- Progress log now splits verified (off-site redirect, offline) from
+  suspected (`javascript:` execution). The Rulings row "Fix … no change"
+  for the third Task 2 note means "recorded here; no doc change needed".
+- Added ruling: shared loader for each edit page and its modal twin
+  (simplification, out of scope): not applied, touches pages and modals
+  outside the range's purpose; low value.
+
+The browser run from `/auth/signin` has no saved raw output: it is the
+first `javascript_exec` result of the Task 1 verification in this
+session's transcript (`accounts`/`transactions` each `rsc: 1`, `href`
+`/auth/signin`, `session: {}`).

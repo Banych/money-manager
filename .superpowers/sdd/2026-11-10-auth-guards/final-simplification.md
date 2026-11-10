@@ -4,7 +4,8 @@ Report only; nothing applied.
 
 ## Verdict
 
-No code simplification proposed. The six `.tsx` edits are the minimum
+No code simplification proposed. The five `.tsx` edits (the agent wrote "six"; corrected by the
+fix-wave re-review against `git diff --stat`) are the minimum
 (import swap + one line) and match the existing `redirect('/auth/signin')`
 guards in `src/app/accounts/page.tsx` and `src/app/transactions/[id]/page.tsx`
 (no stray `return`, same form). The `middleware.ts` deletion leaves no

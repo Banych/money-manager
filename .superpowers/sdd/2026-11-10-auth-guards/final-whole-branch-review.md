@@ -25,7 +25,8 @@ APPROVED. No Critical or Important findings.
 
 - Nothing relies on the deleted middleware, `forbidden()` or
   `unauthorized()` (grep over `src`, `next.config.*`, `package.json`: no
-  match). Every API handler (6 files, 11 methods, excluding next-auth's)
+  match). Every API handler (6 files, 12 methods, excluding next-auth's; the
+  agent's handback said 11, corrected by the fix-wave re-review's count)
   returns 401 itself.
 - Modal slots: `routes-manifest.json` rewrites `/accounts/:id/edit` and
   `/transactions/:id/edit` to the `(.)` routes when `next-url` is present;
