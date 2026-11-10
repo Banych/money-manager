@@ -52,7 +52,13 @@ const EditAccountForm: FC<EditAccountFormProps> = ({ initialAccount }) => {
   });
 
   const onSubmit = (data: UpdateAccountData) => {
-    updateAccount(data, {
+    // Send balance only when the user changed it: a submitted balance resets
+    // the account to that amount, and the value shown may be stale.
+    const { balance, ...rest } = data;
+    const payload: UpdateAccountData = form.formState.dirtyFields.balance
+      ? { ...rest, balance }
+      : rest;
+    updateAccount(payload, {
       onSuccess: () => {
         modal?.onClose();
       },

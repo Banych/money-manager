@@ -64,18 +64,20 @@ model Account {
 }
 
 model FinancialAccount {
-  id           String               @id @default(cuid())
-  userId       String
-  user         User                 @relation(fields: [userId], references: [id])
-  name         String
-  balance      Float                @default(0)
-  currency     String               @default("EUR")
-  type         FinancialAccountType @default(CASH)
+  id             String               @id @default(cuid())
+  userId         String
+  user           User                 @relation(fields: [userId], references: [id])
+  name           String
+  balance        Float                @default(0)
+  // Amount held before any recorded transaction; balance = openingBalance + income - expense
+  openingBalance Float                @default(0)
+  currency       String               @default("EUR")
+  type           FinancialAccountType @default(CASH)
   // lastActivity defaults to creation timestamp (now) so new accounts show immediate activity
-  lastActivity DateTime?            @default(now())
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
-  Transaction  Transaction[]
+  lastActivity   DateTime?            @default(now())
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  Transaction    Transaction[]
 }
 
 model Session {
