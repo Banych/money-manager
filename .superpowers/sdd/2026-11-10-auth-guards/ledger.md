@@ -67,3 +67,20 @@ Also: a server run with a different `NEXTAUTH_SECRET` would clear a
 browser's session cookie on its next `/api/auth/session` call (next-auth
 v4 cleans undecodable session cookies); use `127.0.0.1` for signed-out
 browser checks instead.
+
+## Task 2: docs (done 2026-11-10)
+
+Implementer: `implementer`, commit `ee6beda` (`CLAUDE.md` code map,
+`docs/auth.md`, `docs/folder-structure.md` entry removed, new
+`docs/progress/2026-11-10-auth-guards-session.md`, `docs/progress/README.md`
+index and naming convention). Controller re-ran acceptance: `yarn
+format:check` exit 0; the `forbidden\|not compiled` grep over CLAUDE.md,
+`docs/auth.md`, `docs/folder-structure.md` exit 1 (no output).
+
+Review: `task-reviewer`, APPROVED, no Critical/Important; three Minor
+notes, none needing a change (the older 2026-11-10 session log keeps its
+dated statements; `docs/architecture.md` mentions middleware generically).
+Tamper check clean (status empty, HEAD `ee6beda` before and after).
+
+Next: end-of-branch passes (whole-branch review plus security review, as
+the range touches auth guards), after Vlad's go-ahead.
