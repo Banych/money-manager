@@ -5,7 +5,8 @@
 - Uses NextAuth.js with Prisma Adapter for authentication.
 - Supports Google OAuth (or Credentials provider).
 - JWT strategy with custom callbacks to include user id, role, name, email, image in session.
-- Middleware restricts access to authenticated routes.
+- Each API route and server page checks the session itself; the middleware
+  file is not active (see "Route Protection" below).
 - Roles: OWNER, PARTNER, USER.
 
 ## NextAuth.js Configuration
@@ -108,40 +109,23 @@ declare module 'next-auth/jwt' {
 }
 ```
 
-## Middleware Protection
+## Route Protection
 
-The middleware protects all application routes except for authentication, API routes, and static assets:
+Protection is done per route, with `getAuthSession()` from `src/lib/auth.ts`:
 
-```typescript
-// middleware.ts
-import { withAuth } from 'next-auth/middleware';
+- Every API route handler under `src/app/api/` returns
+  `401 {"error":"Unauthorized"}` when there is no session.
+- Server pages either `redirect()` (for example `/accounts` to `/auth/signin`,
+  `/dashboard` to `/`) or call `forbidden()` (`/transactions`, which currently
+  answers 500 because `experimental.authInterrupts` is not enabled).
 
-export default withAuth({
-  pages: {
-    signIn: '/auth/signin',
-  },
-});
-
-export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     */
-    '/((?!api|auth|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
-  ],
-};
-```
-
-This configuration ensures that:
-
-- All pages require authentication by default
-- Authentication routes (`/auth/*`) are accessible to unauthenticated users
-- API routes are handled separately (can implement their own auth checks)
-- Static assets and metadata files are publicly accessible
+`middleware.ts` at the repository root (`withAuth`, matchers
+`/accounts/:path*` and `/api/accounts/:path*`) is **not compiled**: the app
+lives under `src/app`, and Next only picks up middleware placed beside the
+`app` directory, i.e. `src/middleware.ts`. The build's
+`.next/server/middleware-manifest.json` is empty, and no `Middleware` line
+appears in the route table. Verified 2026-11-10 on Next 15.3.3 and 15.5.29;
+see `docs/progress/2026-11-10-session.md`.
 
 ## Accessing Session
 
