@@ -24,3 +24,4 @@ This directory contains chronological session/sprint logs capturing project stat
 ### Index
 
 - 2025-08-15 – Initial comprehensive status review (`2025-08-15-session.md`).
+- 2026-11-10 – Next.js security patch to 15.5.29, before/after checks (`2026-11-10-session.md`).
