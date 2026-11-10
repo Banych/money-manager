@@ -36,11 +36,15 @@ export async function getAccountNetTransactions(
 }
 
 /**
- * Lock the account row (SELECT ... FOR UPDATE) and return its openingBalance,
- * or null when the account does not exist or belongs to someone else.
- * Every write that derives balance or openingBalance from the transaction sums
- * calls this first, inside a Prisma transaction, so two such writes on one
- * account run one after the other and each reads the other's committed result.
+ * Lock the account row and return its openingBalance, or null when the account
+ * does not exist or belongs to someone else. Every write that derives balance
+ * or openingBalance from the transaction sums calls this first, inside a Prisma
+ * transaction, so two such writes on one account run one after the other and
+ * each reads the other's committed result.
+ *
+ * FOR NO KEY UPDATE, not FOR UPDATE: inserting a transaction takes FOR KEY
+ * SHARE on the account row through the foreign key, and FOR UPDATE conflicts
+ * with it, so two concurrent transaction creates deadlocked (Postgres 40P01).
  */
 export async function lockAccountForBalanceWrite(
   prisma: PrismaClient | Prisma.TransactionClient,
@@ -51,7 +55,7 @@ export async function lockAccountForBalanceWrite(
     { id: string; openingBalance: number }[]
   >`SELECT "id", "openingBalance" FROM "FinancialAccount"
     WHERE "id" = ${accountId} AND "userId" = ${userId}
-    FOR UPDATE`;
+    FOR NO KEY UPDATE`;
   return rows[0] ?? null;
 }
 
