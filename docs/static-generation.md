@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the static generation strategy for the Money Manager application using Next.js 15.3.3. Static generation improves performance by pre-rendering pages at build time and serving them from CDN.
+This document outlines the static generation strategy for the Money Manager application using Next.js 15.5. Static generation improves performance by pre-rendering pages at build time and serving them from CDN.
 
 ## Current Static Pages
 
@@ -99,9 +99,9 @@ export const revalidate = 86400; // Revalidate daily for content updates
 
 ## Technical Implementation
 
-### Next.js 15.3.3 Compliance ✅
+### Next.js 15.5 Compliance ✅
 
-Our static generation implementation is fully compliant with Next.js 15.3.3:
+Our static generation implementation is fully compliant with Next.js 15.5:
 
 ```tsx
 // ✅ CORRECT - Current implementation

@@ -47,7 +47,7 @@ This configuration provides:
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2",
     "eslint": "^9.25.1",
-    "eslint-config-next": "^15.3.1",
+    "eslint-config-next": "15.5.29",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-react": "^7.37.5",
     "husky": "^9.1.7",
@@ -316,7 +316,9 @@ yarn lint-staged
 
 ### Script Explanations
 
-- **lint**: Runs ESLint on the project
+- **lint**: Runs ESLint on the project. `next lint` is deprecated since
+  Next.js 15.5 and removed in 16; switch `lint` and `lint:fix` to `eslint .`
+  before upgrading to 16.
 - **lint:fix**: Runs ESLint and automatically fixes issues
 - **format**: Formats all files with Prettier
 - **format:check**: Checks if files are formatted correctly
