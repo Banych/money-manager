@@ -18,7 +18,7 @@
   prisma.ts            # Prisma client setup
   auth.ts              # Auth helpers (e.g., getServerSession)
   ocr.ts               # OCR API wrapper
-/middleware.ts         # Middleware for route protection
+/middleware.ts         # Not compiled here: with src/app it must be src/middleware.ts (see auth.md)
 /prisma
   schema.prisma        # Prisma schema
 /public                # Static files
