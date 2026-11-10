@@ -27,3 +27,4 @@ This directory contains chronological session/sprint logs capturing project stat
 - 2026-11-10 – Next.js security patch to 15.5.29, before/after checks (`2026-11-10-session.md`).
 - 2026-11-10 – Account opening balance kept on recompute (`2026-11-10-session.md`).
 - 2026-11-10 – Per-route auth guards, root middleware removed, curl and browser checks (`2026-11-10-auth-guards-session.md`).
+- 2026-11-10 – Sign-in `callbackUrl` open redirect and `javascript:` XSS fixed and missing `user.id` treated as signed out (`2026-11-10-signin-callback-url-session.md`).

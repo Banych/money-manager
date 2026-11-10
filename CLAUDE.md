@@ -17,7 +17,12 @@ Paths are relative to the repository root.
 
 - `src/lib/auth.ts`: `authConfig` (Google provider, reads `GOOGLE_CLIENT_*`)
   and `getAuthSession()`, the one session helper → `src/app/api/auth/[...nextauth]/route.ts`
-  → sign-in page `src/app/auth/signin/page.tsx`.
+  → sign-in page `src/app/auth/signin/page.tsx`. `getAuthSession()` returns
+  `null` for a session without `user.id`, because owner filters use it and
+  Prisma reads `userId: undefined` as no filter.
+- Redirect targets from user input go through `toSafeCallbackPath()`
+  (`src/lib/callback-url.ts`), which keeps only same-origin paths; the sign-in
+  page uses it for `callbackUrl`.
 - Protection is per route, by decision, with no middleware
   (`docs/superpowers/specs/2026-11-10-auth-guards-design.md`): every
   `src/app/api/**/route.ts` calls `getAuthSession()` and returns 401 itself;

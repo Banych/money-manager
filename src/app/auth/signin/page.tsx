@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { toSafeCallbackPath } from '@/lib/callback-url';
 import { Shield, Users, Wallet } from 'lucide-react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -19,19 +20,21 @@ function SignInContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const rawCallbackUrl = searchParams.get('callbackUrl');
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
-      router.push(callbackUrl);
+      router.push(toSafeCallbackPath(rawCallbackUrl, window.location.origin));
     }
-  }, [status, session, router, callbackUrl]);
+  }, [status, session, router, rawCallbackUrl]);
 
   const handleSignIn = async () => {
     setIsSigningIn(true);
     try {
-      await signIn('google', { callbackUrl });
+      await signIn('google', {
+        callbackUrl: toSafeCallbackPath(rawCallbackUrl, window.location.origin),
+      });
     } catch (error) {
       setIsSigningIn(false);
       // Log error for debugging in development/staging
