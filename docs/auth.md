@@ -5,8 +5,8 @@
 - Uses NextAuth.js with Prisma Adapter for authentication.
 - Supports Google OAuth (or Credentials provider).
 - JWT strategy with custom callbacks to include user id, role, name, email, image in session.
-- Each API route and server page checks the session itself; the middleware
-  file is not active (see "Route Protection" below).
+- Each API route and server page checks the session itself; there is no
+  middleware, by decision (see "Route Protection" below).
 - Roles: OWNER, PARTNER, USER.
 
 ## NextAuth.js Configuration
@@ -113,19 +113,34 @@ declare module 'next-auth/jwt' {
 
 Protection is done per route, with `getAuthSession()` from `src/lib/auth.ts`:
 
-- Every API route handler under `src/app/api/` returns
-  `401 {"error":"Unauthorized"}` when there is no session.
-- Server pages either `redirect()` (for example `/accounts` to `/auth/signin`,
-  `/dashboard` to `/`) or call `forbidden()` (`/transactions`, which currently
-  answers 500 because `experimental.authInterrupts` is not enabled).
+- Every API route handler under `src/app/api/` (except next-auth's own
+  handler) returns `401 {"error":"Unauthorized"}` when there is no session.
+- Server pages, for a signed-out visitor:
+  - `/accounts`, `/accounts/[id]/edit`, `/transactions`, `/transactions/[id]`,
+    `/transactions/[id]/edit` and the two edit modals
+    (`@editAccountModal`, `@editTransactionModal`) redirect to `/auth/signin`.
+  - `/dashboard` redirects to `/`.
+  - `/accounts/[id]` answers 404 (`notFound()`).
+  - `/accounts/new`, `/transactions/new` and their `(.)` modals have no
+    session check; their forms post to APIs that answer 401.
+- The redirects pass no `callbackUrl`, so signing in lands on the default page.
 
-`middleware.ts` at the repository root (`withAuth`, matchers
-`/accounts/:path*` and `/api/accounts/:path*`) is **not compiled**: the app
-lives under `src/app`, and Next only picks up middleware placed beside the
-`app` directory, i.e. `src/middleware.ts`. The build's
-`.next/server/middleware-manifest.json` is empty, and no `Middleware` line
-appears in the route table. Verified 2026-11-10 on Next 15.3.3 and 15.5.29;
-see `docs/progress/2026-11-10-session.md`.
+There is no middleware, by decision: see
+`docs/superpowers/specs/2026-11-10-auth-guards-design.md`. The old root
+`middleware.ts` (`withAuth`, matchers `/accounts/:path*` and
+`/api/accounts/:path*`) was never compiled, because Next only picks up
+middleware placed beside the `app` directory, and it was deleted. Re-adding
+one has these constraints:
+
+- It must live in `src/middleware.ts`; a root `middleware.ts` is never
+  compiled when the app is under `src/app`.
+- It needs next-auth bumped to 4.24.15 or later first: middleware would make
+  next-auth's `getToken()` advisory about malformed Bearer headers
+  reachable.
+- A `withAuth` matcher covering `/api/*` would turn those routes' 401s into
+  307 redirects to the sign-in page.
+
+See `docs/progress/2026-11-10-auth-guards-session.md` for the checks.
 
 ## Accessing Session
 
