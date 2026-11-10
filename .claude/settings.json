@@ -1,0 +1,6 @@
+{
+  "enabledPlugins": {
+    "ship-mode@claude-workflows": true,
+    "rigorous-mode@claude-workflows": false
+  }
+}
