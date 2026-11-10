@@ -64,4 +64,13 @@ export const authConfig: NextAuthOptions = {
   },
 };
 
-export const getAuthSession = () => getServerSession(authConfig);
+/**
+ * The signed-in user's session, or null. A session without `user.id` counts
+ * as signed out: callers filter by `userId: session.user.id`, and Prisma
+ * reads `userId: undefined` as no filter, which would return every user's
+ * rows.
+ */
+export const getAuthSession = async () => {
+  const session = await getServerSession(authConfig);
+  return session?.user?.id ? session : null;
+};

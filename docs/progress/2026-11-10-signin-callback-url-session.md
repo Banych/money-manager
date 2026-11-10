@@ -73,7 +73,41 @@ page renders normally, no redirect, no console errors.
   `src/lib/auth.ts` passes `blob:<app origin>/…` through, because a `blob:` URL
   reports its inner origin. Browsers refuse an HTTP redirect to `blob:`; a
   protocol check there would close it.
-- Guards check `session.user` but not `session.user.id`; Prisma reads
-  `where: { userId: undefined }` as no filter. No known path produces a token
-  without `id`. Making `getAuthSession()` treat a missing `id` as signed out
-  would close it.
+
+## Also fixed: a session without `user.id` counted as signed in
+
+Every server guard calls `getAuthSession()` and checks only `session?.user`,
+then filters by `userId: session.user.id`. Prisma reads `userId: undefined` as
+no filter. The `session` callback sets `user.id` only when the token has an
+`id`, so a token without one gave a session that passed the guard with no
+owner filter. No known path in the app issues such a token (the `jwt` callback
+sets `id` at sign-in); forging one needs `NEXTAUTH_SECRET`. So this is
+hardening, approved by Vlad as an add-on to this branch.
+
+Reproduced on the build above (callbackUrl fix only), with session tokens
+minted from the local `.env` secret and sent to `127.0.0.1:3100`. Vlad's
+real session sees 1 account and 1 transaction.
+
+| Request                                       | Before            | After                   |
+| --------------------------------------------- | ----------------- | ----------------------- |
+| `/api/accounts`, no cookie                    | 401               | 401                     |
+| `/api/accounts`, token with an unknown `id`   | 200, 0 rows       | 200, 0 rows             |
+| `/api/accounts`, token without `id`           | **200, Vlad's 1** | 401                     |
+| `/api/transactions`, token without `id`       | **200, Vlad's 1** | 401                     |
+| `/dashboard`, `/accounts`, token without `id` | –                 | 307, as when signed out |
+| `/transactions`, token without `id`           | –                 | 500, as when signed out |
+
+The 500 is the existing `forbidden()` behaviour for signed-out visitors,
+fixed separately on `fix/auth-guards`.
+
+Fix: `getAuthSession()` in `src/lib/auth.ts` returns `null` when the session
+has no `user.id`. Nothing else calls `getServerSession`, so every guard gets
+it. `yarn validate` exit 0 (lint 0 errors, the same 4 `no-console` warnings;
+Prettier and `tsc` clean); `yarn build` exit 0. In the browser pane, Vlad's
+session still loads the dashboard and `/transactions`, and both APIs return 200.
+
+Security review of this commit (read-only agent): approved, no findings.
+Known, accepted, not run: a token without `id` would likely bounce between
+`/auth/signin` and the server-guarded pages, because the client `useSession`
+still sees `session.user`. Every token from a real sign-in has carried `id`
+since auth was added, so only a forged token hits this.
