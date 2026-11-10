@@ -111,3 +111,13 @@ Known, accepted, not run: a token without `id` would likely bounce between
 `/auth/signin` and the server-guarded pages, because the client `useSession`
 still sees `session.user`. Every token from a real sign-in has carried `id`
 since auth was added, so only a forged token hits this.
+
+## Re-checked after merging master (Next 15.5.29)
+
+The checks above ran on Next 15.3.3. After merging master (the 15.5.29 bump):
+`yarn install --frozen-lockfile` exit 0; `yarn validate` exit 0 (lint 0
+errors, the same 4 `no-console` warnings; Prettier and `tsc` clean);
+`yarn build` exit 0. On that build, all four rejected `callbackUrl` values
+land on `/dashboard`, `/transactions` still works, and a token without `id`
+gets 401 from both APIs while a token with an unknown `id` gets 200 with 0
+rows.
