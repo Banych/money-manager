@@ -55,7 +55,9 @@ const EditAccountForm: FC<EditAccountFormProps> = ({ initialAccount }) => {
     // Send balance only when the user changed it: a submitted balance resets
     // the account to that amount, and the value shown may be stale.
     const { balance, ...rest } = data;
-    const payload: UpdateAccountData = form.formState.dirtyFields.balance
+    // getFieldState reads the live field state; formState.dirtyFields read only
+    // here would depend on which keys the component subscribed to in render.
+    const payload: UpdateAccountData = form.getFieldState('balance').isDirty
       ? { ...rest, balance }
       : rest;
     updateAccount(payload, {
