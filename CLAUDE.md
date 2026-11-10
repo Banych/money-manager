@@ -38,7 +38,11 @@ Paths are relative to the repository root.
   `postinstall` into `src/generated/prisma` (git-ignored) → `src/lib/db.ts`
   (`db`) → queries in `src/lib/queries/`, input schemas in
   `src/lib/validators/`. Account balances are recomputed from transactions in
-  `src/lib/transactions/balance.ts`, called by both transaction route files.
+  `src/lib/transactions/balance.ts`, called by both transaction route files:
+  `balance = openingBalance + Σ income − Σ expense`, rounded to cents. Any
+  write that derives one of the two columns from the transaction sums (the
+  recompute, `PUT /api/accounts/[id]` with a balance) calls
+  `lockAccountForBalanceWrite()` first, inside `db.$transaction`.
 
 **Modals**
 
