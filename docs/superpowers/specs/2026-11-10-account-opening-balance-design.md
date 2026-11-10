@@ -1,6 +1,7 @@
 # Keep an account's starting balance when transactions change
 
-Date: 2026-11-10. Status: draft for Vlad's approval. Option chosen by Vlad
+Date: 2026-11-10. Status: approved by Vlad 2026-11-10; amended during
+implementation (see "Amendments" at the end). Option chosen by Vlad
 on 2026-11-10: a stored opening-balance column ("option A"), over an
 opening-balance transaction and over incremental balance updates.
 
@@ -84,15 +85,18 @@ expense.
    form's field is labelled "Current Balance", so a submitted `balance`
    means "the account holds this now". The route stores
    `openingBalance = submitted balance − (income − expense)` and
-   `balance = submitted balance`. It reads the transaction sums and writes
-   the account inside one `db.$transaction`, so a transaction written at
-   the same moment cannot leave the two out of step.
+   `balance = submitted balance`. It locks the account row, reads the
+   transaction sums and writes the account inside one `db.$transaction`,
+   so a transaction written at the same moment cannot leave the two out
+   of step (the lock is what makes this hold under READ COMMITTED; see
+   Amendments).
    An edit without `balance` (a rename, say) leaves both columns alone.
 4. **7-day chart** (`GET /api/accounts/[id]/statistics`): the running
    total starts at `openingBalance + priorIncome − priorExpense`.
 5. **API responses**: `openingBalance` appears in account JSON because
-   the routes return whole rows. The `Account` type in
-   `src/hooks/useAccounts.ts` gains the field.
+   the routes return whole rows. The hooks in `src/hooks/useAccounts.ts`
+   use Prisma's generated `FinancialAccount` type, which gains the field
+   on regeneration.
 6. **Delete account**: unchanged; it still requires `balance === 0`.
 
 7. **Edit form sends the balance only when it was changed** (my call,
@@ -167,3 +171,33 @@ after deploy changes no balance.
 - The helper's name and signature.
 - Whether `recomputeAccountBalance()` reads `openingBalance` in the same
   query that checks account ownership (it already reads the account).
+
+## Amendments (2026-11-10, during implementation)
+
+1. **Row lock.** A single `db.$transaction` does not keep the columns in
+   step under Postgres's default READ COMMITTED: a transaction create could
+   read the old `openingBalance` while a balance edit committed a new one,
+   then overwrite `balance` from the stale value. Every write that derives
+   one column from the transaction sums (the recompute and the balance
+   edit) first runs `SELECT … FOR NO KEY UPDATE` on the account row
+   (`lockAccountForBalanceWrite()` in `src/lib/transactions/balance.ts`).
+2. **Lock mode, measured.** The first version used `FOR UPDATE`. Against
+   the Prisma Postgres dev database, 4 parallel `POST /api/transactions`
+   on one account plus one balance `PUT`, 6 rounds: 3 of 4 creates per
+   round returned 500 with Postgres `40P01` ("deadlock detected … waits
+   for ShareLock on transaction …"). Cause: inserting a transaction takes
+   `FOR KEY SHARE` on the account row through the foreign key, which
+   `FOR UPDATE` conflicts with. With `FOR NO KEY UPDATE` the same test
+   gave 30 of 30 requests 2xx and `balance = openingBalance + net` in
+   every round.
+3. **Balance rounded in a second migration**
+   (`20261110130000_round_account_balances_to_cents`). The old recompute
+   stored unrounded sums (e.g. `5.55e-17` for an account shown as €0.00);
+   the backfill rounded only `openingBalance`, so such a row kept a
+   balance that delete-account's `balance === 0` check refuses. A separate
+   migration, not an edit of the first, because the first was already
+   applied to the shared dev database.
+4. **Edit form dirtiness** reads `form.getFieldState('balance').isDirty`
+   (live state) rather than `form.formState.dirtyFields`, whose value
+   inside a submit handler depends on react-hook-form's render
+   subscriptions.
