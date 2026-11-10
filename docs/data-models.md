@@ -32,6 +32,13 @@ model Session {
 
 ### Account & Transactions
 
+In the live schema (`prisma/schema.prisma`) this model is `FinancialAccount`.
+Its `balance` is always `openingBalance + Σ income − Σ expense` over the
+account's transactions (amounts stored positive), rounded to cents. Creating
+an account stores the submitted balance in both columns; setting "Current
+Balance" in the edit form recomputes `openingBalance` so the sum matches it
+(spec: `docs/superpowers/specs/2026-11-10-account-opening-balance-design.md`).
+
 ```prisma
 model Account {
   id        String    @id @default(cuid())
@@ -39,6 +46,7 @@ model Account {
   user      User      @relation(fields: [userId], references: [id])
   name      String
   balance   Float     @default(0)
+  openingBalance Float @default(0) // amount held before any recorded transaction
   currency  String    @default("EUR")
   expenses  Expense[]
   createdAt DateTime  @default(now())

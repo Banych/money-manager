@@ -1,5 +1,6 @@
 import { getAuthSession } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { roundToCents } from '@/lib/transactions/balance';
 import { createAccountValidator } from '@/lib/validators/account.validator';
 import { NextResponse } from 'next/server';
 
@@ -48,9 +49,13 @@ export async function POST(request: Request) {
       ...body,
     });
 
+    // A new account has no transactions, so its starting balance is its balance.
+    const balance = roundToCents(validatedData.balance);
     const account = await db.financialAccount.create({
       data: {
         ...validatedData,
+        balance,
+        openingBalance: balance,
         userId: session.user.id,
       },
     });

@@ -5,25 +5,20 @@ import {
   TransactionType,
 } from '@/generated/prisma';
 
+/** Round a money amount to cents, so float noise such as 1e-15 never reaches the database. */
+export function roundToCents(amount: number): number {
+  return Math.round(amount * 100) / 100;
+}
+
 /**
- * Recompute an account's balance and lastActivity from all its transactions.
- * Use inside a Prisma transaction for consistency.
+ * Income minus expense over all of an account's transactions (amounts are
+ * stored positive). The account's balance is its openingBalance plus this.
  */
-export async function recomputeAccountBalance(
+export async function getAccountNetTransactions(
   prisma: PrismaClient | Prisma.TransactionClient,
   accountId: string,
   userId: string
-) {
-  // First verify the account exists and belongs to the user
-  const account = await prisma.financialAccount.findUnique({
-    where: { id: accountId, userId },
-    select: { id: true },
-  });
-
-  if (!account) {
-    throw new Error('Account not found or access denied');
-  }
-
+): Promise<number> {
   const aggregates = await prisma.transaction.groupBy({
     by: ['type'],
     where: { accountId, userId },
@@ -37,13 +32,57 @@ export async function recomputeAccountBalance(
     if (row.type === TransactionType.EXPENSE) expense = row._sum.amount || 0;
   }
 
+  return income - expense;
+}
+
+/**
+ * Lock the account row and return its openingBalance, or null when the account
+ * does not exist or belongs to someone else. Every write that derives balance
+ * or openingBalance from the transaction sums calls this first, inside a Prisma
+ * transaction, so two such writes on one account run one after the other and
+ * each reads the other's committed result.
+ *
+ * FOR NO KEY UPDATE, not FOR UPDATE: inserting a transaction takes FOR KEY
+ * SHARE on the account row through the foreign key, and FOR UPDATE conflicts
+ * with it, so two concurrent transaction creates deadlocked (Postgres 40P01).
+ */
+export async function lockAccountForBalanceWrite(
+  prisma: PrismaClient | Prisma.TransactionClient,
+  accountId: string,
+  userId: string
+): Promise<{ id: string; openingBalance: number } | null> {
+  const rows = await prisma.$queryRaw<
+    { id: string; openingBalance: number }[]
+  >`SELECT "id", "openingBalance" FROM "FinancialAccount"
+    WHERE "id" = ${accountId} AND "userId" = ${userId}
+    FOR NO KEY UPDATE`;
+  return rows[0] ?? null;
+}
+
+/**
+ * Recompute an account's balance (openingBalance + income - expense) and
+ * lastActivity from all its transactions.
+ * Use inside a Prisma transaction for consistency.
+ */
+export async function recomputeAccountBalance(
+  prisma: PrismaClient | Prisma.TransactionClient,
+  accountId: string,
+  userId: string
+) {
+  const account = await lockAccountForBalanceWrite(prisma, accountId, userId);
+  if (!account) {
+    throw new Error('Account not found or access denied');
+  }
+
+  const net = await getAccountNetTransactions(prisma, accountId, userId);
+
   const latestTx = await prisma.transaction.findFirst({
     where: { accountId, userId },
     orderBy: { date: 'desc' },
     select: { date: true },
   });
 
-  const balance = income - expense; // amounts stored positive
+  const balance = roundToCents(account.openingBalance + net);
 
   return prisma.financialAccount.update({
     where: { id: accountId, userId },
