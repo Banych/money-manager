@@ -11,15 +11,15 @@
 ### Accounts
 
 - `GET /api/accounts` - List user accounts
-- `POST /api/accounts` - Create new account
-- `PUT /api/accounts/[id]` - Update account
+- `POST /api/accounts` - Create new account (the submitted `balance` is also stored as `openingBalance`)
+- `PUT /api/accounts/[id]` - Update account. A submitted `balance` means "the account holds this now": the route sets `openingBalance = balance − (Σ income − Σ expense)` in the same database transaction. An update without `balance` leaves both columns alone
 - `DELETE /api/accounts/[id]` - Delete account
 - `GET /api/accounts/[id]/transactions` - Paginated & filterable transactions (query: page, limit, type, category, from, to)
-- `GET /api/accounts/[id]/statistics` - Unified monthly & recent metrics (income, expenses, netChange, trend, trendPercentage, transactionsCount, averageTransaction, 7-day balanceHistory, lastActivity, activityStatus)
+- `GET /api/accounts/[id]/statistics` - Unified monthly & recent metrics (income, expenses, netChange, trend, trendPercentage, transactionsCount, averageTransaction, 7-day balanceHistory starting from `openingBalance` plus older transactions, lastActivity, activityStatus)
 
 ### Transactions
 
-- `POST /api/transactions` - Create transaction (recomputes account balance & lastActivity)
+- `POST /api/transactions` - Create transaction (recomputes account balance as `openingBalance + Σ income − Σ expense`, and lastActivity)
 - `GET /api/transactions/[id]` - Get single transaction
 - `PUT /api/transactions/[id]` - Update transaction (balance recomputed)
 - `DELETE /api/transactions/[id]` - Delete transaction (balance recomputed)

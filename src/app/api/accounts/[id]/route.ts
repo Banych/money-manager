@@ -1,5 +1,11 @@
 import { getAuthSession } from '@/lib/auth';
+import { Prisma } from '@/generated/prisma';
 import { db } from '@/lib/db';
+import {
+  getAccountNetTransactions,
+  lockAccountForBalanceWrite,
+  roundToCents,
+} from '@/lib/transactions/balance';
 import { updateAccountValidator } from '@/lib/validators/account.validator';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -97,18 +103,27 @@ export async function PUT(
     const { balance, currency, name, type } = validatedData;
 
     // Build update data object with only provided fields
-    const updateData: Record<string, unknown> = {};
+    const updateData: Prisma.FinancialAccountUpdateInput = {};
     if (name !== undefined) updateData.name = name;
-    if (balance !== undefined) updateData.balance = balance;
     if (currency !== undefined) updateData.currency = currency;
     if (type !== undefined) updateData.type = type;
 
-    const account = await db.financialAccount.update({
-      where: {
-        id,
-        userId: session.user.id,
-      },
-      data: updateData,
+    const userId = session.user.id;
+    const account = await db.$transaction(async (prisma) => {
+      if (balance !== undefined) {
+        // "Current Balance": the account holds this now, so the opening
+        // balance is whatever makes openingBalance + net equal it.
+        const locked = await lockAccountForBalanceWrite(prisma, id, userId);
+        if (!locked) throw new Error('Account not found');
+        const net = await getAccountNetTransactions(prisma, id, userId);
+        updateData.balance = roundToCents(balance);
+        updateData.openingBalance = roundToCents(balance - net);
+      }
+
+      return prisma.financialAccount.update({
+        where: { id, userId },
+        data: updateData,
+      });
     });
 
     return NextResponse.json(account, { status: 200 });

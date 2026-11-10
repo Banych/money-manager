@@ -19,7 +19,13 @@ export async function GET(
 
     const account = await db.financialAccount.findFirst({
       where: { id, userId: session.user.id },
-      select: { id: true, balance: true, currency: true, lastActivity: true },
+      select: {
+        id: true,
+        balance: true,
+        openingBalance: true,
+        currency: true,
+        lastActivity: true,
+      },
     });
     if (!account) {
       return NextResponse.json({ error: 'Account not found' }, { status: 404 });
@@ -110,7 +116,7 @@ export async function GET(
       if (row.type === 'INCOME') priorIncome = row._sum.amount || 0;
       if (row.type === 'EXPENSE') priorExpense = row._sum.amount || 0;
     }
-    let runningBalance = priorIncome - priorExpense;
+    let runningBalance = account.openingBalance + priorIncome - priorExpense;
     const balanceHistory: Array<{ date: string; balance: number }> = [];
     for (let i = 0; i < 7; i++) {
       const day = new Date(sevenDaysAgo);
