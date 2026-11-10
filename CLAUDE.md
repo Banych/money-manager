@@ -18,14 +18,17 @@ Paths are relative to the repository root.
 - `src/lib/auth.ts`: `authConfig` (Google provider, reads `GOOGLE_CLIENT_*`)
   and `getAuthSession()`, the one session helper → `src/app/api/auth/[...nextauth]/route.ts`
   → sign-in page `src/app/auth/signin/page.tsx`.
-- Protection is per route, not middleware: every `src/app/api/**/route.ts`
-  calls `getAuthSession()` and returns 401 itself; server pages call it and
-  `redirect()` (`src/app/accounts/page.tsx`, `src/app/dashboard/page.tsx`,
-  `src/app/transactions/[id]/page.tsx`) or `forbidden()`
-  (`src/app/transactions/page.tsx`). Server widgets in
-  `src/components/dashboard/widgets/` call it too.
-- `middleware.ts` at the root is not compiled (the app is under `src/`);
-  see `docs/progress/2026-11-10-session.md`.
+- Protection is per route, by decision, with no middleware
+  (`docs/superpowers/specs/2026-11-10-auth-guards-design.md`): every
+  `src/app/api/**/route.ts` calls `getAuthSession()` and returns 401 itself;
+  server pages call it too. Signed out: `/accounts`, `/transactions`,
+  `/transactions/[id]` and the edit pages and modals → `redirect('/auth/signin')`; `/dashboard` →
+  `redirect('/')`; `/accounts/[id]` → `notFound()`; `/accounts/new` and
+  `/transactions/new` (and their modals) have no check, their APIs 401.
+  Server widgets in `src/components/dashboard/widgets/` call it too.
+- A middleware would have to live in `src/middleware.ts` (a root
+  `middleware.ts` is never compiled with `src/app`) and needs next-auth ≥
+  4.24.15 first; see `docs/auth.md`.
 
 **Data**
 

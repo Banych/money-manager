@@ -2,7 +2,7 @@ import EditAccountForm from '@/components/accounts/edit-account-form';
 import InterceptedModal from '@/components/ui/intercepted-modal';
 import { getAuthSession } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { forbidden, notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 type EditAccountPageProps = {
   params: Promise<{
@@ -18,7 +18,7 @@ export default async function EditAccountPage({
   const session = await getAuthSession();
 
   if (!session?.user) {
-    return forbidden();
+    redirect('/auth/signin');
   }
 
   const account = await db.financialAccount.findUnique({

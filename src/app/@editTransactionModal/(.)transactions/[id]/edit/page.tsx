@@ -2,7 +2,7 @@ import EditTransactionForm from '@/components/transactions/edit-transaction-form
 import InterceptedModal from '@/components/ui/intercepted-modal';
 import { getAuthSession } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { forbidden, notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 type EditTransactionPageProps = {
   params: Promise<{
@@ -18,7 +18,7 @@ export default async function EditTransactionPage({
   const session = await getAuthSession();
 
   if (!session?.user) {
-    return forbidden();
+    redirect('/auth/signin');
   }
 
   const transaction = await db.transaction.findUnique({

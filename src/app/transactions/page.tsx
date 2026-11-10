@@ -3,7 +3,7 @@ import { INFINITE_TRANSACTIONS_LIMIT } from '@/constants/transactions';
 import { TransactionType } from '@/generated/prisma';
 import { getAuthSession } from '@/lib/auth';
 import { getAllTransactions } from '@/lib/queries/transactions';
-import { forbidden } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 interface TransactionsPageProps {
   searchParams: Promise<{
@@ -23,7 +23,7 @@ export default async function TransactionsPage({
   const session = await getAuthSession();
 
   if (!session?.user) {
-    return forbidden();
+    redirect('/auth/signin');
   }
 
   const params = await searchParams;
