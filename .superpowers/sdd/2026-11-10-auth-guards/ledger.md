@@ -27,3 +27,43 @@ Verdict DEFECTS; tamper check clean (status empty, HEAD unchanged). Applied:
 - Progress file name: `2026-11-10-auth-guards-session.md`, README naming
   convention amended in Task 2.
 - curl format string kept on one line.
+
+## Task 1: redirect guards, delete middleware (done 2026-11-10)
+
+Implementer: `implementer-transcribe`, commits `7235808` (five pages) and
+`974924a` (`git rm middleware.ts`). Per-task reviewer skipped under the
+transcribe exception: controller byte-compare of `git diff e84b1d0 HEAD`
+showed only the planned lines (5× import swap, 5× `return forbidden();` →
+`redirect('/auth/signin');`, 16-line deletion of `middleware.ts`).
+
+Ruled correction: the implementer's first commit body said `forbidden()`
+"renders a 403 page"; the baseline showed 500. Controller reworded that
+commit (tree unchanged; the two original commits were `049ebdc`,
+`65977a2`).
+
+Verification (main session, Next 15.5.29, `yarn start -p 3100`):
+
+- `yarn validate`: exit 0 (lint has 5 `no-console` warnings in untouched
+  files; Prettier clean; `tsc` clean).
+- `rm -rf .next && yarn build`: exit 0; route table has no `Middleware`
+  line; `.next/server/middleware-manifest.json` is
+  `{"version":3,"middleware":{},"functions":{},"sortedMiddleware":[]}`
+  (same as the baseline).
+- Signed-out curl, before (baseline build at `dd7e523`) → after:
+  `/transactions` 500 → 307 `/auth/signin`; `/transactions/x/edit` 500 →
+  307; `/accounts/x/edit` 500 → 307; `/accounts` 307 → 307;
+  `/api/accounts` 401 → 401.
+- Modal-slot loop check (plan check's inferred risk): browser pane on
+  `http://127.0.0.1:3100/` (not `localhost`, which carries Vlad's session
+  cookie), `window.next.router.push('/accounts/x/edit')` and, from a fresh
+  `/`, `'/transactions/x/edit'`: each made exactly two RSC requests (the
+  target, then `/auth/signin`) in 6–8 s and ended on `/auth/signin`. No
+  loop; the catch-all fallback was not added. Server log: no errors.
+
+Trap recorded: the baseline run's `pkill -f 'next start -p 3100'` matched
+its own shell and left the server running, so the first post-change curl
+hit the stale process (500s). Stop servers by the PID holding the port.
+Also: a server run with a different `NEXTAUTH_SECRET` would clear a
+browser's session cookie on its next `/api/auth/session` call (next-auth
+v4 cleans undecodable session cookies); use `127.0.0.1` for signed-out
+browser checks instead.
