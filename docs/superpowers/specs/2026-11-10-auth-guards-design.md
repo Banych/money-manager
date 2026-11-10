@@ -31,7 +31,11 @@ security bump (`docs/progress/2026-11-10-session.md`, "Found while verifying"):
   and it adds an experimental flag for no gain.
 - **`middleware.ts` is deleted, not moved to `src/`.** Protection stays per
   route: every API handler already returns 401 itself, and every server page
-  checks the session. Moving it would (a) turn the API's 401s into 307
+  that reads user data checks the session. (`/accounts/new` and
+  `/transactions/new` do not check it: they only render a form whose submit
+  hits an API that answers 401. Accepted; listed under "Still open" in the
+  progress record. The middleware never compiled, so this is not a
+  regression.) Moving it would (a) turn the API's 401s into 307
   redirects for `/api/accounts/*`, (b) make the `next-auth` `getToken()`
   malformed-Bearer advisory reachable, which would need the next-auth
   ≥ 4.24.15 bump paired with it, and (c) add a second guard that covers only
@@ -55,8 +59,15 @@ security bump (`docs/progress/2026-11-10-session.md`, "Found while verifying"):
 | `GET /api/accounts`           | 401                  | unchanged            |
 
 The two modal pages only render on a client-side navigation inside the app,
-so curl cannot reach them; they get the same one-line change and are checked
-by reading.
+so curl cannot reach them. They get the same one-line change. On a soft
+navigation the redirect may loop: `/auth/signin` has no match in the modal
+slot, so the router could keep the errored slot segment and replay the
+redirect (inferred from Next 15.5.29's router source by the plan check, not
+observed). It is checked in the browser pane by soft-navigating to
+`/accounts/x/edit` and `/transactions/x/edit` from `/auth/signin` while
+signed out. If it loops, each slot gets a `[...catchAll]/page.tsx` that
+returns `null`, so the slot matches every other route and drops the errored
+segment.
 
 The build's route table shows no `Middleware` line and
 `.next/server/middleware-manifest.json` has an empty `middleware` object —

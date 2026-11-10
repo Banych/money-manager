@@ -56,30 +56,44 @@ Main-session verification after the task (not the implementer's):
 
 - `yarn build`: exit 0, no `Middleware` line in the route table,
   `.next/server/middleware-manifest.json` `middleware` is `{}`.
-- `yarn start -p 3100`, signed-out `curl -s -o /dev/null -w '%{http_code}
-%{redirect_url}'` on `/transactions`, `/transactions/x/edit`,
-  `/accounts/x/edit` → `307 …/auth/signin`; `/accounts` → `307
-…/auth/signin`; `/api/accounts` → `401`.
+- `yarn start -p 3100`, signed-out curl with the format string
+  `'%{http_code} %{redirect_url}'` on `/transactions`,
+  `/transactions/x/edit`, `/accounts/x/edit` → `307 …/auth/signin`;
+  `/accounts` → `307 …/auth/signin`; `/api/accounts` → `401`.
+- Browser pane, signed out, on `/auth/signin`: soft-navigate with
+  `window.next.router.push('/accounts/x/edit')` and then
+  `'/transactions/x/edit'`. Expected: it lands on `/auth/signin` and the
+  network panel stops (no repeated RSC requests). If it loops, add
+  `src/app/@editAccountModal/[...catchAll]/page.tsx` and
+  `src/app/@editTransactionModal/[...catchAll]/page.tsx`, each
+  `export default function CatchAll() { return null; }`, as a fix round of
+  this task, and re-run.
 
 ## Task 2: docs
 
 Route: `implementer` (prose edits needing judgment).
 
 - `docs/auth.md`: overview bullet (line 8–9) and the "Route Protection"
-  section: every server page that needs a session redirects (list which go
-  where: `/auth/signin` for accounts and transactions pages, `/` for
-  `/dashboard`, 404 for `/accounts/[id]`); no `forbidden()` remains; there is
-  no middleware, by decision (point to the spec), and re-adding one needs
-  `src/middleware.ts` plus the next-auth ≥ 4.24.15 bump.
+  section: what each server page does for a signed-out visitor
+  (`/auth/signin` for the accounts and transactions pages, `/` for
+  `/dashboard`, 404 for `/accounts/[id]`, and no check at all on
+  `/accounts/new` and `/transactions/new`, whose forms post to APIs that
+  answer 401); there is no middleware, by decision (point to the spec), and
+  re-adding one needs `src/middleware.ts` plus the next-auth ≥ 4.24.15 bump.
+  Constraint: the edited docs must not mention `forbidden()` (the acceptance
+  grep checks it).
 - `CLAUDE.md` code map, "Auth and route protection": drop the `forbidden()`
   mention and the "not compiled" bullet; say there is no middleware by
   decision and where it would have to live (`src/middleware.ts`).
 - `docs/folder-structure.md` line 21 (`/middleware.ts`): remove the entry or
   say it was removed (the doc describes a planned layout; keep it consistent).
-- New `docs/progress/2026-11-10-auth-guards.md` + a line in
-  `docs/progress/README.md`: the before/after curl table and build evidence
+- New `docs/progress/2026-11-10-auth-guards-session.md` + a line in the
+  index of `docs/progress/README.md`; amend its naming convention (line 7) to
+  allow `YYYY-MM-DD-<topic>-session.md` when a day has more than one
+  session. Content: the before/after curl table, build and browser evidence
   the controller supplies; under "Still open", the `/dashboard` → `/` and
-  `/accounts/[id]` → 404 inconsistencies and the missing `callbackUrl`.
+  `/accounts/[id]` → 404 inconsistencies, the unguarded `/accounts/new` and
+  `/transactions/new`, and the missing `callbackUrl`.
 - Leave `docs/chat.md` (a historical chat log) and
   `docs/progress/2026-11-10-session.md` (another session's log) untouched.
 
