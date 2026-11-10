@@ -9,6 +9,15 @@ No test suite: `yarn validate` (lint, Prettier, `tsc`) and `yarn build` are the
 checks. `.env` is git-ignored and there is no `.env.example`; the variables are
 listed in `README.md`.
 
+**There is one database, and it is production.** Vercel's `DATABASE_URL` and
+`DIRECT_URL` (a Prisma Postgres database named `dev`, despite the name) apply
+to production, preview and development alike, and a local `.env` holds the
+same values (confirmed 2026-11-10). So every local run writes to production:
+never run `prisma migrate reset` or accept the reset `prisma migrate dev`
+offers on a branch missing applied migrations, apply migrations with
+`yarn prisma migrate deploy`, and delete smoke-test accounts and transactions
+when done.
+
 ## Code map
 
 Paths are relative to the repository root.
