@@ -79,7 +79,8 @@ the same as today, but now because there is no file.
   signed-out visitor are inconsistent with the rest but are not errors; left
   as they are.
 - No `callbackUrl` on the redirect (the sign-in page reads one, but no
-  existing guard passes it); a possible follow-up.
+  existing guard passes it); a possible follow-up, but only after the sign-in
+  page validates it: the branch security review found it unchecked.
 - No next-auth bump: with no middleware, the `getToken()` advisory stays
   unreachable.
 

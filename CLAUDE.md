@@ -21,8 +21,8 @@ Paths are relative to the repository root.
 - Protection is per route, by decision, with no middleware
   (`docs/superpowers/specs/2026-11-10-auth-guards-design.md`): every
   `src/app/api/**/route.ts` calls `getAuthSession()` and returns 401 itself;
-  server pages call it too. Signed out: `/accounts`, `/transactions` and the
-  edit pages and modals → `redirect('/auth/signin')`; `/dashboard` →
+  server pages call it too. Signed out: `/accounts`, `/transactions`,
+  `/transactions/[id]` and the edit pages and modals → `redirect('/auth/signin')`; `/dashboard` →
   `redirect('/')`; `/accounts/[id]` → `notFound()`; `/accounts/new` and
   `/transactions/new` (and their modals) have no check, their APIs 401.
   Server widgets in `src/components/dashboard/widgets/` call it too.

@@ -40,7 +40,9 @@ Next's source, not seen before): in the browser pane on
 `http://127.0.0.1:3100/`, `window.next.router.push('/accounts/x/edit')` and,
 from a fresh `/`, `'/transactions/x/edit'` each made exactly two RSC requests
 (the target, then `/auth/signin`) in 6–8 s and ended on `/auth/signin`. No
-loop, so the catch-all fallback was not added. Server log showed no errors.
+loop, so the catch-all fallback was not added. The same two pushes
+started from `/auth/signin` itself (the case the spec names) each made one
+RSC request and stayed on `/auth/signin`. Server log showed no errors.
 
 ## Verification traps
 
@@ -61,4 +63,16 @@ loop, so the catch-all fallback was not added. Server log showed no errors.
 - `/accounts/new` and `/transactions/new` (and their modals) have no session
   check; their forms post to APIs that answer 401.
 - The sign-in redirects pass no `callbackUrl`, so a visitor lands on the
-  default page after signing in.
+  default page after signing in. Do not add one before the next item is
+  fixed.
+- **Pre-existing, Critical (branch security review):** the sign-in page
+  pushes its `callbackUrl` query parameter into the router unchecked when the
+  visitor is already signed in (`src/app/auth/signin/page.tsx:22,27`). A
+  link with `callbackUrl=https://evil.example` redirects off-site, and
+  `callbackUrl=javascript:…` probably runs script in the app's origin.
+  Verified offline against Next's router logic, not run in a browser. Details:
+  `.superpowers/sdd/2026-11-10-auth-guards/final-security-review.md`.
+- **Pre-existing, Minor:** guards check `session.user`, not
+  `session.user.id`; a session without `id` would make Prisma's
+  `userId: undefined` filter match every user's rows. Not reachable with
+  tokens the app issues today.
