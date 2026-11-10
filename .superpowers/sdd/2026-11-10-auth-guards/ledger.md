@@ -84,3 +84,11 @@ Tamper check clean (status empty, HEAD `ee6beda` before and after).
 
 Next: end-of-branch passes (whole-branch review plus security review, as
 the range touches auth guards), after Vlad's go-ahead.
+
+## Branch passes (2026-11-10)
+
+Range: `fe883e3..52d4186` (cut point on `fix/next-security-patch` to the
+Task 2 ledger commit). Production code changed (five `src/app` pages,
+root `middleware.ts` deleted) and the range touches auth guards, so all
+four passes run: whole-branch review, silent-failure hunt, simplification
+report, security review.
