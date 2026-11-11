@@ -282,11 +282,15 @@ yarn lint-staged
 ```json
 {
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,css,scss,md}": ["prettier --write"]
+    "*.{js,jsx,ts,tsx}": ["yarn eslint --fix", "yarn prettier --write"],
+    "*.{json,css,scss,md}": ["yarn prettier --write"]
   }
 }
 ```
+
+The commands go through `yarn` so that a commit in a git worktree runs the
+worktree's own ESLint and Prettier. Worktrees live inside the main checkout,
+and lint-staged would otherwise find the main checkout's binaries first.
 
 ### What This Setup Does
 
