@@ -82,7 +82,8 @@ its pre-commit hook, and GitHub secret scanning, and keeps all of them.
   is gone.
 - Node is pinned in `.nvmrc` and CI uses the same major (22, as in bobrquiz;
   Vercel's Node setting is checked to match).
-- The `Code Quality` check is required on `master` in the existing ruleset (a
+- The `Code Quality` workflow's check (named `quality`, after its job) is
+  required on `master` in the existing ruleset (a
   repository setting Vlad changes or approves).
 
 **0b. Test runner (M)**

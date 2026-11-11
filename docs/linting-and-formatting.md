@@ -537,39 +537,12 @@ npx commitlint --edit $1
 
 ## CI/CD Integration
 
-### GitHub Actions Example
+### GitHub Actions
 
-```yaml
-name: Code Quality
-
-on: [push, pull_request]
-
-jobs:
-  quality:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'yarn'
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Run type check
-        run: yarn type-check
-
-      - name: Run linting
-        run: yarn lint
-
-      - name: Check formatting
-        run: yarn format:check
-
-      - name: Run validation
-        run: yarn validate
-```
+The workflow is `.github/workflows/code-quality.yml`; read it there rather
+than from a copy here. Its `quality` job runs on pushes to `master` and on PRs
+into it, with the Node version from `.nvmrc`, and runs the type check, ESLint
+and the Prettier check.
 
 ## Conclusion
 
