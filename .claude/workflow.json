@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Banych/claude-config/main/workflows/workflow/workflow.schema.json",
+  "profile": "ship",
+  "verify": ["yarn validate", "yarn build"],
+  "merge": "pr",
+  "scope": "the open GitHub milestone with the nearest due date (Family M1 now), in the order of docs/family-plan.md; the test before a task is whether it blocks the family trial, not the first paying user",
+  "capableTier": ["src/lib/transactions/balance.ts"],
+  "riskPaths": [
+    "prisma/**",
+    "src/lib/auth.ts",
+    "src/lib/callback-url.ts",
+    "src/app/api/**",
+    "src/app/auth/**",
+    ".github/workflows/**",
+    ".husky/**"
+  ],
+  "realTarget": "the dev server (yarn dev) in a browser signed in with Google; the only database is production, so delete smoke-test accounts and transactions afterwards",
+  "docs": {
+    "specs": "docs/superpowers/specs",
+    "plans": "docs/superpowers/plans",
+    "progress": "docs/progress",
+    "parkingLot": "docs/parking-lot.md"
+  }
+}
