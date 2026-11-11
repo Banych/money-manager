@@ -11,8 +11,10 @@ The checks are `yarn validate` (lint, Prettier, `tsc`), `yarn test` and
 `src/tests/setup.ts` points `DATABASE_URL` and `DIRECT_URL` at an unresolvable
 host before anything loads (Prisma's generated client reads `.env` on import,
 which would otherwise hand it production) and mocks `@/lib/db` with a client
-that throws; a test that needs queries passes its own `vi.fn()` fake, as
-`src/tests/lib/transactions/balance.test.ts` does. CI
+that throws; a test of a helper that takes the client as a parameter passes its
+own `vi.fn()` fake, as `src/tests/lib/transactions/balance.test.ts` does, and a
+test of code that imports `db` directly (`src/lib/queries/`, API routes) needs
+its own `vi.mock('@/lib/db', …)`. CI
 (`.github/workflows/code-quality.yml`, the job named `quality`, on pushes to
 `master` and PRs into it, Node from `.nvmrc`: 22, matching Vercel's `22.x`) runs
 the frozen install, `tsc`, lint, Prettier and the tests, not the build.

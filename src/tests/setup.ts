@@ -4,9 +4,11 @@ import { vi } from 'vitest';
  * Tests never reach a database: the only one is production (see CLAUDE.md).
  *
  * 1. The connection variables point at a host that cannot resolve. Prisma's
- *    generated client loads `.env` when it is constructed, but never
- *    overrides a variable that is already set, so even a stray
- *    `new PrismaClient()` cannot reach the real database.
+ *    generated client loads `.env` on import (even a test that only imports
+ *    an enum) and again when constructed, but never overrides a variable that
+ *    is already set, so even a stray `new PrismaClient()` cannot reach the
+ *    real database. If `prisma/schema.prisma` ever reads other variable
+ *    names, block those here too.
  * 2. The app's shared client (`@/lib/db`) is replaced by one that throws on
  *    any use. A test that needs database calls passes its own fake client
  *    built from `vi.fn()`.
