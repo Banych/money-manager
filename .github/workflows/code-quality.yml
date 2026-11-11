@@ -6,7 +6,8 @@ on:
   pull_request:
     branches: [master]
 
-# A new push to a PR cancels that PR's older run; runs on master all finish.
+# A new push to a PR cancels that PR's older run. On master a running run is
+# never cancelled, but a newer push replaces one still waiting to start.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}

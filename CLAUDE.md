@@ -9,7 +9,8 @@ No test suite: `yarn validate` (lint, Prettier, `tsc`) and `yarn build` are the
 checks. CI (`.github/workflows/code-quality.yml`, the job named `quality`, on
 pushes to `master` and PRs into it, Node from `.nvmrc`: 22, matching Vercel's
 `22.x`) runs the frozen install, `tsc`, lint and Prettier, not the build; a push
-to a branch without a PR runs no CI. Vercel (project
+to a branch without a PR runs no CI, and neither does retargeting a PR to
+`master`: push a commit, or close and reopen it, to get a run. Vercel (project
 `money-manager`) deploys a preview for each PR and comments on it. `.env` is
 git-ignored and there is no `.env.example`; the variables are listed in
 `README.md`.
