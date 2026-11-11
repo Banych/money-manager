@@ -20,6 +20,11 @@ that `eslint-config-next` loads fails with "the calling module was not
 recognized". Don't add `package.json` scripts named `eslint` or `prettier`:
 `yarn` would run the script instead of the tool.
 
+A worktree's generated Prisma client (`src/generated/prisma`, git-ignored) is
+built when the worktree is installed and can lag the schema; `tsc` then fails on
+fields the schema has. `yarn prisma generate` rebuilds it from
+`prisma/schema.prisma` without connecting to the database.
+
 **There is one database, and it is production.** Vercel's `DATABASE_URL` and
 `DIRECT_URL` (a Prisma Postgres database named `dev`, despite the name) apply
 to production, preview and development alike, and a local `.env` holds the
