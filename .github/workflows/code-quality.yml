@@ -40,3 +40,8 @@ jobs:
 
       - name: Check formatting
         run: yarn format:check
+
+      # No secrets or database variables here: tests run against a mocked
+      # Prisma client, and src/tests/setup.ts blocks any real connection.
+      - name: Run unit tests
+        run: yarn test
