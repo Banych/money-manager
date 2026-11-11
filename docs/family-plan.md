@@ -248,7 +248,8 @@ Vlad moved in.
 
 ## How this maps to GitHub
 
-Ship mode takes its scope from the current GitHub milestone. Proposed: a
-milestone "Family M1: start the trial" due 2026-12-09 holding issues 0a–0e and 1–10, and
-"Family M2: trial" for the trial fixes, shopping list and recipes. Issues and
-milestones are posted as Vlad, so their text is drafted for approval first.
+The ship profile takes its scope from the current GitHub milestone. Created
+by 2026-11-11: "Family M1: start the trial", due 2026-12-09 (15 open issues
+that day), and "Family M2: trial", due 2027-01-06 (none yet), for the trial
+fixes, shopping list and recipes. Issues and milestones are posted as Vlad, so
+their text is drafted for approval first.
