@@ -76,11 +76,11 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
+      "yarn eslint --fix",
+      "yarn prettier --write"
     ],
     "*.{json,css,scss,md}": [
-      "prettier --write"
+      "yarn prettier --write"
     ]
   }
 }

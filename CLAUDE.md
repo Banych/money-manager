@@ -12,6 +12,14 @@ runs the frozen install and `yarn validate`, not the build; Vercel (project
 git-ignored and there is no `.env.example`; the variables are listed in
 `README.md`.
 
+Worktrees live inside the main checkout (`.claude/worktrees/`), so tools that
+search parent folders find the main checkout's files. The pre-commit hook's
+`lint-staged` commands start with `yarn` for this reason: without it,
+lint-staged runs the main checkout's ESLint, and the `@rushstack/eslint-patch`
+that `eslint-config-next` loads fails with "the calling module was not
+recognized". Don't add `package.json` scripts named `eslint` or `prettier`:
+`yarn` would run the script instead of the tool.
+
 **There is one database, and it is production.** Vercel's `DATABASE_URL` and
 `DIRECT_URL` (a Prisma Postgres database named `dev`, despite the name) apply
 to production, preview and development alike, and a local `.env` holds the
