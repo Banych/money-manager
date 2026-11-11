@@ -25,10 +25,10 @@ when done.
 
 The goal is weekly use by Vlad and their partner, not a first paying user
 (decided 2026-11-11): `docs/family-plan.md` holds the decisions, the success
-test and the milestones. In ship mode, scope is the current family milestone
-in that plan's order, and the question before any task is "does it block the
-family trial?", not "does it block the first paying user?". Release is
-considered only after the trial passes.
+test and the milestones. The scope rule (the current family milestone, in that
+plan's order; the question before any task is "does it block the family
+trial?") is the `scope` line of `.claude/workflow.json`. Release is considered
+only after the trial passes.
 
 `docs/roadmap.md` and `docs/simplified-roadmap.md` are superseded and
 overclaim: recipes, planned purchases, the goods database and analytics are

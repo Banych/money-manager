@@ -28,8 +28,9 @@ then #31, #32, #33, #34.
 5. `docs/progress/2026-11-11-family-plan-session.md`: what was checked and
    what was only read from code.
 
-If no `# Workflow mode: ship` block is in your context, say so before
-anything else.
+If no `# Workflow: ship profile` block (`# Workflow mode: ship` on a
+machine still on the old ship-mode plugin) is in your context, say so
+before anything else.
 
 ## What is established
 
@@ -99,7 +100,8 @@ origin/master`, then `git push -u origin <type>/<slug>`. Merges wait for
   `yarn eslint --fix` and `yarn prettier --write` on the staged files
   yourself, commit with `HUSKY=0`, and say so in the PR.
 - **Docs:** #31 and #32 make `CLAUDE.md`'s "No test suite" and "Node 20"
-  lines stale; fix them in the same PR.
+  lines stale, and #32 also makes `verify` in `.claude/workflow.json`
+  stale (it will not run the new test command); fix them in the same PR.
 
 ## What comes next
 
