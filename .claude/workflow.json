@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/Banych/claude-config/main/workflows/workflow/workflow.schema.json",
   "profile": "ship",
-  "verify": ["yarn validate", "yarn build"],
+  "verify": ["yarn validate", "yarn test", "yarn build"],
   "merge": "pr",
   "scope": "the open GitHub milestone with the nearest due date, its issues in the order of docs/family-plan.md; the test before a task is whether it blocks the family trial, not the first paying user",
   "capableTier": [

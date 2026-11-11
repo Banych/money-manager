@@ -242,6 +242,13 @@ Checked 2026-11-11 through the Prisma and Vercel connectors (read-only):
   dashboard, while `DATABASE_URL` is marked sensitive; issue 1 marks it
   sensitive too.
 
+Checked 2026-11-11 from Vlad's screenshot of the Vercel project settings:
+**Git Fork Protection is Enabled**, so a pull request from a fork is not
+deployed (with the project's environment variables) until a team member
+authorizes it.
+The Vercel API ignores the filter for this setting, so it cannot be read that
+way.
+
 Answered 2026-11-11: money moves to a decimal type in the household migration
 (yes), and a test runner comes first as step 0, together with a CI/CD
 clean-up compared against bobrquiz (yes). Both were parking-lot items that
