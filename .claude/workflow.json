@@ -22,6 +22,7 @@
   ],
   "realTarget": "the dev server (yarn dev) on localhost:3000 (the only local port Google sign-in accepts) in a browser signed in with Google; the only database is production, so delete smoke-test accounts and transactions afterwards",
   "docs": {
+    "decisions": "docs/decisions",
     "plans": "docs/superpowers/plans",
     "progress": "docs/progress"
   }
