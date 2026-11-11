@@ -1,5 +1,10 @@
 # Feature Roadmap & Milestones
 
+> **Superseded 2026-11-11 by [`family-plan.md`](./family-plan.md).** The ✅
+> marks below are not reliable: recipes, planned purchases, the goods database
+> and analytics are marked done but do not exist in the code (gap audit,
+> 2026-11-11). Kept for the feature ideas only.
+
 Based on the chat discussion, this roadmap prioritizes simplicity and core functionality first.
 
 ## Phase 1: Core MVP (3-5 weeks)

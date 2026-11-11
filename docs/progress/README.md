@@ -28,3 +28,4 @@ This directory contains chronological session/sprint logs capturing project stat
 - 2026-11-10 – Account opening balance kept on recompute (`2026-11-10-session.md`).
 - 2026-11-10 – Per-route auth guards, root middleware removed, curl and browser checks (`2026-11-10-auth-guards-session.md`).
 - 2026-11-10 – Sign-in `callbackUrl` open redirect and `javascript:` XSS fixed and missing `user.id` treated as signed out (`2026-11-10-signin-callback-url-session.md`).
+- 2026-11-11 – Goal changed to family use; gap audit and plan (`2026-11-11-family-plan-session.md`, `../family-plan.md`).
