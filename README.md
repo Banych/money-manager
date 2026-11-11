@@ -2,7 +2,7 @@
 
 ## 💡 Project Overview
 
-Money Manager is a modern, mobile-first budgeting app for couples and families. It focuses on clear expense tracking, multi-account management, and will progressively add AI-powered receipt scanning, collaboration, and analytics.
+Money Manager is a budgeting app for couples and families. It focuses on clear expense tracking and multi-account management. Current goal: weekly use by one household before anything public; see [`docs/family-plan.md`](docs/family-plan.md) for what works today and what is planned.
 
 ### Current Phase (as of 2025-08-15)
 
@@ -50,7 +50,7 @@ All date/time rendering uses centralized `dayjs` helpers in `src/lib/date.ts` to
 ## 🚀 Getting Started
 
 1. Clone repo
-2. Copy `.env.example` to `.env` and fill in secrets (see Environment section below)
+2. Create `.env` with the variables in the Environment section below (there is no `.env.example`)
 3. `yarn`
 4. `yarn dev`
 
@@ -60,7 +60,7 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 ### 🔐 Environment Variables
 
-Create `.env` from `.env.example`:
+Create `.env` with:
 
 ```
 DATABASE_URL=postgresql://user:password@host:5432/dbname

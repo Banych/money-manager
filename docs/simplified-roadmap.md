@@ -1,5 +1,9 @@
 # Simplified Development Roadmap
 
+> **Superseded 2026-11-11 by [`family-plan.md`](./family-plan.md).** The
+> "Current Focus" below is no longer the focus; recipes come after the family
+> trial starts. Kept for the feature ideas only.
+
 ## ✅ Completed (Phase 1)
 
 - User authentication with Google OAuth

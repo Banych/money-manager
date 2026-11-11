@@ -21,6 +21,21 @@ offers on a branch missing applied migrations, apply migrations with
 `yarn prisma migrate deploy`, and delete smoke-test accounts and transactions
 when done.
 
+## Goal and scope
+
+The goal is weekly use by Vlad and their partner, not a first paying user
+(decided 2026-11-11): `docs/family-plan.md` holds the decisions, the success
+test and the milestones. In ship mode, scope is the current family milestone
+in that plan's order, and the question before any task is "does it block the
+family trial?", not "does it block the first paying user?". Release is
+considered only after the trial passes.
+
+`docs/roadmap.md` and `docs/simplified-roadmap.md` are superseded and
+overclaim: recipes, planned purchases, the goods database and analytics are
+marked done but do not exist. `docs/data-models.md` and `architecture.md`
+describe a household model that was never built; the household spec (plan,
+issue 5) replaces them.
+
 ## Code map
 
 Paths are relative to the repository root.
