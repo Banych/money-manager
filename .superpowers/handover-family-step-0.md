@@ -28,9 +28,8 @@ then #31, #32, #33, #34.
 5. `docs/progress/2026-11-11-family-plan-session.md`: what was checked and
    what was only read from code.
 
-If no `# Workflow: ship profile` block (`# Workflow mode: ship` on a
-machine still on the old ship-mode plugin) is in your context, say so
-before anything else.
+If no `# Workflow: ship profile` block is in your context, say so before
+anything else.
 
 ## What is established
 
