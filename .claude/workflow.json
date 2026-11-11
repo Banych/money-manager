@@ -3,7 +3,7 @@
   "profile": "ship",
   "verify": ["yarn validate", "yarn build"],
   "merge": "pr",
-  "scope": "the open GitHub milestone with the nearest due date (Family M1 now), in the order of docs/family-plan.md; the test before a task is whether it blocks the family trial, not the first paying user",
+  "scope": "the open GitHub milestone with the nearest due date, in the order of docs/family-plan.md; the test before a task is whether it blocks the family trial, not the first paying user",
   "capableTier": ["src/lib/transactions/balance.ts"],
   "riskPaths": [
     "prisma/**",
@@ -16,9 +16,7 @@
   ],
   "realTarget": "the dev server (yarn dev) in a browser signed in with Google; the only database is production, so delete smoke-test accounts and transactions afterwards",
   "docs": {
-    "specs": "docs/superpowers/specs",
     "plans": "docs/superpowers/plans",
-    "progress": "docs/progress",
-    "parkingLot": "docs/parking-lot.md"
+    "progress": "docs/progress"
   }
 }
