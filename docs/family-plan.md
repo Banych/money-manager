@@ -121,9 +121,11 @@ its pre-commit hook, and GitHub secret scanning, and keeps all of them.
 **1. Backups, export and a separate dev database (M)**
 
 - The provider's backup status is confirmed and one restore has been done into
-  a scratch database, with the steps written in `docs/`. Prisma Postgres'
-  Free plan has no automated backups (Starter and Pro: daily, kept 7 days), so
-  on Free this means a scheduled `pg_dump` or an upgrade.
+  a scratch database, with the steps written in `docs/`. There are no
+  backups today (checked 2026-11-11), so this means a scheduled `pg_dump` or
+  an upgrade to Starter (daily snapshots, kept 7 days).
+- Preview and development deployments use the dev database; only production
+  uses the production one. `DIRECT_URL` is marked sensitive in Vercel.
 - A signed-in user can download all their accounts and transactions as CSV.
 - A local `.env` points at a non-production database; `CLAUDE.md`'s
   "one database" warning is updated to match.
@@ -219,10 +221,25 @@ its pre-commit hook, and GitHub secret scanning, and keeps all of them.
 
 ## Open questions for Vlad
 
-1. **Which Prisma Postgres plan the workspace is on, and whether backups
-   exist.** A second database costs nothing on any plan (Free allows 50,
-   paid plans 1,000, per Prisma's pricing page on 2026-11-11), but Free has no
-   automated backups. Checked by hand; the answer shapes issue 1.
+1. **Google OAuth consent screen: Testing or In production?** In Testing,
+   only listed test users can sign in, which partly covers issue 6's
+   allowlist. Not checkable from here.
+
+Checked 2026-11-11 through the Prisma and Vercel connectors (read-only):
+
+- **No backups exist.** The workspace has one database (`dev`, project
+  `money-manager`, Frankfurt, created 2026-11-10), and its backup list is
+  empty. The API does not report the plan name, but paid plans snapshot daily
+  on days with activity and the database had activity on 2026-11-10, so it is
+  almost certainly the Free plan. Issue 1 therefore needs a scheduled
+  `pg_dump` or an upgrade to Starter. A second database is free (Free allows
+  50).
+- **Vercel variables were pasted by hand** (no integration manages them), and
+  every one, `DATABASE_URL` and `DIRECT_URL` included, targets production,
+  preview and development. Splitting them per environment is a plain edit.
+  `DIRECT_URL` is stored as an ordinary encrypted variable, readable in the
+  dashboard, while `DATABASE_URL` is marked sensitive; issue 1 marks it
+  sensitive too.
 
 Answered 2026-11-11: money moves to a decimal type in the household migration
 (yes), and a test runner comes first as step 0, together with a CI/CD
