@@ -24,11 +24,13 @@ date (`gh pr update-branch <n>` for one that is behind). A push to a branch
 without a PR runs no CI, and neither does retargeting a PR to `master`: push a
 commit, or close and reopen it, to get a run. Vercel (project
 `money-manager`) deploys a preview for each PR and comments on it.
-Dependabot (`.github/dependabot.yml`) opens grouped npm updates weekly and
-GitHub Actions updates monthly, each held back by a cooldown after release;
-majors of Next, React, their type packages and `@types/node` are ignored.
-Security updates are a repository setting (on since 2026-11-12) and skip the
-schedule and cooldown. Its PRs come from branches in this repository, so Vercel
+Dependabot (`.github/dependabot.yml`) opens grouped npm minor and patch updates
+weekly and GitHub Actions updates monthly, each held back by a cooldown after
+release; every npm major is ignored and done by hand. Security updates are a
+repository setting (on since 2026-11-12) and skip the schedule and cooldown.
+Bring a Dependabot PR that is behind up to date with an `@dependabot rebase`
+comment, not `gh pr update-branch`: Dependabot stops rebasing a PR once someone
+else pushes to it. Its PRs come from branches in this repository, so Vercel
 builds their previews with the project's variables, today the production
 database. `.env` is git-ignored and there is no `.env.example`; the variables
 are listed in `README.md`.
