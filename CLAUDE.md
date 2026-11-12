@@ -26,8 +26,10 @@ commit, or close and reopen it, to get a run. Vercel (project
 `money-manager`) deploys a preview for each PR and comments on it.
 Dependabot (`.github/dependabot.yml`) opens grouped npm minor and patch updates
 weekly and GitHub Actions updates monthly, each held back by a cooldown after
-release; every npm major is ignored and done by hand. Security updates are a
-repository setting (on since 2026-11-12) and skip the schedule and cooldown.
+release; npm majors are ignored there and done by hand. Security updates are a
+repository setting (on since 2026-11-12) and skip the schedule, the cooldown
+and that major ignore: the first run (2026-11-12, right after the config
+merged, not on the Monday) opened zod 3 → 4 as a security update.
 Bring a Dependabot PR that is behind up to date with an `@dependabot rebase`
 comment, not `gh pr update-branch`: Dependabot stops rebasing a PR once someone
 else pushes to it. Its PRs come from branches in this repository, so Vercel
@@ -122,3 +124,7 @@ Paths are relative to the repository root.
 **Config**
 
 - `next.config.ts`: image hosts only, no `experimental` flags.
+- `.github/dependabot.yml`: npm and GitHub Actions updates; Dependabot alerts
+  and security updates are repository settings, not in the file.
+- There is no `vercel.json`: Vercel's build settings, including whatever
+  cancels previews of CI- and docs-only PRs, live in the Vercel dashboard.
