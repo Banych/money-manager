@@ -1,0 +1,67 @@
+version: 2
+updates:
+  # npm/yarn dependencies, weekly. Security updates are a repository
+  # setting and ignore the schedule, the groups and the cooldown below.
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 10
+    # Wait before proposing a fresh release, so a version published days
+    # ago (and possibly pulled or compromised since) is not locked in.
+    cooldown:
+      semver-major-days: 14
+      semver-minor-days: 7
+      semver-patch-days: 3
+    groups:
+      prisma:
+        patterns:
+          - 'prisma'
+          - '@prisma/*'
+      eslint:
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - '@eslint/*'
+          - 'typescript-eslint'
+          - '@typescript-eslint/*'
+      radix-ui:
+        patterns:
+          - '@radix-ui/*'
+      tanstack:
+        patterns:
+          - '@tanstack/*'
+      vitest:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
+          - 'vite'
+          - 'vite-*'
+    ignore:
+      # Framework majors need a manual migration. eslint-config-next and
+      # the React type packages move in step with them.
+      - dependency-name: 'next'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'eslint-config-next'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react-dom'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@types/react'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@types/react-dom'
+        update-types: ['version-update:semver-major']
+      # The @types/node major tracks the Node major, which .nvmrc and
+      # Vercel set; bump it by hand when they move.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+
+  # GitHub Actions used by .github/workflows, monthly.
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+    cooldown:
+      default-days: 7
