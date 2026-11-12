@@ -122,3 +122,7 @@ Paths are relative to the repository root.
 **Config**
 
 - `next.config.ts`: image hosts only, no `experimental` flags.
+- `.github/dependabot.yml`: npm and GitHub Actions updates; Dependabot alerts
+  and security updates are repository settings, not in the file.
+- There is no `vercel.json`: Vercel's build settings, including whatever
+  cancels previews of CI- and docs-only PRs, live in the Vercel dashboard.
