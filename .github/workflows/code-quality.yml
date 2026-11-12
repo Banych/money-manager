@@ -45,3 +45,18 @@ jobs:
       # Prisma client, and src/tests/setup.ts blocks any real connection.
       - name: Run unit tests
         run: yarn test
+
+      # Placeholders, not secrets: the build passes with none of these set and
+      # opens no database connection (checked 2026-11-12, no .env). The
+      # .invalid host makes any future build-time query fail instead of
+      # reaching a real database.
+      - name: Build
+        run: yarn build
+        env:
+          DATABASE_URL: postgresql://ci:ci@db.invalid:5432/ci
+          DIRECT_URL: postgresql://ci:ci@db.invalid:5432/ci
+          NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: ci-build-placeholder
+          GOOGLE_CLIENT_ID: ci-build-placeholder
+          GOOGLE_CLIENT_SECRET: ci-build-placeholder
+          NEXT_TELEMETRY_DISABLED: 1

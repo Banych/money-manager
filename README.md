@@ -20,7 +20,7 @@ Late Phase 1 – Core MVP foundation: unified account statistics (`/api/accounts
 | Analytics Dashboards               | ❌                 |
 | Planned Purchases                  | 🚧 / Partial       |
 | Recipes                            | 📘 Planned         |
-| Tests & CI                         | ❌                 |
+| Tests & CI                         | 🚧 Partial         |
 | Monitoring                         | ❌                 |
 
 ## 🏗️ Tech Stack
