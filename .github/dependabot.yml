@@ -1,7 +1,8 @@
 version: 2
 updates:
-  # npm/yarn dependencies, weekly. Security updates are a repository
-  # setting and ignore the schedule, the groups and the cooldown below.
+  # npm/yarn dependencies, weekly: minor and patch versions only.
+  # Security updates are a repository setting and skip the schedule,
+  # the groups and the cooldown below.
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
@@ -11,10 +12,28 @@ updates:
     # Wait before proposing a fresh release, so a version published days
     # ago (and possibly pulled or compromised since) is not locked in.
     cooldown:
+      default-days: 7
       semver-major-days: 14
       semver-minor-days: 7
       semver-patch-days: 3
+    # A dependency joins the first group it matches, so `next` comes
+    # before `eslint` to keep eslint-config-next in step with Next.
     groups:
+      next:
+        patterns:
+          - 'next'
+          - 'eslint-config-next'
+          - '@next/*'
+      react:
+        patterns:
+          - 'react'
+          - 'react-dom'
+          - '@types/react'
+          - '@types/react-dom'
+      tailwind:
+        patterns:
+          - 'tailwindcss'
+          - '@tailwindcss/*'
       prisma:
         patterns:
           - 'prisma'
@@ -39,23 +58,11 @@ updates:
           - 'vite'
           - 'vite-*'
     ignore:
-      # Framework majors need a manual migration. eslint-config-next and
-      # the React type packages move in step with them.
-      - dependency-name: 'next'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'eslint-config-next'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'react'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'react-dom'
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@types/react'
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@types/react-dom'
-        update-types: ['version-update:semver-major']
-      # The @types/node major tracks the Node major, which .nvmrc and
-      # Vercel set; bump it by hand when they move.
-      - dependency-name: '@types/node'
+      # Majors (Next, React, Prisma, ESLint, TypeScript and the rest) need
+      # a manual migration, so they are done by hand, not proposed here.
+      # This may also hold back a security fix that only ships in a new
+      # major; its Dependabot alert still shows.
+      - dependency-name: '*'
         update-types: ['version-update:semver-major']
 
   # GitHub Actions used by .github/workflows, monthly.
