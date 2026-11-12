@@ -13,7 +13,6 @@ updates:
     # ago (and possibly pulled or compromised since) is not locked in.
     cooldown:
       default-days: 7
-      semver-major-days: 14
       semver-minor-days: 7
       semver-patch-days: 3
     # A dependency joins the first group it matches, so `next` comes
@@ -60,8 +59,9 @@ updates:
     ignore:
       # Majors (Next, React, Prisma, ESLint, TypeScript and the rest) need
       # a manual migration, so they are done by hand, not proposed here.
-      # This may also hold back a security fix that only ships in a new
-      # major; its Dependabot alert still shows.
+      # A 0.x package still gets its 0.x minors, which can break. Security
+      # updates are not held back: for them Dependabot applies only an
+      # ignore's `versions`, not its `update-types`.
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
 
