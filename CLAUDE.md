@@ -5,12 +5,23 @@ Postgres. Background docs live in `docs/` (`architecture.md`, `auth.md`,
 `folder-structure.md`; the last describes a planned layout, not the current
 tree). Session logs are in `docs/progress/`.
 
-No test suite: `yarn validate` (lint, Prettier, `tsc`) and `yarn build` are the
-checks. CI (`.github/workflows/code-quality.yml`, the job named `quality`, on
-pushes to `master` and PRs into it, Node from `.nvmrc`: 22, matching Vercel's
-`22.x`) runs the frozen install, `tsc`, lint and Prettier, not the build; a push
-to a branch without a PR runs no CI, and neither does retargeting a PR to
-`master`: push a commit, or close and reopen it, to get a run. Vercel (project
+The checks are `yarn validate` (lint, Prettier, `tsc`), `yarn test` and
+`yarn build`. `yarn test` is Vitest (`vitest.config.mts`, tests in
+`src/tests/**/*.test.ts`). Tests never touch a database:
+`src/tests/setup.ts` points `DATABASE_URL` and `DIRECT_URL` at an unresolvable
+host before anything loads (Prisma's generated client reads `.env` on import,
+which would otherwise hand it production) and mocks `@/lib/db` with a client
+that throws; a test of a helper that takes the client as a parameter passes its
+own `vi.fn()` fake, as `src/tests/lib/transactions/balance.test.ts` does, and a
+test of code that imports `db` directly (`src/lib/queries/`, API routes) needs
+its own `vi.mock('@/lib/db', …)`. CI
+(`.github/workflows/code-quality.yml`, the job named `quality`, on pushes to
+`master` and PRs into it, Node from `.nvmrc`: 22, matching Vercel's `22.x`) runs
+the frozen install, `tsc`, lint, Prettier and the tests, not the build.
+`quality` is a required check on `master`, with branches required to be up to
+date (`gh pr update-branch <n>` for one that is behind). A push to a branch
+without a PR runs no CI, and neither does retargeting a PR to `master`: push a
+commit, or close and reopen it, to get a run. Vercel (project
 `money-manager`) deploys a preview for each PR and comments on it. `.env` is
 git-ignored and there is no `.env.example`; the variables are listed in
 `README.md`.

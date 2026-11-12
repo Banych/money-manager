@@ -47,7 +47,9 @@ charts from 0.
 - Adding a test framework. The repo has none; `yarn validate`, `yarn
 build` and the repro against a dev database are the checks (the
   premise: no test runner exists. If one is added, this fix's recompute
-  rule is the first thing worth a unit test).
+  rule is the first thing worth a unit test). 2026-11-11: premise gone.
+  Issue #32 added Vitest, and `src/tests/lib/transactions/balance.test.ts`
+  covers `recomputeAccountBalance`.
 - Currency conversion when an account's currency is edited.
 - The update validator only checks for a negative cash or prepaid balance
   when the request carries both `balance` and `type`. That gap predates
