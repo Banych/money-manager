@@ -541,8 +541,8 @@ npx commitlint --edit $1
 
 The workflow is `.github/workflows/code-quality.yml`; read it there rather
 than from a copy here. Its `quality` job runs on pushes to `master` and on PRs
-into it, with the Node version from `.nvmrc`, and runs the type check, ESLint
-and the Prettier check.
+into it, with the Node version from `.nvmrc`, and runs the type check, ESLint,
+the Prettier check, the unit tests and `yarn build`.
 
 ## Conclusion
 
