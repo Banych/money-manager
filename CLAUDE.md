@@ -17,7 +17,8 @@ test of code that imports `db` directly (`src/lib/queries/`, API routes) needs
 its own `vi.mock('@/lib/db', …)`. CI
 (`.github/workflows/code-quality.yml`, the job named `quality`, on pushes to
 `master` and PRs into it, Node from `.nvmrc`: 22, matching Vercel's `22.x`) runs
-the frozen install, `tsc`, lint, Prettier and the tests, not the build.
+the frozen install, `tsc`, lint, Prettier, the tests and `yarn build` (with
+placeholder env values and no secrets; the build opens no database connection).
 `quality` is a required check on `master`, with branches required to be up to
 date (`gh pr update-branch <n>` for one that is behind). A push to a branch
 without a PR runs no CI, and neither does retargeting a PR to `master`: push a
