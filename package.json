@@ -14,7 +14,6 @@
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "validate": "yarn lint && yarn format:check && yarn type-check",
-    "changeset": "changeset",
     "postinstall": "prisma generate",
     "prepare": "husky"
   },

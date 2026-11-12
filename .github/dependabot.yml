@@ -1,0 +1,74 @@
+version: 2
+updates:
+  # npm/yarn dependencies, weekly: minor and patch versions only.
+  # Security updates are a repository setting and skip the schedule,
+  # the groups and the cooldown below.
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 10
+    # Wait before proposing a fresh release, so a version published days
+    # ago (and possibly pulled or compromised since) is not locked in.
+    cooldown:
+      default-days: 7
+      semver-minor-days: 7
+      semver-patch-days: 3
+    # A dependency joins the first group it matches, so `next` comes
+    # before `eslint` to keep eslint-config-next in step with Next.
+    groups:
+      next:
+        patterns:
+          - 'next'
+          - 'eslint-config-next'
+          - '@next/*'
+      react:
+        patterns:
+          - 'react'
+          - 'react-dom'
+          - '@types/react'
+          - '@types/react-dom'
+      tailwind:
+        patterns:
+          - 'tailwindcss'
+          - '@tailwindcss/*'
+      prisma:
+        patterns:
+          - 'prisma'
+          - '@prisma/*'
+      eslint:
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - '@eslint/*'
+          - 'typescript-eslint'
+          - '@typescript-eslint/*'
+      radix-ui:
+        patterns:
+          - '@radix-ui/*'
+      tanstack:
+        patterns:
+          - '@tanstack/*'
+      vitest:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
+          - 'vite'
+          - 'vite-*'
+    ignore:
+      # Majors (Next, React, Prisma, ESLint, TypeScript and the rest) need
+      # a manual migration, so they are done by hand, not proposed here.
+      # A 0.x package still gets its 0.x minors, which can break. Security
+      # updates are not held back: for them Dependabot applies only an
+      # ignore's `versions`, not its `update-types`.
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+
+  # GitHub Actions used by .github/workflows, monthly.
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+    cooldown:
+      default-days: 7
