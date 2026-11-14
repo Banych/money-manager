@@ -242,6 +242,13 @@ Checked 2026-11-11 through the Prisma and Vercel connectors (read-only):
   dashboard, while `DATABASE_URL` is marked sensitive; issue 1 marks it
   sensitive too.
 
+Updated 2026-11-14 (issue 1, separate dev database): production's database is
+renamed `prod`, and a second one, `nonprod`, in the same project and region,
+backs Preview, Development and the local `.env`, with all eight migrations
+applied. Vercel's `DATABASE_URL` and `DIRECT_URL` are split per environment and
+all sensitive. Preview deployments stay signed out
+(`docs/decisions/2026-11-14-preview-sign-in.md`). Backups are still open.
+
 Checked 2026-11-11 from Vlad's screenshot of the Vercel project settings:
 **Git Fork Protection is Enabled**, so a pull request from a fork is not
 deployed (with the project's environment variables) until a team member

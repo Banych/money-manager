@@ -34,8 +34,8 @@ merged, not on the Monday) opened zod 3 → 4 as a security update.
 Bring a Dependabot PR that is behind up to date with an `@dependabot rebase`
 comment, not `gh pr update-branch`: Dependabot stops rebasing a PR once someone
 else pushes to it. Its PRs come from branches in this repository, so Vercel
-builds their previews with the project's variables, today the production
-database. `.env` is git-ignored and there is no `.env.example`; the variables
+builds their previews with the project's Preview variables: the `nonprod`
+database, but production's `NEXTAUTH_SECRET` and Google client (parked). `.env` is git-ignored and there is no `.env.example`; the variables
 are listed in `README.md`.
 
 Worktrees live inside the main checkout (`.claude/worktrees/`), so tools that
@@ -51,14 +51,27 @@ built when the worktree is installed and can lag the schema; `tsc` then fails on
 fields the schema has. `yarn prisma generate` rebuilds it from
 `prisma/schema.prisma` without connecting to the database.
 
-**There is one database, and it is production.** Vercel's `DATABASE_URL` and
-`DIRECT_URL` (a Prisma Postgres database named `dev`, despite the name) apply
-to production, preview and development alike, and a local `.env` holds the
-same values (confirmed 2026-11-10). So every local run writes to production:
-never run `prisma migrate reset` or accept the reset `prisma migrate dev`
-offers on a branch missing applied migrations, apply migrations with
-`yarn prisma migrate deploy`, and delete smoke-test accounts and transactions
-when done.
+**Two databases: `prod` and `nonprod`** (Prisma Postgres, project
+`money-manager`, Frankfurt; since 2026-11-14). `prod` (named `dev` until that
+day) backs only Vercel's Production environment. `nonprod` backs Preview,
+Vercel's Development environment and local runs: the main checkout's `.env`
+points at it, and worktrees link to that file. All four `DATABASE_URL` and
+`DIRECT_URL` variables in Vercel are sensitive, so they cannot be read back;
+locally both hold the same direct connection string. `yarn prisma migrate
+deploy` from a local run applies migrations to `nonprod` only. The build runs
+no migrations, so a migration reaches production only when Vlad runs that
+command in their own terminal with `prod`'s connection string in
+`DATABASE_URL` and `DIRECT_URL` (a fresh one from the Prisma console; the
+Vercel copies cannot be read). Do that before merging a PR whose code needs
+the migration. Never run `prisma migrate reset` against `prod`.
+
+Sessions are JWTs signed with `NEXTAUTH_SECRET`, which every environment
+shares, so a cookie minted against one database still passes the auth check
+against the other. After pointing `.env` at a different database, sign out and
+back in: until then the user ID in the token does not exist there, and every
+write fails with a 500 (Prisma P2003 on `FinancialAccount_userId_fkey`,
+observed 2026-11-14). Preview deployments cannot sign in at all (Google's
+redirect list has no preview URLs; `docs/decisions/2026-11-14-preview-sign-in.md`).
 
 ## Goal and scope
 

@@ -73,6 +73,8 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 
 `DIRECT_URL` optional (used for Prisma direct connection). Generate `NEXTAUTH_SECRET` via `openssl rand -base64 32`.
 
+Locally, both database URLs point at the `nonprod` Prisma Postgres database, never at `prod`; Vercel's Preview and Development environments use `nonprod` too, and only Production uses `prod`. Apply migrations with `yarn prisma migrate deploy`. After switching `.env` to another database, sign out and back in: the session token still carries the old database's user ID.
+
 `NEXTAUTH_URL` is for local runs only: leave it unset on Vercel. Since next-auth 4.24.15 it overrides the host Vercel forwards, so a localhost value there would send Google sign-in to localhost.
 
 ### 📊 Key API Endpoints (MVP data layer)

@@ -20,7 +20,7 @@
     ".github/workflows/**",
     ".husky/**"
   ],
-  "realTarget": "the dev server (yarn dev) on localhost:3000 (the only local port Google sign-in accepts) in a browser signed in with Google; the only database is production, so delete smoke-test accounts and transactions afterwards",
+  "realTarget": "the dev server (yarn dev) on localhost:3000 (the only local port Google sign-in accepts) in a browser signed in with Google; .env points at the nonprod database, so smoke tests never touch prod; sign out and back in after switching databases, and delete smoke-test accounts and transactions afterwards",
   "docs": {
     "decisions": "docs/decisions",
     "plans": "docs/superpowers/plans",
