@@ -127,5 +127,8 @@ Paths are relative to the repository root.
 - `next.config.ts`: image hosts only, no `experimental` flags.
 - `.github/dependabot.yml`: npm and GitHub Actions updates; Dependabot alerts
   and security updates are repository settings, not in the file.
+- `package.json` `resolutions` forces Next's PostCSS to 8.5.32: every Next 15
+  pins 8.4.31 exactly, which carries security alerts (2026-11-14). Next 16
+  ships a fixed PostCSS; drop the resolution when moving to it.
 - There is no `vercel.json`: Vercel's build settings, including whatever
   cancels previews of CI- and docs-only PRs, live in the Vercel dashboard.
