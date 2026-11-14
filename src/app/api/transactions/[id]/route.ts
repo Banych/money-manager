@@ -3,7 +3,7 @@ import { db } from '@/lib/db';
 import { recomputeAccountBalance } from '@/lib/transactions/balance';
 import { editTransactionValidator } from '@/lib/validators/transaction.validator';
 import { NextRequest, NextResponse } from 'next/server';
-import { ZodError } from 'zod';
+import { z, ZodError } from 'zod';
 
 export async function GET(
   _req: NextRequest,
@@ -78,7 +78,7 @@ export async function PUT(
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
-        { error: 'Invalid data', details: error.flatten() },
+        { error: 'Invalid data', details: z.flattenError(error) },
         { status: 400 }
       );
     }

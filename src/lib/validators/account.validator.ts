@@ -1,7 +1,7 @@
 import { FinancialAccountType } from '@/generated/prisma';
 import { z } from 'zod';
 
-const zFinancialAccountType = z.nativeEnum(FinancialAccountType);
+const zFinancialAccountType = z.enum(FinancialAccountType);
 
 export const createAccountValidator = z
   .object({
@@ -29,7 +29,7 @@ export const createAccountValidator = z
 
 export const updateAccountValidator = z
   .object({
-    id: z.string().cuid('Invalid account ID format'),
+    id: z.cuid('Invalid account ID format'),
     name: z
       .string()
       .min(3, 'Name must be at least 3 characters long')

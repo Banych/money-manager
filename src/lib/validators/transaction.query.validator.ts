@@ -15,7 +15,7 @@ export const transactionQuerySchema = z.object({
       (v) => v === undefined || (v > 0 && v <= 100),
       'limit must be 1-100'
     ),
-  type: z.nativeEnum(TransactionType).optional(),
+  type: z.enum(TransactionType).optional(),
   category: z.string().min(1).optional(),
   search: z.string().min(1).optional(),
   from: z

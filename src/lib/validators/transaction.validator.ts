@@ -2,27 +2,29 @@ import { TransactionType } from '@/generated/prisma';
 import { isBefore } from 'date-fns';
 import { z } from 'zod';
 
-const zTransactionType = z.nativeEnum(TransactionType);
+const zTransactionType = z.enum(TransactionType);
 
 export const createTransactionValidator = z.object({
   amount: z
     .number({
-      required_error: 'Amount is required',
-      invalid_type_error: 'Amount must be a number',
+      error: (issue) =>
+        issue.input === undefined
+          ? 'Amount is required'
+          : 'Amount must be a number',
     })
     .positive('Amount must be greater than zero')
     .max(1000000, 'Amount cannot exceed 1,000,000'),
   description: z
     .string()
     .min(1, 'Description must be at least 1 character')
-    .optional()
-    .or(z.literal('').transform(() => undefined)),
+    .or(z.literal('').transform(() => undefined))
+    .optional(),
   type: zTransactionType,
   category: z
     .string()
     .min(1, 'Category must be at least 1 character')
-    .optional()
-    .or(z.literal('').transform(() => undefined)),
+    .or(z.literal('').transform(() => undefined))
+    .optional(),
   date: z
     .string()
     .refine((date) => !isNaN(Date.parse(date)), {
@@ -40,21 +42,21 @@ export const createTransactionValidator = z.object({
 export type CreateTransactionData = z.infer<typeof createTransactionValidator>;
 
 export const editTransactionValidator = z.object({
-  id: z.string().cuid('Invalid transaction ID format'),
+  id: z.cuid('Invalid transaction ID format'),
   amount: z
-    .number({ invalid_type_error: 'Amount must be a number' })
+    .number({ error: 'Amount must be a number' })
     .positive('Amount must be greater than zero')
     .max(1000000, 'Amount cannot exceed 1,000,000')
     .optional(),
   description: z
     .string()
-    .optional()
-    .transform((val) => (val === '' ? undefined : val)),
+    .transform((val) => (val === '' ? undefined : val))
+    .optional(),
   type: zTransactionType.optional(),
   category: z
     .string()
-    .optional()
-    .transform((val) => (val === '' ? undefined : val)),
+    .transform((val) => (val === '' ? undefined : val))
+    .optional(),
   date: z
     .string()
     .refine((date) => !isNaN(Date.parse(date)), {

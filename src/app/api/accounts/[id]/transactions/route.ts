@@ -2,6 +2,7 @@ import { getAuthSession } from '@/lib/auth';
 import { getAccountTransactions } from '@/lib/queries/transactions';
 import { transactionQuerySchema } from '@/lib/validators/transaction.query.validator';
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 
 export async function GET(
   req: NextRequest,
@@ -20,7 +21,10 @@ export async function GET(
     );
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Invalid query params', details: parsed.error.flatten() },
+        {
+          error: 'Invalid query params',
+          details: z.flattenError(parsed.error),
+        },
         { status: 400 }
       );
     }

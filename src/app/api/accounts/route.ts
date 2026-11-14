@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { roundToCents } from '@/lib/transactions/balance';
 import { createAccountValidator } from '@/lib/validators/account.validator';
 import { NextResponse } from 'next/server';
+import { z, ZodError } from 'zod';
 
 export async function GET() {
   try {
@@ -62,9 +63,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json(account, { status: 201 });
   } catch (error) {
-    if (error instanceof Error && error.message.includes('validation')) {
+    if (error instanceof ZodError) {
       return NextResponse.json(
-        { error: 'Invalid data provided', details: error.message },
+        { error: 'Invalid data provided', details: z.flattenError(error) },
         { status: 400 }
       );
     }
