@@ -83,5 +83,8 @@
     "*.{json,css,scss,md}": [
       "yarn prettier --write"
     ]
+  },
+  "resolutions": {
+    "next/postcss": "8.5.32"
   }
 }
