@@ -1,7 +1,8 @@
 import { vi } from 'vitest';
 
 /**
- * Tests never reach a database: the only one is production (see CLAUDE.md).
+ * Tests never reach a database; the local one, `nonprod`, is shared with every
+ * preview (see CLAUDE.md).
  *
  * 1. The connection variables point at a host that cannot resolve. Prisma's
  *    generated client loads `.env` on import (even a test that only imports

@@ -56,7 +56,7 @@ accounts.
 | See balances               | Works on `/accounts`. The dashboard total covers only the 3 most recently used accounts.                                                                                                                   |
 | Monthly report by category | Missing. Nothing sums by category; the Analytics widget is a mock. The dashboard monthly totals can drop to the last 20 entries after any change (from code, unrun).                                       |
 | Two people, one household  | Missing. Every query is scoped to one user. Sign-in is open to any verified Google account.                                                                                                                |
-| Backups, export            | None in code. Provider backups unverified. The only database is production.                                                                                                                                |
+| Backups, export            | None in code. Provider backups unverified. The only database was production (split 2026-11-14).                                                                                                            |
 
 The docs overclaimed: `docs/roadmap.md` marked recipes, planned purchases,
 the goods database and analytics as done, and none of them exist.
@@ -91,7 +91,8 @@ its pre-commit hook, and GitHub secret scanning, and keeps all of them.
 - Vitest with mocked database access only, following bobrquiz's pattern
   (mock the Prisma client with `vi.mock`). No test touches a real database
   until issue 1's dev database exists: bobrquiz's integration test falls back
-  to `DATABASE_URL`, which here is production.
+  to `DATABASE_URL`, which here is production. (That database exists since
+  2026-11-14: `nonprod`.)
 - First tests cover `src/lib/transactions/balance.ts`,
   `src/lib/callback-url.ts` and the transaction and account validators.
 - `yarn test` runs in CI and its counts show in the run log.
@@ -241,6 +242,16 @@ Checked 2026-11-11 through the Prisma and Vercel connectors (read-only):
   `DIRECT_URL` is stored as an ordinary encrypted variable, readable in the
   dashboard, while `DATABASE_URL` is marked sensitive; issue 1 marks it
   sensitive too.
+
+Updated 2026-11-14 (issue 1, separate dev database): production's database is
+renamed `prod`, and a second one, `nonprod`, in the same project and region,
+backs Preview, Development and the local `.env`, with all eight migrations
+applied. Vercel's `DATABASE_URL` and `DIRECT_URL` are split per environment and
+all sensitive. Preview deployments stay signed out
+(`docs/decisions/2026-11-14-preview-sign-in.md`). After the security review,
+non-production got its own `NEXTAUTH_SECRET`, and Production got a new one and
+a new database key; the old key is deleted once a production build uses the
+new one. Backups are still open.
 
 Checked 2026-11-11 from Vlad's screenshot of the Vercel project settings:
 **Git Fork Protection is Enabled**, so a pull request from a fork is not

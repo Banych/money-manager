@@ -10,8 +10,8 @@ The checks are `yarn validate` (lint, Prettier, `tsc`), `yarn test` and
 `src/tests/**/*.test.ts`). Tests never touch a database:
 `src/tests/setup.ts` points `DATABASE_URL` and `DIRECT_URL` at an unresolvable
 host before anything loads (Prisma's generated client reads `.env` on import,
-which would otherwise hand it production) and mocks `@/lib/db` with a client
-that throws; a test of a helper that takes the client as a parameter passes its
+which would otherwise hand it `nonprod`, the database every preview shares)
+and mocks `@/lib/db` with a client that throws; a test of a helper that takes the client as a parameter passes its
 own `vi.fn()` fake, as `src/tests/lib/transactions/balance.test.ts` does, and a
 test of code that imports `db` directly (`src/lib/queries/`, API routes) needs
 its own `vi.mock('@/lib/db', …)`, plus one of `@/lib/auth` for the session, as
@@ -34,9 +34,11 @@ merged, not on the Monday) opened zod 3 → 4 as a security update.
 Bring a Dependabot PR that is behind up to date with an `@dependabot rebase`
 comment, not `gh pr update-branch`: Dependabot stops rebasing a PR once someone
 else pushes to it. Its PRs come from branches in this repository, so Vercel
-builds their previews with the project's variables, today the production
-database. `.env` is git-ignored and there is no `.env.example`; the variables
-are listed in `README.md`.
+builds their previews with the project's Preview variables: the `nonprod`
+database and a non-production `NEXTAUTH_SECRET`, but production's Google
+client (parked).
+`.env` is git-ignored and there is no `.env.example`; the variables are listed
+in `README.md`.
 
 Worktrees live inside the main checkout (`.claude/worktrees/`), so tools that
 search parent folders find the main checkout's files. The pre-commit hook's
@@ -51,14 +53,46 @@ built when the worktree is installed and can lag the schema; `tsc` then fails on
 fields the schema has. `yarn prisma generate` rebuilds it from
 `prisma/schema.prisma` without connecting to the database.
 
-**There is one database, and it is production.** Vercel's `DATABASE_URL` and
-`DIRECT_URL` (a Prisma Postgres database named `dev`, despite the name) apply
-to production, preview and development alike, and a local `.env` holds the
-same values (confirmed 2026-11-10). So every local run writes to production:
-never run `prisma migrate reset` or accept the reset `prisma migrate dev`
-offers on a branch missing applied migrations, apply migrations with
-`yarn prisma migrate deploy`, and delete smoke-test accounts and transactions
-when done.
+**Two databases: `prod` and `nonprod`** (Prisma Postgres, project
+`money-manager`, Frankfurt; since 2026-11-14). `prod` (named `dev` until that
+day) backs only Vercel's Production environment. `nonprod` backs Preview,
+Vercel's Development environment and local runs: the main checkout's `.env`
+points at it, and worktrees link to that file. Vercel holds `DATABASE_URL` and
+`DIRECT_URL` once per environment, six variables, all sensitive, so they
+cannot be read back; locally both hold the same direct connection string.
+
+`nonprod` is shared by every worktree and every preview: a migration applied
+there from one branch changes the schema under the others. Resetting it is
+allowed but signs everyone out of it (see the token trap below); say so first.
+
+`yarn prisma migrate deploy` from a local run applies migrations to `nonprod`
+only. The build runs no migrations, so a migration reaches production only
+when Vlad runs it by hand, before merging the PR whose code needs it. Until
+that deploy lands, the old code runs against the new schema, so the migration
+must work with both (add columns and tables; drop or rename in a later PR).
+The steps, in a terminal of Vlad's own:
+
+1. Create a connection string for `prod` in the Prisma console.
+2. In a subshell (zsh syntax), so nothing outlives it or reaches the shell
+   history:
+   `( read -rs 'U?prod URL: '; export DATABASE_URL=$U DIRECT_URL=$U; yarn prisma migrate status && yarn prisma migrate deploy )`.
+   Variables already set win over `.env` (checked 2026-11-14), and both
+   databases report the same host, so check that `migrate status` lists the
+   pending migrations you expect before the deploy runs.
+3. Delete that connection string in the Prisma console.
+
+Never run `prisma migrate reset` or `prisma migrate dev` against `prod`.
+
+Sessions are JWTs, decoded with `NEXTAUTH_SECRET` and trusted without a
+database lookup. Production has its own secret; Preview, Development and the
+local `.env` share another (both rotated 2026-11-14, after previews had held
+production's: code in a preview build could have forged production sessions).
+Switching the local `.env` to another database keeps the old cookie valid. After pointing `.env` at a different database, sign out and
+back in: until then the user ID in the token does not exist there, so creating
+an account fails with a 500 (Prisma P2003 on `FinancialAccount_userId_fkey`,
+observed 2026-11-14) and other writes answer 404. Preview deployments cannot
+sign in at all (Google's redirect list has no preview URLs;
+`docs/decisions/2026-11-14-preview-sign-in.md`).
 
 ## Goal and scope
 
@@ -131,5 +165,10 @@ Paths are relative to the repository root.
   and Next 16.0–16.2 pin 8.4.31 exactly, which carries security alerts
   (2026-11-14). Next 16.3 is the first to pin a fixed one (8.5.23); drop the
   resolution only when moving to 16.3 or later.
-- There is no `vercel.json`: Vercel's build settings, including whatever
-  cancels previews of CI- and docs-only PRs, live in the Vercel dashboard.
+- There is no `vercel.json`: Vercel's build settings live in the dashboard.
+  Its Ignored Build Step skips any build whose diff since the last deployed
+  commit touches only `*.md`, `docs/` and `.claude/` (`git diff --quiet
+${VERCEL_GIT_PREVIOUS_SHA:-HEAD^} HEAD -- . ':(exclude)*.md' …`). So a
+  Redeploy of the same commit is always cancelled (observed 2026-11-14), and a
+  changed environment variable reaches production only with the next merge
+  that touches other files, or a redeploy with that step cleared.

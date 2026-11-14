@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { db } from '@/lib/db';
 
 // If src/tests/setup.ts stops running, these fail instead of letting a test
-// reach the production database. Don't import setup.ts here: that would run
+// reach a real database. Don't import setup.ts here: that would run
 // its guard again and hide a missing setupFiles entry.
 describe('database guard', () => {
   it('points the connection variables at an unreachable host', () => {
