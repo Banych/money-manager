@@ -412,10 +412,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@mantine/hooks@^8.3.1":
-  version "8.3.1"
-  resolved "https://registry.yarnpkg.com/@mantine/hooks/-/hooks-8.3.1.tgz#d2b1f5900c9107d7cd77ef2f0a4a27f97ff64725"
-  integrity sha512-lQutBS+Q0iz/cNFvdrsYassPWo3RtWcmDGJeOtKfHigLzFOhxUuLOkQgepDbMf3WcVMB/tist6Px1PQOv57JTw==
+"@mantine/hooks@^8.3.18":
+  version "8.3.18"
+  resolved "https://registry.yarnpkg.com/@mantine/hooks/-/hooks-8.3.18.tgz#7e5601c0683ed2411e3aee8fcb81a151e5341ad2"
+  integrity sha512-QoWr9+S8gg5050TQ06aTSxtlpGjYOpIllRbjYYXlRvZeTsUqiTbVfvQROLexu4rEaK+yy9Wwriwl9PMRgbLqPw==
 
 "@napi-rs/wasm-runtime@1.2.6":
   version "1.2.6"
