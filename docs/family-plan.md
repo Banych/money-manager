@@ -56,7 +56,7 @@ accounts.
 | See balances               | Works on `/accounts`. The dashboard total covers only the 3 most recently used accounts.                                                                                                                   |
 | Monthly report by category | Missing. Nothing sums by category; the Analytics widget is a mock. The dashboard monthly totals can drop to the last 20 entries after any change (from code, unrun).                                       |
 | Two people, one household  | Missing. Every query is scoped to one user. Sign-in is open to any verified Google account.                                                                                                                |
-| Backups, export            | None in code. Provider backups unverified. The only database is production.                                                                                                                                |
+| Backups, export            | None in code. Provider backups unverified. The only database was production (split 2026-11-14).                                                                                                            |
 
 The docs overclaimed: `docs/roadmap.md` marked recipes, planned purchases,
 the goods database and analytics as done, and none of them exist.
@@ -91,7 +91,8 @@ its pre-commit hook, and GitHub secret scanning, and keeps all of them.
 - Vitest with mocked database access only, following bobrquiz's pattern
   (mock the Prisma client with `vi.mock`). No test touches a real database
   until issue 1's dev database exists: bobrquiz's integration test falls back
-  to `DATABASE_URL`, which here is production.
+  to `DATABASE_URL`, which here is production. (That database exists since
+  2026-11-14: `nonprod`.)
 - First tests cover `src/lib/transactions/balance.ts`,
   `src/lib/callback-url.ts` and the transaction and account validators.
 - `yarn test` runs in CI and its counts show in the run log.
