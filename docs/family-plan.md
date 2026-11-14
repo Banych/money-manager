@@ -248,7 +248,10 @@ renamed `prod`, and a second one, `nonprod`, in the same project and region,
 backs Preview, Development and the local `.env`, with all eight migrations
 applied. Vercel's `DATABASE_URL` and `DIRECT_URL` are split per environment and
 all sensitive. Preview deployments stay signed out
-(`docs/decisions/2026-11-14-preview-sign-in.md`). Backups are still open.
+(`docs/decisions/2026-11-14-preview-sign-in.md`). After the security review,
+non-production got its own `NEXTAUTH_SECRET`, and Production got a new one and
+a new database key; the old key is deleted once a production build uses the
+new one. Backups are still open.
 
 Checked 2026-11-11 from Vlad's screenshot of the Vercel project settings:
 **Git Fork Protection is Enabled**, so a pull request from a fork is not
