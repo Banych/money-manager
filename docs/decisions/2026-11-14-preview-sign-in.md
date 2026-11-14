@@ -35,5 +35,7 @@ alias can be added later without code changes.
 ## Consequences
 
 - Signed-in checks of a PR happen locally, against `nonprod`.
-- Previews still carry production's `NEXTAUTH_SECRET` and Google client
-  secret, parked on 2026-11-14 (`docs/parking-lot.md`).
+- Previews get their own `NEXTAUTH_SECRET` (split the same day, after the
+  security review showed preview code could forge production sessions with the
+  shared one). They still carry production's Google client secret, parked
+  (`docs/parking-lot.md`).

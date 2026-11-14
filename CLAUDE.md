@@ -35,7 +35,8 @@ Bring a Dependabot PR that is behind up to date with an `@dependabot rebase`
 comment, not `gh pr update-branch`: Dependabot stops rebasing a PR once someone
 else pushes to it. Its PRs come from branches in this repository, so Vercel
 builds their previews with the project's Preview variables: the `nonprod`
-database, but production's `NEXTAUTH_SECRET` and Google client (parked).
+database and a non-production `NEXTAUTH_SECRET`, but production's Google
+client (parked).
 `.env` is git-ignored and there is no `.env.example`; the variables are listed
 in `README.md`.
 
@@ -83,8 +84,10 @@ The steps, in a terminal of Vlad's own:
 Never run `prisma migrate reset` or `prisma migrate dev` against `prod`.
 
 Sessions are JWTs, decoded with `NEXTAUTH_SECRET` and trusted without a
-database lookup, so switching the local `.env` to another database keeps the
-old cookie valid. After pointing `.env` at a different database, sign out and
+database lookup. Production has its own secret; Preview, Development and the
+local `.env` share another (both rotated 2026-11-14, after previews had held
+production's: code in a preview build could have forged production sessions).
+Switching the local `.env` to another database keeps the old cookie valid. After pointing `.env` at a different database, sign out and
 back in: until then the user ID in the token does not exist there, so creating
 an account fails with a 500 (Prisma P2003 on `FinancialAccount_userId_fkey`,
 observed 2026-11-14) and other writes answer 404. Preview deployments cannot
@@ -162,5 +165,10 @@ Paths are relative to the repository root.
   and Next 16.0–16.2 pin 8.4.31 exactly, which carries security alerts
   (2026-11-14). Next 16.3 is the first to pin a fixed one (8.5.23); drop the
   resolution only when moving to 16.3 or later.
-- There is no `vercel.json`: Vercel's build settings, including whatever
-  cancels previews of CI- and docs-only PRs, live in the Vercel dashboard.
+- There is no `vercel.json`: Vercel's build settings live in the dashboard.
+  Its Ignored Build Step skips any build whose diff since the last deployed
+  commit touches only `*.md`, `docs/` and `.claude/` (`git diff --quiet
+${VERCEL_GIT_PREVIOUS_SHA:-HEAD^} HEAD -- . ':(exclude)*.md' …`). So a
+  Redeploy of the same commit is always cancelled (observed 2026-11-14), and a
+  changed environment variable reaches production only with the next merge
+  that touches other files, or a redeploy with that step cleared.
