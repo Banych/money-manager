@@ -3,7 +3,8 @@
 Next.js App Router app (Next 15, yarn 1), NextAuth with Google only, Prisma on
 Postgres. Background docs live in `docs/` (`architecture.md`, `auth.md`,
 `folder-structure.md`; the last describes a planned layout, not the current
-tree). Session logs are in `docs/progress/`.
+tree). Session logs are in `docs/progress/`, dated decision records in
+`docs/decisions/`.
 
 The checks are `yarn validate` (lint, Prettier, `tsc`), `yarn test` and
 `yarn build`. `yarn test` is Vitest (`vitest.config.mts`, tests in
@@ -115,8 +116,9 @@ Paths are relative to the repository root.
 
 **Auth and route protection**
 
-- `src/lib/auth.ts`: `authConfig` (Google provider, reads `GOOGLE_CLIENT_*`)
-  and `getAuthSession()`, the one session helper → `src/app/api/auth/[...nextauth]/route.ts`
+- `src/lib/auth.ts`: `authConfig` (Google provider, reads `GOOGLE_CLIENT_*`;
+  JWT sessions, with `PrismaAdapter` storing users and OAuth accounts) and
+  `getAuthSession()`, the one session helper → `src/app/api/auth/[...nextauth]/route.ts`
   → sign-in page `src/app/auth/signin/page.tsx`. `getAuthSession()` returns
   `null` for a session without `user.id`, because owner filters use it and
   Prisma reads `userId: undefined` as no filter.
@@ -146,6 +148,12 @@ Paths are relative to the repository root.
   write that derives one of the two columns from the transaction sums (the
   recompute, `PUT /api/accounts/[id]` with a balance) calls
   `lockAccountForBalanceWrite()` first, inside `db.$transaction`.
+- Smoke-test writes go through the API from a signed-in page:
+  `POST /api/accounts` and `POST /api/transactions` take the bodies in
+  `src/lib/validators/account.validator.ts` and `transaction.validator.ts`.
+  `DELETE /api/accounts/[id]` answers 409 while the balance is not zero, so
+  cleanup deletes the transactions, then `PUT`s `{ id, balance: 0 }`, then
+  deletes the account.
 
 **Modals**
 
