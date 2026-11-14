@@ -134,9 +134,9 @@ one has these constraints:
 
 - It must live in `src/middleware.ts`; a root `middleware.ts` is never
   compiled when the app is under `src/app`.
-- It needs next-auth bumped to 4.24.15 or later first: middleware would make
-  next-auth's `getToken()` advisory about malformed Bearer headers
-  reachable.
+- It needs next-auth 4.24.15 or later, which the app has had since
+  2026-11-14: on earlier versions, middleware would make next-auth's
+  `getToken()` advisory about malformed Bearer headers reachable.
 - A `withAuth` matcher covering `/api/*` would turn those routes' 401s into
   307 redirects to the sign-in page.
 

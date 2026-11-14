@@ -97,8 +97,8 @@ Paths are relative to the repository root.
   `/transactions/new` (and their modals) have no check, their APIs 401.
   Server widgets in `src/components/dashboard/widgets/` call it too.
 - A middleware would have to live in `src/middleware.ts` (a root
-  `middleware.ts` is never compiled with `src/app`) and needs next-auth ≥
-  4.24.15 first; see `docs/auth.md`.
+  `middleware.ts` is never compiled with `src/app`); see `docs/auth.md`.
+  next-auth is on 4.24.15, the version the middleware needed first.
 
 **Data**
 
