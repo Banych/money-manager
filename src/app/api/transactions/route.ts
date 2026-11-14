@@ -5,7 +5,7 @@ import { recomputeAccountBalance } from '@/lib/transactions/balance';
 import { transactionQuerySchema } from '@/lib/validators/transaction.query.validator';
 import { createTransactionValidator } from '@/lib/validators/transaction.validator';
 import { NextRequest, NextResponse } from 'next/server';
-import { ZodError } from 'zod';
+import { z, ZodError } from 'zod';
 
 export async function GET(req: NextRequest) {
   try {
@@ -20,7 +20,10 @@ export async function GET(req: NextRequest) {
     );
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Invalid query params', details: parsed.error.flatten() },
+        {
+          error: 'Invalid query params',
+          details: z.flattenError(parsed.error),
+        },
         { status: 400 }
       );
     }
@@ -129,7 +132,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
-        { error: 'Invalid transaction data', details: error.errors },
+        { error: 'Invalid transaction data', details: error.issues },
         { status: 400 }
       );
     }

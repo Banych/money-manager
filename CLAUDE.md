@@ -14,7 +14,8 @@ which would otherwise hand it production) and mocks `@/lib/db` with a client
 that throws; a test of a helper that takes the client as a parameter passes its
 own `vi.fn()` fake, as `src/tests/lib/transactions/balance.test.ts` does, and a
 test of code that imports `db` directly (`src/lib/queries/`, API routes) needs
-its own `vi.mock('@/lib/db', …)`. CI
+its own `vi.mock('@/lib/db', …)`, plus one of `@/lib/auth` for the session, as
+`src/tests/api/accounts.route.test.ts` does. CI
 (`.github/workflows/code-quality.yml`, the job named `quality`, on pushes to
 `master` and PRs into it, Node from `.nvmrc`: 22, matching Vercel's `22.x`) runs
 the frozen install, `tsc`, lint, Prettier, the tests and `yarn build` (with

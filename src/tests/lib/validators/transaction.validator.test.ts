@@ -122,9 +122,11 @@ describe('createTransactionValidator', () => {
 
 describe('editTransactionValidator', () => {
   it('accepts an id alone', () => {
-    expect(editTransactionValidator.parse({ id: transactionId })).toEqual({
-      id: transactionId,
-    });
+    expect(editTransactionValidator.parse({ id: transactionId })).toStrictEqual(
+      {
+        id: transactionId,
+      }
+    );
   });
 
   it('rejects an id that is not a cuid', () => {

@@ -87,7 +87,7 @@ describe('createAccountValidator', () => {
 
 describe('updateAccountValidator', () => {
   it('accepts an id alone', () => {
-    expect(updateAccountValidator.parse({ id: accountId })).toEqual({
+    expect(updateAccountValidator.parse({ id: accountId })).toStrictEqual({
       id: accountId,
     });
   });
