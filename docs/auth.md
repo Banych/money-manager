@@ -11,6 +11,11 @@
 
 ## NextAuth.js Configuration
 
+`NEXTAUTH_URL` must stay unset on Vercel (it is, checked 2026-11-14). From
+next-auth 4.24.15 it takes precedence over the host Vercel forwards, so a
+value copied from a local `.env` would build Google's `redirect_uri` and the
+`redirect` callback's `baseUrl` on that host.
+
 ```typescript
 // src/lib/auth.ts
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
@@ -134,9 +139,9 @@ one has these constraints:
 
 - It must live in `src/middleware.ts`; a root `middleware.ts` is never
   compiled when the app is under `src/app`.
-- It needs next-auth 4.24.15 or later, which the app has had since
-  2026-11-14: on earlier versions, middleware would make next-auth's
-  `getToken()` advisory about malformed Bearer headers reachable.
+- It needs next-auth 4.24.15 or later, which the app is on: on earlier
+  versions, middleware would make next-auth's `getToken()` advisory about
+  malformed Bearer headers reachable.
 - A `withAuth` matcher covering `/api/*` would turn those routes' 401s into
   307 redirects to the sign-in page.
 

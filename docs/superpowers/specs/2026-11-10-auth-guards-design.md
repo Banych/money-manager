@@ -41,6 +41,9 @@ security bump (`docs/progress/2026-11-10-session.md`, "Found while verifying"):
   ≥ 4.24.15 bump paired with it, and (c) add a second guard that covers only
   two path prefixes. Revisitable: if a later change wants a single gate,
   re-add `src/middleware.ts` with the next-auth bump.
+  (2026-11-14: next-auth is now 4.24.15, bumped on `fix/security-deps` for
+  its own advisories, so a middleware no longer needs the bump paired with
+  it; points (a) and (c) still stand.)
 - **The branch is stacked on `fix/next-security-patch`** (local tip
   `fe883e3`), not cut from `origin/master` as the brief said. The CLAUDE.md
   code map and the rewritten `docs/auth.md` "Route Protection" section only
