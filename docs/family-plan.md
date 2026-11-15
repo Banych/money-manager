@@ -123,9 +123,8 @@ its pre-commit hook, and GitHub secret scanning, and keeps all of them.
 **1. Backups, export and a separate dev database (M)**
 
 - The provider's backup status is confirmed and one restore has been done into
-  a scratch database, with the steps written in `docs/`. There are no
-  backups today (checked 2026-11-11), so this means a scheduled `pg_dump` or
-  an upgrade to Starter (daily snapshots, kept 7 days).
+  a scratch database, with the steps written in `docs/`. Done 2026-11-15:
+  Starter plan, restore drill passed (`docs/backups.md`).
 - Preview and development deployments use the dev database; only production
   uses the production one. `DIRECT_URL` is marked sensitive in Vercel.
 - A signed-in user can download all their accounts and transactions as CSV.
@@ -257,9 +256,10 @@ Updated 2026-11-15 (issue 1, backups): the workspace moved to Starter. The
 2026-11-11 finding above was wrong in part: the backup list was empty, but
 right after the upgrade it showed a full backup from the database's creation
 (2026-11-10) and five increments since, all dated before the upgrade. Why the
-Free plan did not list them is unknown. A restore of the newest one into a scratch database
-matched `prod` row for row, and the scratch database was deleted. Steps,
-observations and open questions: `docs/backups.md`. CSV export is still open.
+Free plan did not list them is unknown. A restore of the newest one into a
+scratch database matched `prod` row for row, and the scratch database was
+deleted. Steps, observations and open questions: `docs/backups.md`. CSV export
+is still open.
 
 Checked 2026-11-11 from Vlad's screenshot of the Vercel project settings:
 **Git Fork Protection is Enabled**, so a pull request from a fork is not

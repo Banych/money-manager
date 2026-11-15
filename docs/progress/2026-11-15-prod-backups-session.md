@@ -27,7 +27,7 @@ artifacts). Vlad chose Starter.
   2026-11-14 19:42 UTC after it.
 - Backup `20261110-105539F_20261114-194213I` restored into
   `prod-restore-check-20261115`; `scripts/count-rows.cjs` (run by Vlad with
-  temporary connection strings, deleted afterwards) printed identical output
+  temporary connection strings) printed identical output
   for both databases: 1 user, 1 account, 1 financial account, 0 sessions,
   1 transaction, 8 migrations, last migration 2026-11-10T11:45:27.139Z.
 - The scratch database was deleted; `prod` and `nonprod` were `ready` after.
@@ -35,6 +35,8 @@ artifacts). Vlad chose Starter.
 
 ## Not verified
 
+- That the temporary connection string for `prod` was deleted after the count
+  (the copy's went with the database).
 - An in-place restore, and switching Production to a restored database.
 - How the 7-day retention treats the 2026-11-10 full backup.
 - Whether Starter can take a backup on demand (wanted before the household

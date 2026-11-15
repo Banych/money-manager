@@ -30,9 +30,10 @@ both:
 - The same list was empty on the Free plan (2026-11-11 and the morning of
   2026-11-15), then showed history back to the database's creation once the
   plan changed.
-- 2026-11-14 has three entries, not one.
+- Some days have more than one entry: 2026-11-10 has two (the full backup and
+  an increment), 2026-11-14 has three.
 
-Every entry is an increment on the 2026-11-10 full backup. How the 7-day
+Every increment builds on the 2026-11-10 full backup. How the 7-day
 retention applies to that chain (whether the full backup or old increments
 drop out after 2026-11-17) has not been seen yet.
 
@@ -52,7 +53,8 @@ counts with `prod`, and deletes the copy. `prod` is not touched.
 3. **Count rows in both databases.** For each one, create a connection string
    (database → **Connect to your database** → **Generate new connection
    string**, copy the direct one, note the last four characters of its
-   password) and run, from the repository root in a terminal of your own:
+   password, which Prisma's docs say is how the **Connection strings** list
+   tells credentials apart) and run, from the repository root in a terminal of your own:
 
    ```sh
    ( read -rs 'U?Connection string: ' && echo && DATABASE_URL=$U DIRECT_URL=$U node scripts/count-rows.cjs )
@@ -86,9 +88,9 @@ Result on 2026-11-15, both databases identical:
 Traps seen in the drill:
 
 - **The connector asks for an approval on every write and every SQL query**,
-  read-only ones included. Each approval is granted in Prisma Console →
-  workspace settings → Agents → Approvals, and expires about five minutes
-  after the request.
+  read-only ones included. The refusal carries an approval link (a
+  `console.prisma.io/<workspace>/settings/agents/…?tab=approvals` URL); the
+  approval expires about five minutes after the request.
 - **The connector's `execute_sql_query` answered "Database not found"** for
   both `prod` and the restored copy, after the approval went through and with
   or without the `db_`/`proj_` prefixes. Why is unknown. Count rows locally,
