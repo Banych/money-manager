@@ -179,17 +179,22 @@ Paths are relative to the repository root.
 
 **Shell and dashboard**
 
-- `src/app/layout.tsx` → `src/components/navigation.tsx` (top links, hidden
-  below `md`) → `src/components/profile/profile-dropdown.tsx` (the avatar
+- `src/app/layout.tsx` → `src/components/navigation.tsx` (no bar on
+  `/auth/signin`; top links only when signed in and only from `md` up, with no
+  phone menu) → `src/components/profile/profile-dropdown.tsx` (the avatar
   menu: a `/profile/…` link with no page behind it, the CSV downloads, sign
   out).
 - `/dashboard` (`src/app/dashboard/page.tsx`) composes
-  `src/components/dashboard/widgets/`: `server-accounts-widget.tsx` and
+  `src/components/dashboard/widgets/`: `server-accounts-widget.tsx` (its
+  total covers only the 3 most recent accounts; issue 3) and
   `server-expenses-income-widget.tsx` read real data; `analytics-widget.tsx`,
-  `grocery-widget.tsx` and `planned-purchases-widget.tsx` are the mocks issue
-  2 of `docs/family-plan.md` removes. Its other dead links: "View Reports" in
-  the dashboard page and the analytics widget, "Account Settings" in
-  `src/components/accounts/account-actions.tsx`.
+  `grocery-widget.tsx` and `planned-purchases-widget.tsx` are hard-coded
+  mocks, and `enhanced-accounts-widget.tsx` is empty.
+- Issue 2 of `docs/family-plan.md` removes those, and these dead controls:
+  "View Reports" (disabled buttons in the dashboard page and the analytics
+  widget); "Account Settings", an enabled button with an empty handler in
+  `src/components/accounts/account-actions.tsx`, on `/accounts/[id]`; the
+  "Coming Soon" badges on the landing page `src/app/page.tsx`.
 
 **Config**
 
