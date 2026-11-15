@@ -19,8 +19,12 @@ vi.mock('@/lib/db', () => ({
 import { GET as exportAccounts } from '@/app/api/export/accounts/route';
 import { GET as exportTransactions } from '@/app/api/export/transactions/route';
 
-const lines = async (response: Response) =>
-  (await response.text()).replace(/^\uFEFF/, '').split('\r\n');
+// `text()` drops a leading BOM, so check the raw bytes for it first.
+const lines = async (response: Response) => {
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  expect([...bytes.slice(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+  return new TextDecoder().decode(bytes).split('\r\n');
+};
 
 beforeEach(() => {
   accountFindMany.mockReset();
@@ -100,7 +104,9 @@ describe('GET /api/export/transactions', () => {
     const response = await exportTransactions();
 
     expect(transactionFindMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { userId: 'user-1' } })
+      expect.objectContaining({
+        where: { userId: 'user-1', account: { userId: 'user-1' } },
+      })
     );
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Disposition')).toMatch(

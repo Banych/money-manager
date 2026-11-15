@@ -25,8 +25,14 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // The account must be the user's too: the schema does not tie a
+    // transaction's owner to its account's owner, and the account's name
+    // goes into the file.
     const transactions = await db.transaction.findMany({
-      where: { userId: session.user.id },
+      where: {
+        userId: session.user.id,
+        account: { userId: session.user.id },
+      },
       orderBy: [{ date: 'asc' }, { createdAt: 'asc' }, { id: 'asc' }],
       include: { account: { select: { name: true, currency: true } } },
     });

@@ -7,7 +7,9 @@ export type CsvCell = string | number | Date | null | undefined;
 // user typed (names, descriptions) gets a leading apostrophe so it stays text.
 // Numbers are written by us and never pass through this check.
 const FORMULA_START = /^[=+\-@\t\r]/;
-const NEEDS_QUOTES = /[",\r\n]/;
+// `;` too: Excel splits on it in locales whose list separator is `;`, and an
+// unquoted `a;=1+1` would put a live formula in the second cell.
+const NEEDS_QUOTES = /[",;\r\n]/;
 
 export function csvCell(value: CsvCell): string {
   if (value === null || value === undefined) {

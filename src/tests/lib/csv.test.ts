@@ -39,6 +39,10 @@ describe('csvCell', () => {
     }
   );
 
+  it('quotes cells holding semicolons, so Excel cannot split out a formula', () => {
+    expect(csvCell('Food;=1+1')).toBe('"Food;=1+1"');
+  });
+
   it('quotes a guarded cell that also needs quotes', () => {
     expect(csvCell('=HYPERLINK("x")')).toBe('"\'=HYPERLINK(""x"")"');
   });
