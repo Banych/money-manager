@@ -177,6 +177,20 @@ Paths are relative to the repository root.
   `src/components/transactions/`; mutations in `src/hooks/useAccounts.ts` and
   `src/hooks/useTransactions.ts`.
 
+**Shell and dashboard**
+
+- `src/app/layout.tsx` → `src/components/navigation.tsx` (top links, hidden
+  below `md`) → `src/components/profile/profile-dropdown.tsx` (the avatar
+  menu: a `/profile/…` link with no page behind it, the CSV downloads, sign
+  out).
+- `/dashboard` (`src/app/dashboard/page.tsx`) composes
+  `src/components/dashboard/widgets/`: `server-accounts-widget.tsx` and
+  `server-expenses-income-widget.tsx` read real data; `analytics-widget.tsx`,
+  `grocery-widget.tsx` and `planned-purchases-widget.tsx` are the mocks issue
+  2 of `docs/family-plan.md` removes. Its other dead links: "View Reports" in
+  the dashboard page and the analytics widget, "Account Settings" in
+  `src/components/accounts/account-actions.tsx`.
+
 **Config**
 
 - `next.config.ts`: image hosts only, no `experimental` flags.
