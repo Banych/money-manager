@@ -161,6 +161,12 @@ Paths are relative to the repository root.
   `DELETE /api/accounts/[id]` answers 409 while the balance is not zero, so
   cleanup deletes the transactions, then `PUT`s `{ id, balance: 0 }`, then
   deletes the account.
+- Data export: `GET /api/export/accounts` and `GET /api/export/transactions`
+  (linked from the profile menu, `src/components/profile/profile-dropdown.tsx`)
+  build CSV with `src/lib/csv.ts`: RFC 4180 quoting (`;` quoted too, for
+  Excel in `;` locales), a UTF-8 BOM, and a leading `'` on text that starts
+  with `=`, `+`, `-` or `@`. Add a column there when the schema gains a field
+  the family would want back.
 
 **Modals**
 
