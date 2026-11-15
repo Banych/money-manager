@@ -84,6 +84,13 @@ The steps, in a terminal of Vlad's own:
 
 Never run `prisma migrate reset` or `prisma migrate dev` against `prod`.
 
+Backups are Prisma's own (Starter plan since 2026-11-15); there is no backup
+job in the repository. `docs/backups.md` has the restore drill (passed
+2026-11-15), `scripts/count-rows.cjs` for comparing a restored copy with
+`prod`, and the traps: the Prisma connector needs a console approval for every
+write and SQL query, and its `execute_sql_query` answers "Database not found"
+for these databases, so counts run locally.
+
 Sessions are JWTs, decoded with `NEXTAUTH_SECRET` and trusted without a
 database lookup. Production has its own secret; Preview, Development and the
 local `.env` share another (both rotated 2026-11-14, after previews had held

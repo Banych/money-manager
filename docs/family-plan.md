@@ -56,7 +56,7 @@ accounts.
 | See balances               | Works on `/accounts`. The dashboard total covers only the 3 most recently used accounts.                                                                                                                   |
 | Monthly report by category | Missing. Nothing sums by category; the Analytics widget is a mock. The dashboard monthly totals can drop to the last 20 entries after any change (from code, unrun).                                       |
 | Two people, one household  | Missing. Every query is scoped to one user. Sign-in is open to any verified Google account.                                                                                                                |
-| Backups, export            | None in code. Provider backups unverified. The only database was production (split 2026-11-14).                                                                                                            |
+| Backups, export            | Prisma Starter backups since 2026-11-15, restore drill passed (`docs/backups.md`). No export yet. The only database was production (split 2026-11-14).                                                     |
 
 The docs overclaimed: `docs/roadmap.md` marked recipes, planned purchases,
 the goods database and analytics as done, and none of them exist.
@@ -252,6 +252,14 @@ all sensitive. Preview deployments stay signed out
 non-production got its own `NEXTAUTH_SECRET`, and Production got a new one and
 a new database key; the old key is deleted once a production build uses the
 new one. Backups are still open.
+
+Updated 2026-11-15 (issue 1, backups): the workspace moved to Starter. The
+2026-11-11 finding above was wrong in part: the backup list was empty, but
+right after the upgrade it showed a full backup from the database's creation
+(2026-11-10) and five increments since, all dated before the upgrade. Why the
+Free plan did not list them is unknown. A restore of the newest one into a scratch database
+matched `prod` row for row, and the scratch database was deleted. Steps,
+observations and open questions: `docs/backups.md`. CSV export is still open.
 
 Checked 2026-11-11 from Vlad's screenshot of the Vercel project settings:
 **Git Fork Protection is Enabled**, so a pull request from a fork is not
