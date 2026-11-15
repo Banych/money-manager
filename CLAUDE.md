@@ -186,7 +186,8 @@ Paths are relative to the repository root.
   out).
 - `/dashboard` (`src/app/dashboard/page.tsx`) composes
   `src/components/dashboard/widgets/`: `server-accounts-widget.tsx` (its
-  total covers only the 3 most recent accounts; issue 3) and
+  total is the largest single-currency sum among the 3 accounts with the
+  latest `lastActivity`; issue 3) and
   `server-expenses-income-widget.tsx` read real data; `analytics-widget.tsx`,
   `grocery-widget.tsx` and `planned-purchases-widget.tsx` are hard-coded
   mocks, and `enhanced-accounts-widget.tsx` is empty.
