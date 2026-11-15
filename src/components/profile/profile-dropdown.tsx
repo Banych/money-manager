@@ -47,6 +47,28 @@ const ProfileDropdown: FC<Props> = ({ user }) => {
 
         <DropdownMenuSeparator />
 
+        {/* Plain links: the export routes answer with a CSV attachment. */}
+        <DropdownMenuItem asChild>
+          <a
+            href="/api/export/accounts"
+            download
+            className="cursor-pointer"
+          >
+            Download accounts (CSV)
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <a
+            href="/api/export/transactions"
+            download
+            className="cursor-pointer"
+          >
+            Download transactions (CSV)
+          </a>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
         <DropdownMenuItem
           onSelect={(event) => {
             event.preventDefault();
