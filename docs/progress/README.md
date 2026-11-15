@@ -30,3 +30,4 @@ This directory contains chronological session/sprint logs capturing project stat
 - 2026-11-10 – Sign-in `callbackUrl` open redirect and `javascript:` XSS fixed and missing `user.id` treated as signed out (`2026-11-10-signin-callback-url-session.md`).
 - 2026-11-11 – Goal changed to family use; gap audit and plan (`2026-11-11-family-plan-session.md`, `../family-plan.md`).
 - 2026-11-15 – Production backups on Prisma Starter, restore drill passed (`2026-11-15-prod-backups-session.md`).
+- 2026-11-15 – CSV export of accounts and transactions (`2026-11-15-csv-export-session.md`).
